@@ -833,6 +833,54 @@ body {
 .popover-bubble p { font-size: .78rem; color: var(--text-dim); margin: 0; line-height: 1.5; }
 
 /* ============================================================
+   Demo: Nested Tooltip (Paradox-style cascading tooltips)
+   ============================================================ */
+.nt-trigger {
+  color: #c4b5fd;
+  cursor: help;
+  border-bottom: 1.5px dashed #c4b5fd;
+  transition: color .15s, border-color .15s;
+}
+.nt-trigger:hover { color: #ddd6fe; border-bottom-color: #ddd6fe; }
+
+/* The floating tooltip — created dynamically, appended to body */
+.nested-tooltip {
+  position: fixed;
+  z-index: 2000;
+  background: rgba(20,20,40,.97);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  border: 1px solid #3a3a58;
+  border-left: 3px solid #a78bfa;
+  border-radius: 10px;
+  padding: 13px 17px;
+  min-width: 190px;
+  max-width: 290px;
+  opacity: 0;
+  transform: translateX(-6px);
+  transition: opacity .22s ease, transform .22s ease;
+  pointer-events: auto;
+  box-shadow: 0 10px 36px rgba(0,0,0,.55);
+  font-size: .8rem;
+  line-height: 1.55;
+}
+.nested-tooltip.visible { opacity: 1; transform: translateX(0); }
+
+.nested-tooltip .nt-title {
+  font-size: .82rem;
+  font-weight: 700;
+  color: #fbbf24;
+  margin-bottom: 7px;
+}
+.nested-tooltip .nt-body { color: #c8c8d8; }
+.nested-tooltip .nt-body em { color: #e2e2ec; font-style: normal; font-weight: 500; }
+.nested-tooltip .nt-body .nt-trigger {
+  color: #a5b4fc;
+  border-bottom-color: #a5b4fc;
+}
+.nested-tooltip .nt-body .nt-trigger:hover { color: #c7d2fe; }
+
+/* ============================================================
    Footer
    ============================================================ */
 .footer {
@@ -1289,6 +1337,37 @@ body {
     <div class="card-feedback" id="popoverFeedback">👆 点击按钮打开弹出框（点击外部关闭）</div>
     <div class="card-explanation">
       <strong>Popover</strong>（弹出框）是点击触发的浮动卡片。与 Tooltip（悬停触发、文字简短）不同，Popover 可包含<em>更丰富的内容</em>——文字、按钮、图片，常用于快捷操作菜单。
+    </div>
+  </article>
+
+  <!-- 23. Nested Tooltip (P 社风格) -->
+  <article class="card" id="card-nested-tooltip">
+    <div class="card-header">
+      <span class="icon">🪆</span><h3>Nested Tooltip</h3>
+      <span class="cn-tag">嵌套悬浮提示</span>
+    </div>
+    <div class="card-demo" style="min-height:170px;padding:20px 24px;">
+      <p class="nested-demo-text" style="font-size:.88rem;line-height:1.75;color:var(--text-dim);">
+        在
+        <span class="nt-trigger" data-nt="paradox">P 社游戏</span>
+        中，
+        <span class="nt-trigger" data-nt="nested-tooltip">嵌套提示</span>
+        是理解复杂系统的关键。当你看到
+        <span class="nt-trigger" data-nt="ui-design">UI 设计</span>
+        相关的高亮词，悬停即可查看解释；解释中又会出现
+        <span class="nt-trigger" data-nt="ixd">交互设计</span>
+        的概念，继续悬停还能深入；深入后你可能会看到
+        <span class="nt-trigger" data-nt="micro">微交互</span>
+        的说明，它又引出了
+        <span class="nt-trigger" data-nt="feedback-loop">反馈循环</span>
+        ——而反馈循环最终会带你回到
+        <span class="nt-trigger" data-nt="ui-design">UI 设计</span>
+        本身，形成完美的循环探索体验 🎯。
+      </p>
+    </div>
+    <div class="card-feedback" id="nestedTooltipFeedback">🖱️ 悬停文中 <span style="color:#c4b5fd;">紫色高亮词</span>，层层深入——可无限循环</div>
+    <div class="card-explanation">
+      <strong>Nested Tooltip</strong>（嵌套提示/级联提示）允许用户从一层解释<em>逐层深入</em>到下一层，形成知识探索的纵深。P 社游戏以此闻名——你不用离开当前界面，就能在层层提示中理解整个复杂系统。
     </div>
   </article>
 
@@ -1763,6 +1842,179 @@ body {
         setFeedback('popoverFeedback', '👆 点击按钮打开弹出框（点击外部关闭）', false);
       }
     });
+  })();
+
+  // ==================== 23. Nested Tooltip (P 社风格级联提示) ====================
+  (function() {
+    // ---- 提示内容数据（支持循环引用） ----
+    var ntData = {
+      paradox: {
+        title: '🎮 P 社 / Paradox Interactive',
+        content: 'Paradox Interactive 是瑞典策略游戏开发商，代表作《<em>十字军之王</em>》《<em>欧陆风云</em>》《<em>钢铁雄心</em>》。其游戏以<span class="nt-trigger" data-nt="nested-tooltip">嵌套提示</span>系统闻名——玩家可以在层层提示中，不离开当前界面就能理解极其复杂的游戏机制。'
+      },
+      'nested-tooltip': {
+        title: '🪆 嵌套提示 Nested Tooltip',
+        content: '嵌套提示允许多层<span class="nt-trigger" data-nt="ui-design">UI 设计</span>信息逐级展开。用户悬停高亮词 → 看到解释 → 解释中还有高亮词 → 再悬停 → 继续深入。信息就像<em>俄罗斯套娃</em>一样层层剥开，而不需要跳转到帮助页面。'
+      },
+      'ui-design': {
+        title: '🎨 UI 设计',
+        content: 'UI（用户界面）设计关注产品的<em>视觉呈现</em>与布局。好的 UI 让信息层级清晰——而这正是<span class="nt-trigger" data-nt="ixd">交互设计</span>的前提。'
+      },
+      ixd: {
+        title: '🔗 交互设计 IxD',
+        content: '交互设计（Interaction Design）专注于<em>用户行为流程</em>——用户如何与系统"对话"。它催生了<span class="nt-trigger" data-nt="micro">微交互</span>等精细的设计概念。'
+      },
+      micro: {
+        title: '💫 微交互 Micro-interaction',
+        content: '微交互是完成单个任务的<em>微小动画反馈</em>——点赞的心形动画、开关的滑动、下拉刷新。它创造了愉悦的<span class="nt-trigger" data-nt="feedback-loop">反馈循环</span>。'
+      },
+      'feedback-loop': {
+        title: '🔄 反馈循环 Feedback Loop',
+        content: '反馈循环：系统响应 → 用户感知 → 再次操作 → 形成闭环。好的反馈让用户感到<em>掌控感</em>。这也正是<span class="nt-trigger" data-nt="ui-design">UI 设计</span>的核心目标——形成人与界面之间的流畅对话。🔁'
+      }
+    };
+
+    // ---- 状态 ----
+    var tooltipChain = [];        // [{trigger, el}]
+    var globalHideTimer = null;
+    var feedbackEl = document.getElementById('nestedTooltipFeedback');
+    var depthCount = 0;
+
+    function setFB(text, active) {
+      if (feedbackEl) {
+        feedbackEl.innerHTML = text;
+        feedbackEl.classList.toggle('active', !!active);
+      }
+    }
+
+    // ---- 定位：优先右侧，其次左侧，再次下方 ----
+    function positionTooltip(el, trigger) {
+      var tRect = trigger.getBoundingClientRect();
+      var tipW = el.offsetWidth;
+      var tipH = el.offsetHeight;
+      var gap = 10;
+      var spaceR = window.innerWidth - tRect.right - gap;
+      var spaceL = tRect.left - gap;
+      var spaceB = window.innerHeight - tRect.bottom - gap;
+
+      var left, top;
+      // 优先右侧
+      if (spaceR > tipW + gap) {
+        left = tRect.right + gap;
+        top = tRect.top + tRect.height / 2 - tipH / 2;
+      } else if (spaceL > tipW + gap) {
+        // 其次左侧
+        left = tRect.left - tipW - gap;
+        top = tRect.top + tRect.height / 2 - tipH / 2;
+      } else if (spaceB > tipH + gap) {
+        // 再次下方
+        left = tRect.left;
+        top = tRect.bottom + gap;
+      } else {
+        // 兜底：上方
+        left = tRect.left;
+        top = tRect.top - tipH - gap;
+      }
+      // 视口边界钳制
+      left = Math.max(8, Math.min(left, window.innerWidth - tipW - 8));
+      top = Math.max(8, Math.min(top, window.innerHeight - tipH - 8));
+
+      el.style.left = left + 'px';
+      el.style.top = top + 'px';
+    }
+
+    // ---- 绑定嵌套触发器 ----
+    function bindInnerTriggers(container) {
+      var triggers = container.querySelectorAll('.nt-trigger');
+      for (var i = 0; i < triggers.length; i++) {
+        (function(trig) {
+          trig.addEventListener('mouseenter', function(e) {
+            e.stopPropagation();
+            clearTimeout(globalHideTimer);
+            spawnTooltip(trig);
+          });
+        })(triggers[i]);
+      }
+    }
+
+    // ---- 生成提示 ----
+    function spawnTooltip(trigger) {
+      clearTimeout(globalHideTimer);
+      var key = trigger.getAttribute('data-nt');
+      var data = ntData[key];
+      if (!data) return;
+
+      // 如果该 trigger 已在链中，剪掉它之后的所有 tooltip（回退行为）
+      for (var i = 0; i < tooltipChain.length; i++) {
+        if (tooltipChain[i].trigger === trigger) {
+          // 剪掉 i 之后的所有
+          for (var j = i + 1; j < tooltipChain.length; j++) {
+            tooltipChain[j].el.classList.remove('visible');
+            setTimeout((function(el) { return function() { if (el.parentNode) el.remove(); }; })(tooltipChain[j].el), 250);
+          }
+          tooltipChain.length = i + 1;
+          depthCount = tooltipChain.length;
+          setFB('🔙 回到第 ' + depthCount + ' 层——链式提示支持前进和后退', true);
+          return;
+        }
+      }
+
+      // 创建新 tooltip
+      var el = document.createElement('div');
+      el.className = 'nested-tooltip';
+      el.innerHTML = '<div class="nt-title">' + data.title + '</div><div class="nt-body">' + data.content + '</div>';
+      document.body.appendChild(el);
+
+      // 定位
+      positionTooltip(el, trigger);
+
+      // 显示
+      requestAnimationFrame(function() { el.classList.add('visible'); });
+
+      // 入链
+      tooltipChain.push({ trigger: trigger, el: el });
+      depthCount = tooltipChain.length;
+
+      // 绑定内部触发器
+      bindInnerTriggers(el);
+
+      // tooltip 自身 hover 事件
+      el.addEventListener('mouseenter', function() { clearTimeout(globalHideTimer); });
+      el.addEventListener('mouseleave', function() { scheduleHideAll(); });
+
+      setFB('✅ 第 ' + depthCount + ' 层提示已展开——继续悬停内部高亮词可深入探索', true);
+    }
+
+    // ---- 延迟隐藏 ----
+    function scheduleHideAll() {
+      globalHideTimer = setTimeout(function() {
+        for (var i = 0; i < tooltipChain.length; i++) {
+          tooltipChain[i].el.classList.remove('visible');
+          (function(el) {
+            setTimeout(function() { if (el.parentNode) el.remove(); }, 250);
+          })(tooltipChain[i].el);
+        }
+        tooltipChain.length = 0;
+        depthCount = 0;
+        setFB('🖱️ 悬停文中 <span style="color:#c4b5fd;">紫色高亮词</span>，层层深入——可无限循环', false);
+      }, 350);
+    }
+
+    // ---- 绑定所有初始触发器 ----
+    var demoArea = document.querySelector('#card-nested-tooltip .card-demo');
+    if (demoArea) {
+      var initialTriggers = demoArea.querySelectorAll('.nt-trigger');
+      for (var k = 0; k < initialTriggers.length; k++) {
+        (function(trig) {
+          trig.addEventListener('mouseenter', function(e) {
+            e.stopPropagation();
+            clearTimeout(globalHideTimer);
+            spawnTooltip(trig);
+          });
+          trig.addEventListener('mouseleave', function() { scheduleHideAll(); });
+        })(initialTriggers[k]);
+      }
+    }
   })();
 
 })();
