@@ -1,0 +1,826 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>AI 概念透明模拟器</title>
+  <style>
+    :root {
+      --bg: #09090f;
+      --panel: rgba(18, 18, 30, .84);
+      --panel-2: rgba(28, 28, 46, .72);
+      --line: rgba(190, 185, 235, .16);
+      --line-2: rgba(190, 185, 235, .28);
+      --text: #f5f2ff;
+      --muted: #aaa4c1;
+      --muted-2: #7e7896;
+      --purple: #7c6ff7;
+      --green: #3dd6a8;
+      --cyan: #52d8ff;
+      --blue: #4b8cff;
+      --orange: #ffb45c;
+      --red: #ff6b82;
+      --radius: 12px;
+      --shadow: 0 24px 80px rgba(0,0,0,.45);
+      --ease: cubic-bezier(.2,.8,.2,1);
+      --temp: .4;
+    }
+
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      margin: 0;
+      min-height: 100vh;
+      color: var(--text);
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", "Microsoft YaHei", sans-serif;
+      background:
+        radial-gradient(circle at 16% 6%, rgba(124,111,247,.22), transparent 440px),
+        radial-gradient(circle at 88% 12%, rgba(61,214,168,.13), transparent 390px),
+        radial-gradient(circle at 64% 76%, rgba(82,216,255,.10), transparent 500px),
+        var(--bg);
+      line-height: 1.55;
+      overflow-x: hidden;
+    }
+
+    body::before {
+      content: "";
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      background-image:
+        linear-gradient(rgba(255,255,255,.035) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255,255,255,.03) 1px, transparent 1px);
+      background-size: 44px 44px;
+      mask-image: radial-gradient(circle at top, black, transparent 72%);
+      opacity: .35;
+    }
+
+    button, input, textarea { font: inherit; }
+    button { color: inherit; }
+    .page { width: min(1180px, calc(100% - 32px)); margin: 0 auto; padding: 52px 0 86px; }
+    .hero { text-align: center; animation: rise .65s var(--ease) both; }
+    .pill-row, .actions { display: flex; align-items: center; justify-content: center; flex-wrap: wrap; gap: 8px; }
+    .pill, .tag {
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
+      min-height: 28px;
+      padding: 5px 10px;
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      color: var(--muted);
+      background: rgba(255,255,255,.045);
+      font-size: 12px;
+      backdrop-filter: blur(16px);
+    }
+    .live-dot {
+      width: 7px; height: 7px; border-radius: 50%;
+      background: var(--green);
+      box-shadow: 0 0 0 5px rgba(61,214,168,.12), 0 0 18px rgba(61,214,168,.7);
+    }
+    h1 {
+      margin: 18px auto 12px;
+      font-size: clamp(40px, 7vw, 78px);
+      line-height: 1.04;
+      letter-spacing: 0;
+      background: linear-gradient(100deg, #fff 0%, #a89eff 38%, #3dd6a8 80%);
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+    }
+    .subtitle { max-width: 820px; margin: 0 auto 18px; color: #c6c0da; font-size: clamp(16px, 2.4vw, 20px); }
+    .brief {
+      display: grid;
+      grid-template-columns: auto 1fr;
+      gap: 16px;
+      max-width: 960px;
+      margin: 28px auto 0;
+      padding: 18px;
+      text-align: left;
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      background: linear-gradient(180deg, rgba(255,255,255,.075), rgba(255,255,255,.04));
+      box-shadow: var(--shadow);
+      backdrop-filter: blur(18px);
+    }
+    .brief-icon {
+      width: 46px; height: 46px; display: grid; place-items: center;
+      border-radius: 12px;
+      color: var(--green);
+      background: linear-gradient(135deg, rgba(124,111,247,.24), rgba(61,214,168,.12));
+      border: 1px solid rgba(255,255,255,.12);
+    }
+    .brief h2 { margin: 0 0 6px; font-size: 16px; }
+    .brief p, .note { margin: 0; color: var(--muted); font-size: 14px; }
+    .note { color: var(--muted-2); font-size: 12px; margin-top: 10px; }
+
+    .topbar {
+      display: flex;
+      justify-content: space-between;
+      gap: 14px;
+      align-items: center;
+      margin: 28px 0 18px;
+      padding: 12px;
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      background: rgba(255,255,255,.045);
+      backdrop-filter: blur(16px);
+    }
+    .progress-block { flex: 1; min-width: 180px; }
+    .progress-meta { display: flex; justify-content: space-between; margin-bottom: 8px; color: var(--muted); font-size: 13px; }
+    .track { height: 8px; border-radius: 999px; overflow: hidden; background: rgba(255,255,255,.08); border: 1px solid rgba(255,255,255,.07); }
+    .fill { width: 0%; height: 100%; border-radius: inherit; background: linear-gradient(90deg, var(--purple), var(--green)); transition: width .32s var(--ease); }
+    .switch-wrap { display: inline-flex; gap: 9px; align-items: center; color: var(--muted); font-size: 13px; user-select: none; }
+    .switch-wrap input { position: absolute; opacity: 0; }
+    .switch { width: 42px; height: 24px; padding: 3px; border-radius: 999px; background: rgba(255,255,255,.11); border: 1px solid var(--line); cursor: pointer; transition: .25s var(--ease); }
+    .switch::before { content: ""; display: block; width: 16px; height: 16px; border-radius: 50%; background: #ded9ff; transition: .25s var(--ease); }
+    .switch-wrap input:checked + .switch { background: rgba(61,214,168,.22); border-color: rgba(61,214,168,.45); }
+    .switch-wrap input:checked + .switch::before { transform: translateX(18px); background: var(--green); }
+
+    .grid { display: grid; grid-template-columns: repeat(2, minmax(0,1fr)); gap: 16px; }
+    .card {
+      position: relative;
+      min-height: 420px;
+      padding: 18px;
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      background: linear-gradient(180deg, rgba(255,255,255,.07), rgba(255,255,255,.038)), rgba(14,14,24,.88);
+      box-shadow: 0 18px 60px rgba(0,0,0,.32);
+      overflow: hidden;
+      animation: cardIn .55s var(--ease) both;
+      transition: transform .25s var(--ease), border-color .25s var(--ease), box-shadow .25s var(--ease);
+    }
+    .card::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+      background: radial-gradient(circle at 20% 0%, rgba(124,111,247,.12), transparent 350px);
+    }
+    .card:hover { transform: translateY(-3px); border-color: var(--line-2); box-shadow: 0 24px 70px rgba(0,0,0,.42); }
+    .card > * { position: relative; z-index: 1; }
+    .wide { grid-column: 1 / -1; }
+    .head { display: flex; justify-content: space-between; align-items: flex-start; gap: 14px; margin-bottom: 16px; }
+    .kicker { color: var(--green); font-size: 12px; font-weight: 800; margin-bottom: 8px; text-transform: uppercase; }
+    .title { margin: 0; font-size: 20px; line-height: 1.28; }
+    .desc { margin: 8px 0 0; color: var(--muted); font-size: 14px; }
+    .done {
+      width: 28px; height: 28px; flex: 0 0 auto; display: grid; place-items: center;
+      border-radius: 50%; border: 1px solid var(--line); color: var(--muted-2); background: rgba(255,255,255,.04);
+      transition: .25s var(--ease);
+    }
+    .card.complete .done { color: #04100c; background: var(--green); border-color: rgba(61,214,168,.7); box-shadow: 0 0 22px rgba(61,214,168,.32); }
+
+    label, .label { color: #ded9f4; font-size: 13px; font-weight: 700; }
+    .field { display: grid; gap: 8px; margin: 14px 0; }
+    textarea, input[type="text"] {
+      width: 100%;
+      min-height: 44px;
+      padding: 12px 13px;
+      color: var(--text);
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      outline: none;
+      background: rgba(5,5,10,.44);
+      transition: border-color .22s var(--ease), box-shadow .22s var(--ease), background .22s var(--ease);
+    }
+    textarea { min-height: 92px; resize: vertical; }
+    textarea:hover, input[type="text"]:hover { border-color: rgba(190,185,235,.34); }
+    textarea:focus, input[type="text"]:focus { border-color: rgba(124,111,247,.88); box-shadow: 0 0 0 4px rgba(124,111,247,.16); background: rgba(7,7,15,.72); }
+    .actions { justify-content: flex-start; margin: 12px 0; }
+    .btn {
+      position: relative;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      min-height: 38px;
+      padding: 9px 13px;
+      border: 1px solid transparent;
+      border-radius: 9px;
+      background: rgba(255,255,255,.08);
+      cursor: pointer;
+      overflow: hidden;
+      font-weight: 750;
+      transition: transform .2s var(--ease), border-color .2s var(--ease), background .2s var(--ease), box-shadow .2s var(--ease);
+    }
+    .btn:hover { transform: translateY(-1px); border-color: rgba(255,255,255,.18); background: rgba(255,255,255,.12); }
+    .btn:active { transform: translateY(0) scale(.985); }
+    .btn:focus-visible, .token:focus-visible, .word:focus-visible, .att-token:focus-visible, .template:focus-visible { outline: 2px solid rgba(61,214,168,.86); outline-offset: 3px; }
+    .btn:disabled { cursor: not-allowed; opacity: .62; transform: none; }
+    .primary { background: linear-gradient(135deg, rgba(124,111,247,.95), rgba(61,214,168,.7)); box-shadow: 0 10px 28px rgba(124,111,247,.22); }
+    .ghost { background: transparent; border-color: var(--line); color: #d7d2ef; }
+    .spinner { display: none; width: 16px; height: 16px; border: 2px solid rgba(255,255,255,.26); border-top-color: #fff; border-radius: 50%; animation: spin .75s linear infinite; }
+    .btn[aria-busy="true"] .spinner { display: inline-block; }
+    .ripple { position: absolute; width: 12px; height: 12px; border-radius: 50%; background: rgba(255,255,255,.35); transform: translate(-50%,-50%) scale(0); animation: ripple .55s var(--ease); pointer-events: none; }
+
+    .result { margin-top: 14px; padding: 13px; min-height: 84px; border: 1px solid var(--line); border-radius: 8px; background: rgba(0,0,0,.18); }
+    .token-cloud { display: flex; flex-wrap: wrap; gap: 8px; min-height: 46px; align-items: flex-start; }
+    .token {
+      appearance: none;
+      border: 1px solid rgba(124,111,247,.26);
+      border-radius: 999px;
+      padding: 7px 10px;
+      color: #eeeaff;
+      background: rgba(124,111,247,.13);
+      cursor: pointer;
+      font-size: 13px;
+      animation: tokenPop .35s var(--ease) both;
+      transition: .22s var(--ease);
+    }
+    .token:hover { transform: translateY(-2px); border-color: rgba(61,214,168,.5); background: rgba(61,214,168,.14); box-shadow: 0 0 18px rgba(61,214,168,.16); }
+    .stats { display: grid; grid-template-columns: repeat(3,1fr); gap: 8px; margin-top: 12px; }
+    .stat { padding: 10px; border-radius: 9px; border: 1px solid var(--line); background: rgba(255,255,255,.04); }
+    .stat strong { display: block; font-size: 20px; line-height: 1.1; }
+    .stat span { color: var(--muted-2); font-size: 12px; }
+
+    .question { padding: 12px 13px; border-radius: 10px; border: 1px solid rgba(82,216,255,.18); background: rgba(82,216,255,.055); color: #dff7ff; font-size: 14px; }
+    .slider-row { display: grid; grid-template-columns: 1fr auto; gap: 12px; align-items: center; margin-top: 14px; }
+    input[type="range"] { width: 100%; accent-color: var(--purple); cursor: pointer; }
+    .temp-value { width: 56px; text-align: right; color: var(--green); font-weight: 850; font-variant-numeric: tabular-nums; }
+    .meter { margin-top: 12px; padding: 11px; border: 1px solid var(--line); border-radius: 10px; background: rgba(255,255,255,.04); }
+    .meter-track { position: relative; height: 9px; border-radius: 999px; background: linear-gradient(90deg, var(--green), var(--purple), var(--orange)); opacity: .82; }
+    .meter-thumb { position: absolute; top: 50%; left: calc(var(--temp) * 100%); width: 18px; height: 18px; border-radius: 50%; border: 3px solid #0e0e17; background: #fff; transform: translate(-50%,-50%); box-shadow: 0 0 18px rgba(255,255,255,.32); transition: left .12s ease; }
+    .meter-labels { display: flex; justify-content: space-between; margin-top: 8px; color: var(--muted-2); font-size: 12px; }
+    .answer { position: relative; min-height: 102px; padding: 14px; border-radius: 10px; border: 1px solid var(--line); background: rgba(255,255,255,.045); overflow: hidden; transition: .25s var(--ease); }
+    .answer.hot { border-color: rgba(255,180,92,.34); box-shadow: 0 0 24px rgba(255,180,92,.08); }
+    .answer p { margin: 0; animation: fadeUp .28s var(--ease) both; }
+    .skeleton { display: block; height: 14px; margin: 8px 0; border-radius: 999px; background: linear-gradient(90deg, rgba(255,255,255,.06), rgba(255,255,255,.16), rgba(255,255,255,.06)); background-size: 220% 100%; animation: shimmer 1s linear infinite; }
+    .skeleton.short { width: 62%; }
+
+    .embed-layout { display: grid; grid-template-columns: minmax(0,1.2fr) minmax(230px,.8fr); gap: 14px; }
+    .space {
+      position: relative;
+      min-height: 340px;
+      border-radius: 12px;
+      border: 1px solid var(--line);
+      background:
+        linear-gradient(rgba(255,255,255,.035) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255,255,255,.035) 1px, transparent 1px),
+        radial-gradient(circle at 26% 28%, rgba(61,214,168,.11), transparent 130px),
+        radial-gradient(circle at 76% 28%, rgba(75,140,255,.10), transparent 130px),
+        radial-gradient(circle at 28% 78%, rgba(255,180,92,.10), transparent 130px),
+        rgba(0,0,0,.18);
+      background-size: 38px 38px, 38px 38px, auto, auto, auto, auto;
+      overflow: hidden;
+    }
+    .space::after { content: "二维语义空间"; position: absolute; right: 12px; bottom: 10px; color: rgba(255,255,255,.22); font-size: 12px; }
+    .sim-svg, .att-svg { position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none; overflow: visible; }
+    .sim-line { stroke: rgba(61,214,168,.72); stroke-linecap: round; filter: drop-shadow(0 0 7px rgba(61,214,168,.42)); transition: stroke-dashoffset .55s var(--ease); }
+    .word {
+      position: absolute;
+      left: var(--x);
+      top: var(--y);
+      transform: translate(-50%,-50%);
+      min-width: 42px;
+      min-height: 30px;
+      padding: 5px 9px;
+      border: 1px solid rgba(255,255,255,.15);
+      border-radius: 999px;
+      color: #f7f4ff;
+      background: rgba(14,14,24,.82);
+      cursor: pointer;
+      font-size: 13px;
+      box-shadow: 0 8px 22px rgba(0,0,0,.22);
+      animation: pointIn .38s var(--ease) both;
+      transition: .22s var(--ease);
+    }
+    .word:hover, .word.glow { transform: translate(-50%,-50%) scale(1.06); border-color: rgba(61,214,168,.54); box-shadow: 0 0 18px rgba(61,214,168,.22), 0 10px 26px rgba(0,0,0,.24); }
+    .sim-list { display: grid; gap: 8px; min-height: 124px; }
+    .sim-item { display: flex; justify-content: space-between; gap: 10px; padding: 9px 10px; border-radius: 9px; border: 1px solid var(--line); background: rgba(255,255,255,.045); animation: fadeUp .28s var(--ease) both; }
+    .sim-item strong { color: var(--green); font-variant-numeric: tabular-nums; }
+
+    .att-stage { position: relative; min-height: 228px; padding: 26px 14px 18px; border-radius: 12px; border: 1px solid var(--line); background: rgba(0,0,0,.18); overflow: hidden; }
+    .att-row { position: relative; z-index: 2; display: flex; flex-wrap: wrap; justify-content: center; align-items: center; gap: 10px; padding: 34px 0; }
+    .att-token {
+      min-width: 48px;
+      min-height: 38px;
+      padding: 8px 11px;
+      border: 1px solid var(--line);
+      border-radius: 10px;
+      color: #e7e2ff;
+      background: rgba(255,255,255,.07);
+      cursor: pointer;
+      transition: .22s var(--ease);
+    }
+    .att-token:hover { transform: translateY(-2px); border-color: rgba(124,111,247,.55); }
+    .att-token.selected { color: #fff; background: rgba(124,111,247,.30); border-color: rgba(124,111,247,.88); box-shadow: 0 0 24px rgba(124,111,247,.32); transform: scale(1.05); }
+    .att-token.related { color: #fff; background: rgba(61,214,168, calc(.08 + var(--w,.3) * .24)); border-color: rgba(61,214,168, calc(.24 + var(--w,.3) * .46)); }
+    .att-token.dim { opacity: .48; }
+    .att-explain { margin: 0; color: var(--muted); }
+
+    .prompt-layout { display: grid; grid-template-columns: 260px 1fr; gap: 14px; align-items: start; }
+    .templates { display: grid; gap: 9px; margin-top: 12px; }
+    .template {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 8px;
+      width: 100%;
+      min-height: 44px;
+      padding: 10px 11px;
+      border: 1px solid var(--line);
+      border-radius: 10px;
+      color: #ded9f4;
+      background: rgba(255,255,255,.05);
+      cursor: pointer;
+      font-weight: 750;
+      transition: .22s var(--ease);
+    }
+    .template:hover { transform: translateY(-1px); border-color: rgba(190,185,235,.34); background: rgba(255,255,255,.08); }
+    .template.active { color: #fff; border-color: rgba(61,214,168,.52); background: linear-gradient(135deg, rgba(124,111,247,.22), rgba(61,214,168,.12)); }
+    .template small { color: var(--muted-2); }
+    .flow { display: grid; gap: 12px; }
+    .flow-box { padding: 12px; border-radius: 10px; border: 1px solid var(--line); background: rgba(255,255,255,.045); transition: opacity .2s var(--ease), transform .2s var(--ease); }
+    .flow-box .label { color: var(--muted-2); font-size: 12px; margin-bottom: 7px; }
+    .flow-box p { margin: 0; color: #eeeaff; }
+    .arrow { display: grid; place-items: center; height: 26px; color: var(--green); }
+
+    .float {
+      position: fixed;
+      right: 18px;
+      bottom: 18px;
+      z-index: 30;
+      width: 220px;
+      padding: 13px;
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      background: rgba(15,15,25,.84);
+      box-shadow: var(--shadow);
+      backdrop-filter: blur(18px);
+    }
+    .float h3 { display: flex; justify-content: space-between; margin: 0 0 9px; font-size: 13px; }
+    .float p { margin: 8px 0 0; color: var(--muted-2); font-size: 12px; }
+    .toast-stack { position: fixed; top: 18px; right: 18px; z-index: 60; display: grid; gap: 10px; width: min(360px, calc(100vw - 32px)); }
+    .toast { display: grid; grid-template-columns: auto 1fr; gap: 10px; align-items: center; padding: 12px; border-radius: 12px; color: #f7f4ff; background: rgba(18,18,30,.94); border: 1px solid rgba(61,214,168,.28); box-shadow: var(--shadow); backdrop-filter: blur(18px); animation: toastIn .28s var(--ease) both; }
+    .toast .icon { width: 24px; height: 24px; display: grid; place-items: center; border-radius: 50%; background: rgba(61,214,168,.15); color: var(--green); }
+    .tip { position: fixed; z-index: 70; transform: translate(-50%, calc(-100% - 9px)); padding: 7px 9px; border-radius: 8px; border: 1px solid var(--line-2); color: #f7f4ff; background: rgba(13,13,22,.96); box-shadow: 0 10px 30px rgba(0,0,0,.35); font-size: 12px; pointer-events: none; animation: fadeUp .18s var(--ease) both; }
+    .tip::after { content: ""; position: absolute; left: 50%; bottom: -5px; width: 9px; height: 9px; background: rgba(13,13,22,.96); border-right: 1px solid var(--line-2); border-bottom: 1px solid var(--line-2); transform: translateX(-50%) rotate(45deg); }
+    .modal-bg { position: fixed; inset: 0; z-index: 80; display: none; place-items: center; padding: 18px; background: rgba(0,0,0,.64); backdrop-filter: blur(12px); }
+    .modal-bg.open { display: grid; animation: fadeIn .2s ease both; }
+    .modal { width: min(560px,100%); padding: 18px; border-radius: 14px; border: 1px solid var(--line-2); background: radial-gradient(circle at top left, rgba(124,111,247,.18), transparent 320px), rgba(16,16,27,.96); box-shadow: var(--shadow); animation: modalIn .26s var(--ease) both; }
+    .modal-head { display: flex; justify-content: space-between; gap: 12px; align-items: flex-start; margin-bottom: 10px; }
+    .modal h2 { margin: 0; font-size: 20px; }
+    .modal p { margin: 10px 0 0; color: var(--muted); }
+    .icon-btn { width: 36px; height: 36px; padding: 0; border-radius: 9px; }
+
+    @keyframes rise { from { opacity: 0; transform: translateY(18px); } to { opacity: 1; transform: translateY(0); } }
+    @keyframes cardIn { from { opacity: 0; transform: translateY(22px) scale(.985); } to { opacity: 1; transform: translateY(0) scale(1); } }
+    @keyframes tokenPop { from { opacity: 0; transform: translateY(8px) scale(.92); filter: brightness(1.4); } to { opacity: 1; transform: translateY(0) scale(1); filter: brightness(1); } }
+    @keyframes pointIn { from { opacity: 0; transform: translate(-50%,-50%) scale(.72); } to { opacity: 1; transform: translate(-50%,-50%) scale(1); } }
+    @keyframes fadeUp { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
+    @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+    @keyframes modalIn { from { opacity: 0; transform: translateY(14px) scale(.98); } to { opacity: 1; transform: translateY(0) scale(1); } }
+    @keyframes toastIn { from { opacity: 0; transform: translateX(18px); } to { opacity: 1; transform: translateX(0); } }
+    @keyframes shimmer { to { background-position: -220% 0; } }
+    @keyframes spin { to { transform: rotate(360deg); } }
+    @keyframes ripple { to { transform: translate(-50%,-50%) scale(18); opacity: 0; } }
+    .reduced *, .reduced *::before, .reduced *::after { animation-duration: .001ms !important; transition-duration: .001ms !important; scroll-behavior: auto !important; }
+
+    @media (max-width: 920px) {
+      .grid, .embed-layout, .prompt-layout { grid-template-columns: 1fr; }
+      .wide { grid-column: auto; }
+      .float { position: static; width: auto; margin-top: 18px; }
+    }
+    @media (max-width: 640px) {
+      .page { width: min(100% - 22px, 1180px); padding-top: 34px; }
+      .brief { grid-template-columns: 1fr; }
+      .topbar { flex-direction: column; align-items: stretch; }
+      .stats { grid-template-columns: 1fr; }
+      .space { min-height: 300px; }
+      .toast-stack { top: 10px; right: 10px; }
+    }
+  </style>
+</head>
+<body>
+  <div class="page">
+    <header class="hero">
+      <div class="pill-row"><span class="pill"><span class="live-dot"></span>Transparent AI Lab</span></div>
+      <h1>AI 概念透明模拟器</h1>
+      <p class="subtitle">把 token、temperature、embedding、attention 这些抽象概念，变成可以点击、拖动、观察的前端实验。</p>
+      <div class="pill-row" aria-label="页面特性">
+        <span class="pill">Pure Frontend</span><span class="pill">Interactive Lab</span><span class="pill">Beginner Friendly</span><span class="pill">No Backend</span>
+      </div>
+      <div class="actions" style="justify-content:center;margin-top:22px">
+        <button class="btn primary" id="openModal" type="button">什么是真实模型？</button>
+        <button class="btn ghost" type="button" onclick="document.querySelector('#tokenCard').scrollIntoView({behavior:'smooth'})">开始实验</button>
+      </div>
+      <section class="brief">
+        <div class="brief-icon" aria-hidden="true">
+          <svg width="25" height="25" viewBox="0 0 24 24" fill="none">
+            <path d="M4 8l8-4 8 4-8 4-8-4z" stroke="currentColor" stroke-width="1.7"/>
+            <path d="M4 12l8 4 8-4M4 16l8 4 8-4" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/>
+          </svg>
+        </div>
+        <div>
+          <h2>目标：把不可见的处理过程做成可观察的实验</h2>
+          <p>很多人听到 “token”“embedding”“attention”“temperature”“prompt engineering” 都很模糊。这个页面通过透明模拟器，让用户直接看见模型处理信息时的一些基本机制。重点不是做真实模型，而是用准确、简化、可交互的方式建立直觉。</p>
+        </div>
+      </section>
+    </header>
+
+    <section class="topbar" aria-label="全局控制">
+      <div class="progress-block">
+        <div class="progress-meta"><span>学习进度</span><strong id="progressText">0 / 5</strong></div>
+        <div class="track"><div class="fill" id="progressFill"></div></div>
+      </div>
+      <label class="switch-wrap"><input id="motionSwitch" type="checkbox"><span class="switch"></span><span>简化动效</span></label>
+    </section>
+
+    <main class="grid">
+      <section class="card" id="tokenCard" data-exp="token" style="animation-delay:.04s">
+        <div class="head">
+          <div><div class="kicker">Simulator 01</div><h2 class="title">Token：模型不是整句阅读，而是分块处理</h2><p class="desc">输入一句话，观察它如何被粗略切成一个个可处理的小片段。</p></div>
+          <div class="done">✓</div>
+        </div>
+        <div class="field"><label for="tokenInput">输入文本</label><textarea id="tokenInput">人工智能正在改变我们理解知识的方式。</textarea></div>
+        <div class="actions"><button class="btn primary" id="splitBtn" type="button" aria-busy="false"><span class="spinner"></span><span>切分 Token</span></button><span class="tag">点击 token 查看索引</span></div>
+        <div class="result">
+          <div class="token-cloud" id="tokenCloud" aria-live="polite"></div>
+          <div class="stats">
+            <div class="stat"><strong id="tokenCount">0</strong><span>token 数量</span></div>
+            <div class="stat"><strong id="charCount">0</strong><span>字符数量</span></div>
+            <div class="stat"><strong id="avgCount">0</strong><span>平均字符</span></div>
+          </div>
+          <p class="note">这是教学用简化切分。真实模型的 tokenization 会使用词表、子词规则和特殊符号，复杂得多。</p>
+        </div>
+      </section>
+
+      <section class="card" data-exp="temperature" style="animation-delay:.09s">
+        <div class="head">
+          <div><div class="kicker">Simulator 02</div><h2 class="title">Temperature：控制回答的稳定或发散</h2><p class="desc">拖动滑块，观察回答从保守定义逐渐走向多样表达。</p></div>
+          <div class="done">✓</div>
+        </div>
+        <div class="question">请用一句话解释什么是人工智能？</div>
+        <div class="slider-row"><label for="tempSlider">Temperature</label><output class="temp-value" id="tempValue">0.40</output></div>
+        <input id="tempSlider" type="range" min="0" max="1" step=".01" value=".4" aria-label="Temperature 数值">
+        <div class="meter"><div class="meter-track"><div class="meter-thumb"></div></div><div class="meter-labels"><span>稳定</span><span>平衡</span><span>创造</span></div></div>
+        <div class="actions"><button class="btn primary" id="genBtn" type="button"><span class="spinner"></span><span>生成回答</span></button></div>
+        <div class="answer" id="answerCard"><p id="answerText">点击生成，查看不同 temperature 下的回答变化。</p></div>
+      </section>
+
+      <section class="card wide" data-exp="embedding" style="animation-delay:.14s">
+        <div class="head">
+          <div><div class="kicker">Simulator 03</div><h2 class="title">Embedding：把语义放进空间里</h2><p class="desc">词语被放到一个二维语义空间中。语义相近的词靠得更近。</p></div>
+          <div class="done">✓</div>
+        </div>
+        <div class="embed-layout">
+          <div class="space" id="space" aria-label="二维语义空间"><svg class="sim-svg" id="simSvg"></svg></div>
+          <div>
+            <div class="actions"><button class="btn primary" id="calcBtn" type="button">计算相似度</button></div>
+            <div class="field"><label for="newWord">输入一个词，看看它落在哪个区域</label><input id="newWord" type="text" placeholder="例如：老虎、地铁、梨、教授"></div>
+            <div class="actions"><button class="btn ghost" id="addWordBtn" type="button">加入空间</button></div>
+            <div class="result">
+              <div class="sim-list" id="simList"><p class="note">点击“计算相似度”后，相近词之间会出现连线和分数。</p></div>
+              <p class="note">真实 embedding 是高维向量。这里为了理解，被压缩成二维空间。</p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="card wide" data-exp="attention" style="animation-delay:.19s">
+        <div class="head">
+          <div><div class="kicker">Simulator 04</div><h2 class="title">Attention：模型在处理一个词时，会关注其他词</h2><p class="desc">点击句子中的词，观察它和其他词之间的简化关注关系。</p></div>
+          <div class="done">✓</div>
+        </div>
+        <div class="att-stage" id="attStage"><svg class="att-svg" id="attSvg"></svg><div class="att-row" id="attRow"></div></div>
+        <div class="result"><p class="att-explain" id="attExplain">先点击“她”。在这个例子里，模型需要判断代词指代谁，因此会更关注前文中的相关名词。</p></div>
+      </section>
+
+      <section class="card wide" data-exp="prompt" style="animation-delay:.24s">
+        <div class="head">
+          <div><div class="kicker">Simulator 05</div><h2 class="title">Prompt Engineering：提示词改变输出方向</h2><p class="desc">同一个任务，换一种提示方式，输出风格就会明显改变。</p></div>
+          <div class="done">✓</div>
+        </div>
+        <div class="prompt-layout">
+          <div>
+            <div class="question">任务：让 AI 解释什么是机器学习</div>
+            <div class="templates" role="tablist" aria-label="Prompt 模板">
+              <button class="template active" type="button" data-template="simple" role="tab" aria-selected="true">简单解释 <small>clear</small></button>
+              <button class="template" type="button" data-template="kid" role="tab" aria-selected="false">面向小学生解释 <small>story</small></button>
+              <button class="template" type="button" data-template="pro" role="tab" aria-selected="false">用专业术语解释 <small>formal</small></button>
+            </div>
+          </div>
+          <div class="flow">
+            <div class="flow-box"><div class="label">输入提示词</div><p id="promptText">请用简单、准确的一句话解释什么是机器学习。</p></div>
+            <div class="arrow">↓</div>
+            <div class="flow-box" id="promptOutputBox"><div class="label">模型输出示例</div><p id="promptOutput">机器学习是一种让计算机从数据中总结规律，并用这些规律处理新问题的方法。</p></div>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <aside class="float" aria-label="实验完成度">
+      <h3><span>实验完成度</span><span id="floatPercent">0%</span></h3>
+      <div class="track"><div class="fill" id="floatFill"></div></div>
+      <p id="floatText">完成任意模拟器交互后，进度会自动更新。</p>
+    </aside>
+  </div>
+
+  <div class="toast-stack" id="toastStack" aria-live="polite"></div>
+  <div class="tip" id="tip" hidden></div>
+  <div class="modal-bg" id="modal" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+    <div class="modal">
+      <div class="modal-head"><h2 id="modalTitle">真实模型比这个页面复杂得多</h2><button class="btn icon-btn" id="closeModal" type="button" aria-label="关闭弹窗">×</button></div>
+      <p>这里的模拟器强调直觉：token 是分块，temperature 影响随机性，embedding 把语义转成向量，attention 表示信息之间的关注权重，prompt 会改变输出方向。</p>
+      <p>真实 AI 系统会包含大规模参数、训练数据、向量空间、采样策略、上下文窗口、安全策略和部署系统。这个页面不是模型本体，而是一组可观察的教学近似。</p>
+      <div class="actions"><button class="btn primary" id="okModal" type="button">明白了</button></div>
+    </div>
+  </div>
+
+  <script>
+    const $ = (s, r = document) => r.querySelector(s);
+    const $$ = (s, r = document) => Array.from(r.querySelectorAll(s));
+    const done = new Set();
+    const total = 5;
+
+    function toast(text) {
+      const el = document.createElement("div");
+      el.className = "toast";
+      el.innerHTML = `<span class="icon">✓</span><span>${text}</span>`;
+      $("#toastStack").appendChild(el);
+      setTimeout(() => {
+        el.style.opacity = "0";
+        el.style.transform = "translateX(18px)";
+        setTimeout(() => el.remove(), 220);
+      }, 2200);
+    }
+
+    function complete(name) {
+      if (done.has(name)) return;
+      done.add(name);
+      $(`[data-exp="${name}"]`)?.classList.add("complete");
+      const pct = Math.round(done.size / total * 100);
+      $("#progressText").textContent = `${done.size} / ${total}`;
+      $("#progressFill").style.width = pct + "%";
+      $("#floatFill").style.width = pct + "%";
+      $("#floatPercent").textContent = pct + "%";
+      $("#floatText").textContent = done.size === total ? "全部实验已完成。你已经看过五个核心概念的透明模拟。" : `已完成 ${done.size} 个实验，继续点击其他卡片。`;
+    }
+
+    function busy(btn, yes) {
+      btn.disabled = yes;
+      btn.setAttribute("aria-busy", String(yes));
+    }
+
+    function tip(text, anchor) {
+      const t = $("#tip");
+      const r = anchor.getBoundingClientRect();
+      t.textContent = text;
+      t.hidden = false;
+      t.style.left = `${r.left + r.width / 2}px`;
+      t.style.top = `${r.top - 6}px`;
+      clearTimeout(tip.timer);
+      tip.timer = setTimeout(() => t.hidden = true, 1500);
+    }
+
+    document.addEventListener("click", e => {
+      const target = e.target.closest(".btn,.template");
+      if (!target || target.disabled) return;
+      const r = target.getBoundingClientRect();
+      const wave = document.createElement("span");
+      wave.className = "ripple";
+      wave.style.left = e.clientX - r.left + "px";
+      wave.style.top = e.clientY - r.top + "px";
+      target.appendChild(wave);
+      setTimeout(() => wave.remove(), 600);
+    });
+
+    const dict = ["人工智能","机器学习","深度学习","自然语言","正在","改变","我们","理解","知识","方式","模型","提示词","向量","语义","生成","数据","学习"].sort((a,b)=>b.length-a.length);
+    function tokenize(text) {
+      const out = [];
+      let i = 0;
+      while (i < text.length) {
+        const ch = text[i];
+        if (/\s/.test(ch)) { i++; continue; }
+        const hit = dict.find(w => text.startsWith(w, i));
+        if (hit) { out.push(hit); i += hit.length; continue; }
+        if (/[A-Za-z0-9_]/.test(ch)) {
+          let j = i + 1;
+          while (j < text.length && /[A-Za-z0-9_'-]/.test(text[j])) j++;
+          out.push(text.slice(i, j)); i = j; continue;
+        }
+        out.push(ch); i++;
+      }
+      return out;
+    }
+
+    function renderTokens(tokens, text) {
+      const cloud = $("#tokenCloud");
+      cloud.innerHTML = "";
+      tokens.forEach((tok, i) => {
+        const b = document.createElement("button");
+        b.type = "button";
+        b.className = "token";
+        b.textContent = tok;
+        b.style.animationDelay = i * 42 + "ms";
+        b.addEventListener("click", () => tip(`token #${i + 1}`, b));
+        cloud.appendChild(b);
+      });
+      const chars = Array.from(text).filter(c => !/\s/.test(c)).length;
+      $("#tokenCount").textContent = tokens.length;
+      $("#charCount").textContent = chars;
+      $("#avgCount").textContent = tokens.length ? (chars / tokens.length).toFixed(1) : "0";
+    }
+
+    $("#splitBtn").addEventListener("click", () => {
+      const btn = $("#splitBtn");
+      const text = $("#tokenInput").value.trim();
+      if (!text) { toast("请输入一段文本"); return; }
+      busy(btn, true);
+      setTimeout(() => {
+        const tokens = tokenize(text);
+        renderTokens(tokens, text);
+        busy(btn, false);
+        complete("token");
+        toast(`已切分为 ${tokens.length} 个 token`);
+      }, 500);
+    });
+
+    const pools = {
+      low: ["人工智能是让计算机完成感知、推理、生成和决策等任务的技术。","人工智能是用算法和数据让机器执行通常需要人类智能才能完成的任务。"],
+      mid: ["人工智能就像一种让机器学习经验、理解信息并辅助人类解决问题的技术。","人工智能是一类让计算机从数据中学习规律，并用这些规律完成任务的方法。"],
+      high: ["人工智能像一间会自我整理知识的实验室，能从数据中寻找模式并生成新的答案。","人工智能像给机器装上观察和联想能力，让它能读懂线索、组合信息并提出回应。","人工智能更像一套会更新经验的工具箱，可以在复杂数据里捕捉关系并创造表达。"]
+    };
+    const pick = a => a[Math.floor(Math.random() * a.length)];
+    function answer(temp) {
+      if (temp < .3) return Math.random() < .82 ? pools.low[0] : pick(pools.low);
+      if (temp < .67) return Math.random() < .65 ? pick(pools.mid) : pick([...pools.low, ...pools.mid]);
+      return Math.random() < .78 ? pick(pools.high) : pick([...pools.mid, ...pools.high]);
+    }
+    function updateTemp() {
+      const temp = Number($("#tempSlider").value);
+      document.documentElement.style.setProperty("--temp", temp);
+      $("#tempValue").textContent = temp.toFixed(2);
+    }
+    $("#tempSlider").addEventListener("input", updateTemp);
+    $("#genBtn").addEventListener("click", () => {
+      const btn = $("#genBtn");
+      const temp = Number($("#tempSlider").value);
+      busy(btn, true);
+      $("#answerCard").classList.toggle("hot", temp > .67);
+      $("#answerText").innerHTML = `<span class="skeleton"></span><span class="skeleton"></span><span class="skeleton short"></span>`;
+      setTimeout(() => {
+        $("#answerText").textContent = answer(temp);
+        busy(btn, false);
+        complete("temperature");
+        toast("已生成一条回答");
+      }, 620);
+    });
+    updateTemp();
+
+    const words = [
+      {text:"猫",x:18,y:25},{text:"狗",x:27,y:31},{text:"汽车",x:72,y:27},{text:"公交",x:82,y:34},
+      {text:"苹果",x:22,y:74},{text:"香蕉",x:33,y:78},{text:"老师",x:66,y:73},{text:"学生",x:76,y:80},
+      {text:"音乐",x:46,y:42},{text:"电影",x:55,y:49}
+    ];
+    const pairs = [["猫","狗","0.91"],["汽车","公交","0.87"],["苹果","香蕉","0.89"],["老师","学生","0.84"],["音乐","电影","0.76"]];
+    const hints = {
+      老虎:{x:22,y:22,tip:"老虎接近动物区域"}, 地铁:{x:78,y:38,tip:"地铁接近交通区域"},
+      梨:{x:29,y:72,tip:"梨接近水果区域"}, 教授:{x:67,y:69,tip:"教授接近教育角色区域"},
+      教师:{x:64,y:68,tip:"教师接近教育角色区域"}, 歌曲:{x:47,y:39,tip:"歌曲接近音乐区域"}, 影院:{x:58,y:48,tip:"影院接近电影区域"}
+    };
+    function addPoint(w) {
+      const b = document.createElement("button");
+      b.type = "button";
+      b.className = "word";
+      b.textContent = w.text;
+      b.dataset.word = w.text;
+      b.style.setProperty("--x", w.x + "%");
+      b.style.setProperty("--y", w.y + "%");
+      b.addEventListener("click", () => tip(`${w.text}: (${Math.round(w.x)}, ${Math.round(w.y)})`, b));
+      $("#space").appendChild(b);
+      return b;
+    }
+    words.forEach(addPoint);
+    function line(aText,bText,score) {
+      const a = words.find(w => w.text === aText), b = words.find(w => w.text === bText);
+      const l = document.createElementNS("http://www.w3.org/2000/svg", "line");
+      l.setAttribute("x1", a.x + "%"); l.setAttribute("y1", a.y + "%"); l.setAttribute("x2", b.x + "%"); l.setAttribute("y2", b.y + "%");
+      l.setAttribute("stroke-width", String(1.5 + Number(score) * 3)); l.classList.add("sim-line");
+      $("#simSvg").appendChild(l);
+      requestAnimationFrame(() => { const len = l.getTotalLength(); l.style.strokeDasharray = len; l.style.strokeDashoffset = len; requestAnimationFrame(() => l.style.strokeDashoffset = "0"); });
+    }
+    $("#calcBtn").addEventListener("click", () => {
+      $("#simSvg").innerHTML = "";
+      $$(".word").forEach(p => p.classList.remove("glow"));
+      $("#simList").innerHTML = "";
+      pairs.forEach(([a,b,score], i) => {
+        setTimeout(() => {
+          line(a,b,score);
+          $(`.word[data-word="${a}"]`)?.classList.add("glow");
+          $(`.word[data-word="${b}"]`)?.classList.add("glow");
+        }, i * 90);
+        const item = document.createElement("div");
+        item.className = "sim-item";
+        item.style.animationDelay = i * 45 + "ms";
+        item.innerHTML = `<span>${a} ↔ ${b}</span><strong>${score}</strong>`;
+        $("#simList").appendChild(item);
+      });
+      complete("embedding");
+      toast("已计算相似度");
+    });
+    function addCustomWord() {
+      const input = $("#newWord");
+      const raw = input.value.trim();
+      if (!raw) { toast("请输入一个词"); return; }
+      const h = hints[raw];
+      const jitter = () => (Math.random() - .5) * 5;
+      const w = h ? {text:raw,x:h.x+jitter(),y:h.y+jitter()} : {text:raw,x:50+jitter(),y:52+jitter()};
+      addPoint(w).classList.add("glow");
+      input.value = "";
+      complete("embedding");
+      toast(h ? h.tip : "未知词会先落在不确定区域");
+    }
+    $("#addWordBtn").addEventListener("click", addCustomWord);
+    $("#newWord").addEventListener("keydown", e => { if (e.key === "Enter") addCustomWord(); });
+
+    const attWords = ["小明","把","书","递给","小红","因为","她","要","准备","考试"];
+    const maps = {
+      0:{3:.42,2:.22}, 2:{3:.72,0:.24,4:.22}, 3:{0:.66,2:.58,4:.64},
+      4:{3:.48,6:.62,9:.2}, 6:{4:.92,0:.42,9:.18}, 9:{6:.64,7:.36,8:.52}
+    };
+    const explain = {
+      0:"点击“小明”时，模型会关注和动作有关的“递给”和被递出的“书”。",
+      2:"处理“书”时，模型会关注动作“递给”，并关联动作的参与者。",
+      3:"处理“递给”时，模型需要同时看见谁递、递什么、递给谁。",
+      4:"处理“小红”时，它和后面的“她”存在潜在指代关系。",
+      6:"在这个简化例子里，模型需要判断“她”指代谁，因此会更关注前文中的相关名词“小红”，并弱关注“小明”。",
+      9:"处理“考试”时，模型会关注“她要准备”这部分，理解事件目标。"
+    };
+    let activeAtt = null;
+    attWords.forEach((w,i) => {
+      const b = document.createElement("button");
+      b.type = "button"; b.className = "att-token"; b.textContent = w; b.dataset.i = i;
+      b.addEventListener("click", () => updateAtt(i));
+      $("#attRow").appendChild(b);
+    });
+    function attLine(from,to,weight) {
+      const stage = $("#attStage"), svg = $("#attSvg"), a = $(`.att-token[data-i="${from}"]`), b = $(`.att-token[data-i="${to}"]`);
+      const sr = stage.getBoundingClientRect(), ar = a.getBoundingClientRect(), br = b.getBoundingClientRect();
+      const x1 = ar.left + ar.width/2 - sr.left, y1 = ar.top + ar.height/2 - sr.top, x2 = br.left + br.width/2 - sr.left, y2 = br.top + br.height/2 - sr.top;
+      const midY = Math.min(y1,y2) - 40 - weight * 18;
+      const path = document.createElementNS("http://www.w3.org/2000/svg", "path");
+      path.setAttribute("d", `M ${x1} ${y1} C ${x1} ${midY}, ${x2} ${midY}, ${x2} ${y2}`);
+      path.setAttribute("fill","none");
+      path.setAttribute("stroke", weight > .75 ? "rgba(61,214,168,.88)" : "rgba(124,111,247,.68)");
+      path.setAttribute("stroke-width", String(1.4 + weight * 4.4));
+      path.setAttribute("stroke-linecap","round");
+      path.style.filter = "drop-shadow(0 0 8px rgba(124,111,247,.35))";
+      path.style.opacity = String(.25 + weight * .7);
+      svg.appendChild(path);
+      const len = path.getTotalLength();
+      path.style.strokeDasharray = len; path.style.strokeDashoffset = len;
+      requestAnimationFrame(() => { path.style.transition = "stroke-dashoffset .38s cubic-bezier(.2,.8,.2,1)"; path.style.strokeDashoffset = "0"; });
+    }
+    function updateAtt(i) {
+      activeAtt = i;
+      const map = maps[i] || {[Math.max(0,i-1)]:.34,[Math.min(attWords.length-1,i+1)]:.3};
+      $("#attSvg").innerHTML = "";
+      $$(".att-token").forEach(t => { t.classList.remove("selected","related","dim"); t.style.removeProperty("--w"); });
+      $(`.att-token[data-i="${i}"]`)?.classList.add("selected");
+      $$(".att-token").forEach(t => { const n = Number(t.dataset.i); if (n !== i && map[n] === undefined) t.classList.add("dim"); });
+      Object.entries(map).forEach(([to,w]) => {
+        const target = $(`.att-token[data-i="${to}"]`);
+        target.classList.remove("dim"); target.classList.add("related"); target.style.setProperty("--w", w);
+        attLine(i, Number(to), w);
+      });
+      $("#attExplain").textContent = explain[i] || `处理“${attWords[i]}”时，模型会参考相邻词和上下文线索。`;
+      complete("attention");
+      toast(`已显示“${attWords[i]}”的关注关系`);
+    }
+    window.addEventListener("resize", () => { if (activeAtt !== null) updateAtt(activeAtt); });
+
+    const prompts = {
+      simple:{prompt:"请用简单、准确的一句话解释什么是机器学习。", output:"机器学习是一种让计算机从数据中总结规律，并用这些规律处理新问题的方法。"},
+      kid:{prompt:"请面向小学生，用生活类比解释什么是机器学习。", output:"机器学习就像教小朋友认水果。看过很多苹果和香蕉之后，它下次看到新的水果，就能猜出它是什么。"},
+      pro:{prompt:"请使用专业术语解释机器学习，强调参数优化、数据分布和泛化。", output:"机器学习是通过优化模型参数，使系统从数据分布中学习映射关系，并在未见样本上进行预测或生成的技术。"}
+    };
+    $$(".template").forEach(btn => {
+      btn.addEventListener("click", () => {
+        $$(".template").forEach(b => { b.classList.toggle("active", b === btn); b.setAttribute("aria-selected", String(b === btn)); });
+        const box = $("#promptOutputBox");
+        box.style.opacity = 0; box.style.transform = "translateY(8px)";
+        setTimeout(() => {
+          $("#promptText").textContent = prompts[btn.dataset.template].prompt;
+          $("#promptOutput").textContent = prompts[btn.dataset.template].output;
+          box.style.opacity = 1; box.style.transform = "translateY(0)";
+          complete("prompt");
+          toast("已切换 prompt 模板");
+        }, 160);
+      });
+    });
+
+    const modal = $("#modal");
+    $("#openModal").addEventListener("click", () => { modal.classList.add("open"); $("#closeModal").focus(); });
+    function closeModal() { modal.classList.remove("open"); $("#openModal").focus(); }
+    $("#closeModal").addEventListener("click", closeModal);
+    $("#okModal").addEventListener("click", closeModal);
+    modal.addEventListener("click", e => { if (e.target === modal) closeModal(); });
+    document.addEventListener("keydown", e => { if (e.key === "Escape" && modal.classList.contains("open")) closeModal(); });
+    $("#motionSwitch").addEventListener("change", e => { document.body.classList.toggle("reduced", e.target.checked); toast(e.target.checked ? "已简化页面动效" : "已恢复细腻动效"); });
+
+    renderTokens(tokenize($("#tokenInput").value), $("#tokenInput").value);
+  </script>
+</body>
+</html>
