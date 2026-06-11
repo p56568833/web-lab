@@ -642,6 +642,197 @@ body {
 .skeleton-toggle:hover { border-color: var(--accent); color: var(--accent); }
 
 /* ============================================================
+   Demo: Toggle
+   ============================================================ */
+.toggle-wrap { cursor: pointer; position: relative; display: inline-block; }
+.toggle-input { position: absolute; opacity: 0; width: 0; height: 0; }
+.toggle-track {
+  display: block; width: 56px; height: 30px;
+  background: #3a3a50; border-radius: 15px;
+  transition: background .3s ease;
+  position: relative;
+}
+.toggle-input:checked + .toggle-track { background: var(--accent); }
+.toggle-thumb {
+  position: absolute; top: 3px; left: 3px;
+  width: 24px; height: 24px;
+  background: #fff; border-radius: 50%;
+  transition: transform .3s ease;
+  box-shadow: 0 2px 6px rgba(0,0,0,.3);
+}
+.toggle-input:checked + .toggle-track .toggle-thumb { transform: translateX(26px); }
+
+/* ============================================================
+   Demo: Accordion
+   ============================================================ */
+.accordion-item { width: 100%; border-bottom: 1px solid var(--border); }
+.accordion-item:last-child { border-bottom: none; }
+.accordion-header {
+  width: 100%; padding: 12px 0; background: none; border: none; color: var(--text);
+  font-size: .85rem; cursor: pointer; display: flex; justify-content: space-between;
+  align-items: center; text-align: left; font-weight: 500;
+}
+.accordion-arrow { transition: transform .3s ease; font-size: .7rem; color: var(--text-dim); }
+.accordion-header.open .accordion-arrow { transform: rotate(180deg); }
+.accordion-body { max-height: 0; overflow: hidden; transition: max-height .35s ease; }
+.accordion-body.open { max-height: 90px; }
+.accordion-body p { font-size: .78rem; color: var(--text-dim); padding: 0 0 10px; margin: 0; line-height: 1.5; }
+
+/* ============================================================
+   Demo: Ripple
+   ============================================================ */
+.ripple-btn {
+  padding: 14px 36px; background: var(--accent); color: #fff;
+  border: none; border-radius: 10px; font-size: 1rem; font-weight: 600;
+  cursor: pointer; position: relative; overflow: hidden;
+  box-shadow: 0 4px 14px var(--accent-glow);
+  transition: background .2s;
+}
+.ripple-btn:hover { background: #907df7; }
+.ripple-btn .ripple-circle {
+  position: absolute; border-radius: 50%; background: rgba(255,255,255,.35);
+  transform: scale(0); animation: rippleAnim .6s ease-out forwards;
+  pointer-events: none;
+}
+@keyframes rippleAnim { to { transform: scale(4); opacity: 0; } }
+
+/* ============================================================
+   Demo: Badge
+   ============================================================ */
+.badge-dot {
+  position: absolute; top: -6px; right: -8px;
+  min-width: 20px; height: 20px; padding: 0 5px;
+  background: var(--red); color: #fff; font-size: .7rem; font-weight: 700;
+  border-radius: 10px; display: flex; align-items: center; justify-content: center;
+  transition: transform .3s ease, opacity .3s ease;
+}
+.badge-dot.cleared { transform: scale(0); opacity: 0; }
+.badge-trigger {
+  padding: 8px 20px; background: transparent; color: var(--text);
+  border: 1.5px solid var(--border); border-radius: 20px;
+  font-size: .82rem; cursor: pointer; transition: all var(--transition);
+}
+.badge-trigger:hover { border-color: var(--red); color: var(--red); }
+
+/* ============================================================
+   Demo: Progress Bar
+   ============================================================ */
+.progress-bar-bg {
+  width: 100%; height: 10px; background: var(--surface);
+  border-radius: 5px; overflow: hidden;
+}
+.progress-bar-fill {
+  height: 100%; width: 0%;
+  background: linear-gradient(90deg, var(--accent), var(--green));
+  border-radius: 5px; transition: width .3s ease;
+}
+.progress-trigger {
+  padding: 8px 20px; background: transparent; color: var(--text);
+  border: 1.5px solid var(--border); border-radius: 20px;
+  font-size: .82rem; cursor: pointer; transition: all var(--transition);
+}
+.progress-trigger:hover { border-color: var(--accent); color: var(--accent); }
+
+/* ============================================================
+   Demo: Tabs
+   ============================================================ */
+.tab-bar { display: flex; gap: 4px; background: var(--surface); border-radius: 10px; padding: 4px; }
+.tab-btn {
+  padding: 8px 18px; border: none; background: transparent; color: var(--text-dim);
+  border-radius: 8px; font-size: .82rem; cursor: pointer; transition: all var(--transition);
+}
+.tab-btn.active { background: var(--accent); color: #fff; }
+.tab-btn:hover:not(.active) { color: var(--text); }
+.tab-panel { display: none; font-size: .82rem; color: var(--text-dim); padding: 8px 0; text-align: center; line-height: 1.5; }
+.tab-panel.active { display: block; }
+
+/* ============================================================
+   Demo: Empty State
+   ============================================================ */
+.empty-state-box {
+  display: flex; flex-direction: column; align-items: center; gap: 8px;
+  padding: 20px; border: 2px dashed var(--border); border-radius: 12px; width: 100%; max-width: 260px;
+  transition: opacity .25s ease;
+}
+.empty-icon { font-size: 2.5rem; opacity: .5; }
+.empty-title { font-size: .9rem; font-weight: 600; }
+.empty-desc { font-size: .75rem; color: var(--text-dim); text-align: center; }
+.empty-trigger {
+  padding: 8px 20px; background: transparent; color: var(--text);
+  border: 1.5px solid var(--border); border-radius: 20px;
+  font-size: .82rem; cursor: pointer; transition: all var(--transition);
+}
+.empty-trigger:hover { border-color: var(--accent); color: var(--accent); }
+
+/* ============================================================
+   Demo: Breadcrumb
+   ============================================================ */
+.breadcrumb-nav { display: flex; align-items: center; gap: 6px; font-size: .82rem; flex-wrap: wrap; }
+.crumb { color: var(--text-dim); cursor: pointer; padding: 4px 8px; border-radius: 6px; transition: all var(--transition); user-select: none; }
+.crumb:hover { color: var(--accent); background: rgba(124,111,247,.1); }
+.crumb.active { color: var(--text); font-weight: 600; cursor: default; }
+.crumb.active:hover { background: transparent; }
+.crumb-sep { color: #555; user-select: none; }
+
+/* ============================================================
+   Demo: Drawer (global overlay + panel)
+   ============================================================ */
+.drawer-overlay {
+  position: fixed; inset: 0; z-index: 1000;
+  background: rgba(0,0,0,.5); opacity: 0; visibility: hidden;
+  transition: opacity .3s ease, visibility .3s ease;
+}
+.drawer-overlay.open { opacity: 1; visibility: visible; }
+.drawer-panel {
+  position: fixed; top: 0; left: 0; bottom: 0; width: 290px; max-width: 80vw;
+  background: var(--surface); z-index: 1001; padding: 28px 24px;
+  transform: translateX(-100%);
+  transition: transform .35s cubic-bezier(.4,0,.2,1);
+  display: flex; flex-direction: column; gap: 14px;
+  box-shadow: 4px 0 20px rgba(0,0,0,.3);
+}
+.drawer-overlay.open .drawer-panel { transform: translateX(0); }
+.drawer-panel h4 { font-size: 1.1rem; margin: 0; }
+.drawer-panel p { font-size: .82rem; color: var(--text-dim); line-height: 1.6; margin: 0; }
+.drawer-close {
+  padding: 10px 24px; background: var(--accent); color: #fff;
+  border: none; border-radius: 8px; cursor: pointer; font-weight: 600; margin-top: auto;
+}
+.drawer-trigger {
+  padding: 10px 28px; background: var(--accent); color: #fff;
+  border: none; border-radius: 10px; font-size: .9rem; font-weight: 600;
+  cursor: pointer; transition: all var(--transition);
+  box-shadow: 0 4px 14px var(--accent-glow);
+}
+.drawer-trigger:hover { opacity: .85; }
+
+/* ============================================================
+   Demo: Popover
+   ============================================================ */
+.popover-wrap { position: relative; display: inline-block; }
+.popover-trigger {
+  padding: 10px 24px; background: var(--accent); color: #fff;
+  border: none; border-radius: 10px; font-size: .9rem; font-weight: 600;
+  cursor: pointer; transition: all var(--transition);
+}
+.popover-bubble {
+  position: absolute; bottom: calc(100% + 12px); left: 50%;
+  transform: translateX(-50%) translateY(4px);
+  background: var(--surface-2); border: 1px solid var(--border); border-radius: 12px;
+  padding: 14px 18px; width: 210px; box-shadow: 0 8px 24px rgba(0,0,0,.4);
+  opacity: 0; visibility: hidden;
+  transition: opacity .25s ease, transform .25s ease, visibility .25s ease;
+  z-index: 10;
+}
+.popover-bubble.show { opacity: 1; visibility: visible; transform: translateX(-50%) translateY(0); }
+.popover-arrow {
+  position: absolute; bottom: -6px; left: 50%; transform: translateX(-50%) rotate(45deg);
+  width: 12px; height: 12px; background: var(--surface-2);
+  border-right: 1px solid var(--border); border-bottom: 1px solid var(--border);
+}
+.popover-bubble p { font-size: .78rem; color: var(--text-dim); margin: 0; line-height: 1.5; }
+
+/* ============================================================
    Footer
    ============================================================ */
 .footer {
@@ -901,6 +1092,206 @@ body {
     </div>
   </article>
 
+  <!-- 13. Toggle -->
+  <article class="card" id="card-toggle">
+    <div class="card-header">
+      <span class="icon">🔘</span><h3>Toggle</h3>
+      <span class="cn-tag">开关切换</span>
+    </div>
+    <div class="card-demo">
+      <label class="toggle-wrap">
+        <input type="checkbox" class="toggle-input" id="toggleInput">
+        <span class="toggle-track"><span class="toggle-thumb"></span></span>
+      </label>
+      <span style="font-size:.82rem;color:var(--text-dim)" id="toggleLabel">关闭</span>
+    </div>
+    <div class="card-feedback" id="toggleFeedback">👆 点击开关切换状态</div>
+    <div class="card-explanation">
+      <strong>Toggle</strong>（开关）用于在两个互斥状态间快速切换，如开/关、启用/禁用。它比复选框更直观——<em>一眼就能看出当前状态</em>。
+    </div>
+  </article>
+
+  <!-- 14. Accordion -->
+  <article class="card" id="card-accordion">
+    <div class="card-header">
+      <span class="icon">📂</span><h3>Accordion</h3>
+      <span class="cn-tag">手风琴/折叠</span>
+    </div>
+    <div class="card-demo" style="gap:0;width:100%;">
+      <div class="accordion-item">
+        <button class="accordion-header">什么是 UI 设计？<span class="accordion-arrow">▾</span></button>
+        <div class="accordion-body"><p>UI（User Interface）设计关注产品界面的视觉呈现和交互逻辑，包括布局、配色、字体、动效等。</p></div>
+      </div>
+      <div class="accordion-item">
+        <button class="accordion-header">什么是 UX？<span class="accordion-arrow">▾</span></button>
+        <div class="accordion-body"><p>UX（User Experience）关注用户使用产品时的整体感受——是否好用、是否令人愉悦、是否高效。</p></div>
+      </div>
+    </div>
+    <div class="card-feedback" id="accordionFeedback">👆 点击标题展开内容</div>
+    <div class="card-explanation">
+      <strong>Accordion</strong>（手风琴/折叠面板）允许用户展开/折叠内容区域，在有限空间内按需显示信息。它是<em>渐进式披露</em>的经典实现——先给概要，想看详情再展开。
+    </div>
+  </article>
+
+  <!-- 15. Ripple -->
+  <article class="card" id="card-ripple">
+    <div class="card-header">
+      <span class="icon">🌊</span><h3>Ripple</h3>
+      <span class="cn-tag">波纹效果</span>
+    </div>
+    <div class="card-demo">
+      <button class="ripple-btn" id="rippleBtn">点我产生波纹</button>
+    </div>
+    <div class="card-feedback" id="rippleFeedback">👆 点击按钮观察波纹从触点扩散</div>
+    <div class="card-explanation">
+      <strong>Ripple</strong>（波纹/涟漪）是 Material Design 的标志性交互。点击瞬间从触点产生圆形波纹向外扩散，给用户即时的<em>触觉隐喻</em>——"你确实点到了这里"，类似水面的涟漪。
+    </div>
+  </article>
+
+  <!-- 16. Badge -->
+  <article class="card" id="card-badge">
+    <div class="card-header">
+      <span class="icon">🔴</span><h3>Badge</h3>
+      <span class="cn-tag">徽标/角标</span>
+    </div>
+    <div class="card-demo">
+      <div style="position:relative;display:inline-block;">
+        <span style="font-size:2rem;">🔔</span>
+        <span class="badge-dot" id="badgeDot">3</span>
+      </div>
+      <button class="badge-trigger" id="badgeTrigger">标记已读</button>
+    </div>
+    <div class="card-feedback" id="badgeFeedback">👀 红色徽标提示有 3 条未读通知</div>
+    <div class="card-explanation">
+      <strong>Badge</strong>（徽标/角标）是附着在图标或元素上的小型标记，通常显示未读数量或状态变化。它用<em>最小的视觉空间</em>传递关键信息——用户扫一眼就知道有事情需要处理。
+    </div>
+  </article>
+
+  <!-- 17. Progress Bar -->
+  <article class="card" id="card-progress">
+    <div class="card-header">
+      <span class="icon">📊</span><h3>Progress Bar</h3>
+      <span class="cn-tag">进度条</span>
+    </div>
+    <div class="card-demo">
+      <div style="width:100%;max-width:260px;">
+        <div class="progress-bar-bg">
+          <div class="progress-bar-fill" id="progressFill"></div>
+        </div>
+        <div style="text-align:center;font-size:.8rem;color:var(--text-dim);margin-top:6px;" id="progressLabel">0%</div>
+      </div>
+      <button class="progress-trigger" id="progressTrigger">开始上传</button>
+    </div>
+    <div class="card-feedback" id="progressFeedback">📊 点击按钮模拟文件上传进度</div>
+    <div class="card-explanation">
+      <strong>Progress Bar</strong>（进度条）显示一个操作的完成比例。与 Loading spinner 不同，它给出<em>确定的进度信息</em>——用户知道还要等多久，等待焦虑感大大降低。
+    </div>
+  </article>
+
+  <!-- 18. Tabs -->
+  <article class="card" id="card-tabs">
+    <div class="card-header">
+      <span class="icon">📑</span><h3>Tabs</h3>
+      <span class="cn-tag">标签页</span>
+    </div>
+    <div class="card-demo">
+      <div class="tab-bar">
+        <button class="tab-btn active" data-tab="tab-design">设计</button>
+        <button class="tab-btn" data-tab="tab-dev">开发</button>
+        <button class="tab-btn" data-tab="tab-test">测试</button>
+      </div>
+      <div class="tab-panel active" id="tab-design">🎨 设计阶段：关注用户体验和界面美观</div>
+      <div class="tab-panel" id="tab-dev">💻 开发阶段：将设计转化为可运行的代码</div>
+      <div class="tab-panel" id="tab-test">🧪 测试阶段：确保功能正确、体验流畅</div>
+    </div>
+    <div class="card-feedback" id="tabsFeedback">👆 点击不同标签切换内容面板</div>
+    <div class="card-explanation">
+      <strong>Tabs</strong>（标签页）将相关内容组织在不同面板中，用户一次只看一个。它<em>节省空间、降低认知负荷</em>——用户知道信息被分类好了，按需切换即可。
+    </div>
+  </article>
+
+  <!-- 19. Empty State -->
+  <article class="card" id="card-emptystate">
+    <div class="card-header">
+      <span class="icon">📭</span><h3>Empty State</h3>
+      <span class="cn-tag">空状态</span>
+    </div>
+    <div class="card-demo">
+      <div class="empty-state-box" id="emptyStateBox">
+        <div class="empty-icon">📭</div>
+        <div class="empty-title">还没有内容</div>
+        <div class="empty-desc">点击下方按钮添加第一条数据</div>
+      </div>
+      <div id="emptyContent" style="display:none;gap:8px;flex-direction:column;align-items:center;">
+        <span style="font-size:2rem;">✅</span>
+        <span style="font-size:.9rem;">数据已加载！</span>
+        <span style="font-size:.78rem;color:var(--text-dim);">共 1 条记录</span>
+      </div>
+      <button class="empty-trigger" id="emptyTrigger">添加数据</button>
+    </div>
+    <div class="card-feedback" id="emptyFeedback">👆 点击按钮看看空状态如何变成有内容</div>
+    <div class="card-explanation">
+      <strong>Empty State</strong>（空状态）是列表或页面没有任何数据时的占位展示。好的空状态不会只写"暂无数据"——它会<em>引导用户采取行动</em>，比如"创建第一条记录"。
+    </div>
+  </article>
+
+  <!-- 20. Breadcrumb -->
+  <article class="card" id="card-breadcrumb">
+    <div class="card-header">
+      <span class="icon">🍞</span><h3>Breadcrumb</h3>
+      <span class="cn-tag">面包屑导航</span>
+    </div>
+    <div class="card-demo">
+      <nav class="breadcrumb-nav">
+        <span class="crumb">🏠 首页</span>
+        <span class="crumb-sep">/</span>
+        <span class="crumb">📚 课程</span>
+        <span class="crumb-sep">/</span>
+        <span class="crumb active">🎨 UI 设计基础</span>
+      </nav>
+    </div>
+    <div class="card-feedback" id="breadcrumbFeedback">👆 点击面包屑的「首页」或「课程」试试</div>
+    <div class="card-explanation">
+      <strong>Breadcrumb</strong>（面包屑导航）显示用户当前在网站层级结构中的位置，并提供返回上层的快捷方式。它回答了用户心中<em>"我在哪？"</em>的问题——这个命名源自童话故事《汉赛尔与格莱特》。
+    </div>
+  </article>
+
+  <!-- 21. Drawer -->
+  <article class="card" id="card-drawer">
+    <div class="card-header">
+      <span class="icon">🗂️</span><h3>Drawer</h3>
+      <span class="cn-tag">抽屉面板</span>
+    </div>
+    <div class="card-demo">
+      <button class="drawer-trigger" id="drawerTrigger">打开抽屉</button>
+    </div>
+    <div class="card-feedback" id="drawerFeedback">👈 点击按钮从左侧滑出抽屉面板</div>
+    <div class="card-explanation">
+      <strong>Drawer</strong>（抽屉）是从屏幕边缘滑入的辅助面板。与 Modal 不同，抽屉<em>不强制打断用户</em>——它常用于导航菜单、筛选面板或详情展示，用户可随时关闭回到主界面。
+    </div>
+  </article>
+
+  <!-- 22. Popover -->
+  <article class="card" id="card-popover">
+    <div class="card-header">
+      <span class="icon">💭</span><h3>Popover</h3>
+      <span class="cn-tag">弹出框</span>
+    </div>
+    <div class="card-demo" style="min-height:140px;">
+      <div class="popover-wrap" id="popoverWrap">
+        <button class="popover-trigger" id="popoverTrigger">点击我</button>
+        <div class="popover-bubble" id="popoverBubble">
+          <div class="popover-arrow"></div>
+          <p>这是一个 <strong>Popover</strong>！它比 Tooltip 更丰富，可以包含更多内容和交互元素。</p>
+        </div>
+      </div>
+    </div>
+    <div class="card-feedback" id="popoverFeedback">👆 点击按钮打开弹出框（点击外部关闭）</div>
+    <div class="card-explanation">
+      <strong>Popover</strong>（弹出框）是点击触发的浮动卡片。与 Tooltip（悬停触发、文字简短）不同，Popover 可包含<em>更丰富的内容</em>——文字、按钮、图片，常用于快捷操作菜单。
+    </div>
+  </article>
+
 </main>
 
 <!-- ============================================================
@@ -915,6 +1306,20 @@ body {
       这在需要用户<strong>集中注意力</strong>做出决策时非常有用。
     </p>
     <button class="modal-close" id="modalClose">关闭弹窗</button>
+  </div>
+</div>
+
+<!-- ============================================================
+     Drawer Overlay (global, outside card flow)
+     ============================================================ -->
+<div class="drawer-overlay" id="drawerOverlay">
+  <div class="drawer-panel">
+    <h4>📂 抽屉面板</h4>
+    <p>
+      这是一个从左侧滑入的抽屉（Drawer）。与 Modal 不同，抽屉不强制阻断背景，
+      用户可以随时点击遮罩或关闭按钮返回。它常用来放置导航菜单、筛选条件或辅助信息。
+    </p>
+    <button class="drawer-close" id="drawerClose">关闭抽屉</button>
   </div>
 </div>
 
@@ -1149,6 +1554,213 @@ body {
         real.classList.remove('visible');
         toggle.textContent = '切换加载状态';
         setFeedback('skeletonFeedback', '🔄 骨架屏占位中——用灰色形状勾勒出即将加载的内容轮廓', false);
+      }
+    });
+  })();
+
+  // ==================== 13. Toggle ====================
+  (function() {
+    const input = $('#toggleInput');
+    const label = $('#toggleLabel');
+    if (!input || !label) return;
+    input.addEventListener('change', () => {
+      const on = input.checked;
+      label.textContent = on ? '开启' : '关闭';
+      setFeedback('toggleFeedback', on ? '✅ 开关已开启——背景变色、滑块平滑右移' : '👆 点击开关切换状态', on);
+    });
+  })();
+
+  // ==================== 14. Accordion ====================
+  (function() {
+    const headers = document.querySelectorAll('#card-accordion .accordion-header');
+    if (!headers.length) return;
+    headers.forEach(function(header) {
+      header.addEventListener('click', function() {
+        const body = this.nextElementSibling;
+        const isOpen = body.classList.contains('open');
+        // 关闭所有
+        headers.forEach(function(h) { h.classList.remove('open'); });
+        document.querySelectorAll('#card-accordion .accordion-body').forEach(function(b) { b.classList.remove('open'); });
+        if (!isOpen) {
+          this.classList.add('open');
+          body.classList.add('open');
+          setFeedback('accordionFeedback', '✅ 内容已展开——这就是渐进式披露', true);
+        } else {
+          setFeedback('accordionFeedback', '👆 点击标题展开内容', false);
+        }
+      });
+    });
+  })();
+
+  // ==================== 15. Ripple ====================
+  (function() {
+    const btn = $('#rippleBtn');
+    if (!btn) return;
+    btn.addEventListener('click', function(e) {
+      const rect = this.getBoundingClientRect();
+      const size = Math.max(rect.width, rect.height);
+      const x = e.clientX - rect.left - size / 2;
+      const y = e.clientY - rect.top - size / 2;
+      const circle = document.createElement('span');
+      circle.className = 'ripple-circle';
+      circle.style.width = circle.style.height = size + 'px';
+      circle.style.left = x + 'px';
+      circle.style.top = y + 'px';
+      this.appendChild(circle);
+      circle.addEventListener('animationend', function() { circle.remove(); });
+      setFeedback('rippleFeedback', '✅ 波纹从点击位置向外扩散——这就是 Material Ripple 效果', true);
+    });
+  })();
+
+  // ==================== 16. Badge ====================
+  (function() {
+    const trigger = $('#badgeTrigger');
+    const dot = $('#badgeDot');
+    if (!trigger || !dot) return;
+    let count = 3;
+    trigger.addEventListener('click', function() {
+      if (count > 0) {
+        count--;
+        if (count === 0) {
+          dot.classList.add('cleared');
+          setFeedback('badgeFeedback', '✅ 通知已全部清除——徽标消失，用户知道没有待处理事项了', true);
+        } else {
+          dot.textContent = count;
+          setFeedback('badgeFeedback', `✅ 还有 ${count} 条未读——徽标是最精炼的状态指示器`, true);
+        }
+      } else {
+        count = 3;
+        dot.textContent = '3';
+        dot.classList.remove('cleared');
+        setFeedback('badgeFeedback', '👀 红色徽标提示有 3 条未读通知', false);
+      }
+    });
+  })();
+
+  // ==================== 17. Progress Bar ====================
+  (function() {
+    const trigger = $('#progressTrigger');
+    const fill = $('#progressFill');
+    const label = $('#progressLabel');
+    if (!trigger || !fill || !label) return;
+    let animating = false;
+    trigger.addEventListener('click', function() {
+      if (animating) return;
+      animating = true;
+      trigger.disabled = true;
+      trigger.textContent = '上传中…';
+      fill.style.width = '0%';
+      label.textContent = '0%';
+      setFeedback('progressFeedback', '📊 正在上传…（注意进度条逐步填充）', false);
+      let progress = 0;
+      var interval = setInterval(function() {
+        progress += Math.random() * 15 + 5;
+        if (progress >= 100) {
+          progress = 100;
+          clearInterval(interval);
+          fill.style.width = '100%';
+          label.textContent = '100%';
+          setFeedback('progressFeedback', '✅ 上传完成！进度条让等待变得可预期，焦虑感降低', true);
+          animating = false;
+          trigger.disabled = false;
+          trigger.textContent = '重新上传';
+          return;
+        }
+        fill.style.width = progress + '%';
+        label.textContent = Math.floor(progress) + '%';
+      }, 250);
+    });
+  })();
+
+  // ==================== 18. Tabs ====================
+  (function() {
+    var btns = document.querySelectorAll('#card-tabs .tab-btn');
+    var panels = document.querySelectorAll('#card-tabs .tab-panel');
+    if (!btns.length) return;
+    btns.forEach(function(btn) {
+      btn.addEventListener('click', function() {
+        btns.forEach(function(b) { b.classList.remove('active'); });
+        panels.forEach(function(p) { p.classList.remove('active'); });
+        this.classList.add('active');
+        var panel = document.getElementById(this.dataset.tab);
+        if (panel) panel.classList.add('active');
+        setFeedback('tabsFeedback', '✅ 已切换到「' + this.textContent + '」面板——Tabs 让内容分类清晰、一次只聚焦一项', true);
+      });
+    });
+  })();
+
+  // ==================== 19. Empty State ====================
+  (function() {
+    const trigger = $('#emptyTrigger');
+    const empty = $('#emptyStateBox');
+    const content = $('#emptyContent');
+    if (!trigger || !empty || !content) return;
+    let hasData = false;
+    trigger.addEventListener('click', function() {
+      hasData = !hasData;
+      if (hasData) {
+        empty.style.display = 'none';
+        content.style.display = 'flex';
+        trigger.textContent = '清空数据';
+        setFeedback('emptyFeedback', '✅ 数据出现了——空状态被真实内容替换，引导用户完成目标', true);
+      } else {
+        empty.style.display = 'flex';
+        content.style.display = 'none';
+        trigger.textContent = '添加数据';
+        setFeedback('emptyFeedback', '👆 点击按钮看看空状态如何变成有内容', false);
+      }
+    });
+  })();
+
+  // ==================== 20. Breadcrumb ====================
+  (function() {
+    var crumbs = document.querySelectorAll('#card-breadcrumb .crumb:not(.active)');
+    if (!crumbs.length) return;
+    crumbs.forEach(function(crumb) {
+      crumb.addEventListener('click', function() {
+        var name = this.textContent.replace(/[🏠📚🎨]\s*/, '');
+        setFeedback('breadcrumbFeedback', '✅ 已跳转到「' + name + '」——面包屑让你快速返回上级，不用按浏览器后退', true);
+      });
+    });
+  })();
+
+  // ==================== 21. Drawer ====================
+  (function() {
+    const overlay = $('#drawerOverlay');
+    const trigger = $('#drawerTrigger');
+    const closeBtn = $('#drawerClose');
+    if (!overlay || !trigger) return;
+    var close = function() {
+      overlay.classList.remove('open');
+      setFeedback('drawerFeedback', '👈 点击按钮从左侧滑出抽屉面板', false);
+    };
+    trigger.addEventListener('click', function() {
+      overlay.classList.add('open');
+      setFeedback('drawerFeedback', '✅ 抽屉从左侧滑入——不阻断背景，适合辅助信息展示', true);
+    });
+    closeBtn.addEventListener('click', close);
+    overlay.addEventListener('click', function(e) {
+      if (e.target === overlay) close();
+    });
+  })();
+
+  // ==================== 22. Popover ====================
+  (function() {
+    const trigger = $('#popoverTrigger');
+    const bubble = $('#popoverBubble');
+    if (!trigger || !bubble) return;
+    let open = false;
+    trigger.addEventListener('click', function(e) {
+      e.stopPropagation();
+      open = !open;
+      bubble.classList.toggle('show', open);
+      setFeedback('popoverFeedback', open ? '✅ Popover 弹出框出现在按钮上方——内容丰富、带三角箭头指向触发源' : '👆 点击按钮打开弹出框（点击外部关闭）', open);
+    });
+    document.addEventListener('click', function(e) {
+      if (open && !bubble.contains(e.target) && e.target !== trigger) {
+        open = false;
+        bubble.classList.remove('show');
+        setFeedback('popoverFeedback', '👆 点击按钮打开弹出框（点击外部关闭）', false);
       }
     });
   })();
