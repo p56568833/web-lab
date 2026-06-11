@@ -1073,6 +1073,72 @@ body {
 .fab-sub:nth-child(3) { background:var(--orange); transition-delay:.15s; }
 
 /* ============================================================
+   Demo: Timeline
+   ============================================================ */
+.timeline { position:relative; padding-left:28px; text-align:left; width:100%; max-width:230px; }
+.timeline::before { content:''; position:absolute; left:8px; top:4px; bottom:4px; width:2px; background:var(--border); border-radius:1px; }
+.tl-item { position:relative; margin-bottom:14px; }
+.tl-item::before { content:''; position:absolute; left:-24px; top:4px; width:10px; height:10px; border-radius:50%; background:var(--accent); border:2.5px solid var(--surface-2); z-index:1; }
+.tl-item .tl-time { font-size:.68rem; color:var(--text-dim); }
+.tl-item .tl-title { font-size:.82rem; font-weight:600; cursor:pointer; transition:color .15s; }
+.tl-item .tl-title:hover { color:var(--accent); }
+.tl-item .tl-detail { max-height:0; overflow:hidden; transition:max-height .35s ease; font-size:.73rem; color:var(--text-dim); line-height:1.5; }
+.tl-item .tl-detail.open { max-height:50px; }
+
+/* Split Button */
+.split-btn-group { display:flex; position:relative; }
+.split-btn-main { padding:10px 20px; background:var(--accent); color:#fff; border:none; border-radius:10px 0 0 10px; font-size:.85rem; font-weight:600; cursor:pointer; transition:opacity .2s; }
+.split-btn-main:hover { opacity:.85; }
+.split-btn-arrow { padding:10px 12px; background:var(--accent); color:#fff; border:none; border-left:1px solid rgba(255,255,255,.2); border-radius:0 10px 10px 0; font-size:.7rem; cursor:pointer; transition:opacity .2s; }
+.split-btn-arrow:hover { opacity:.85; }
+.split-dd { position:absolute; top:100%; right:0; margin-top:6px; background:var(--surface); border:1px solid var(--border); border-radius:8px; min-width:130px; display:none; z-index:5; overflow:hidden; }
+.split-dd.show { display:block; }
+
+/* Pull to Refresh */
+.ptr-area { width:100%; max-width:240px; height:100px; background:var(--surface); border-radius:10px; overflow:hidden; position:relative; cursor:grab; user-select:none; }
+.ptr-area:active { cursor:grabbing; }
+.ptr-content { padding:20px; text-align:center; transition:transform .35s cubic-bezier(.25,.8,.25,1.2); }
+.ptr-indicator { text-align:center; font-size:.75rem; color:var(--accent); padding:6px 0 0; opacity:0; transition:opacity .2s; }
+.ptr-area.refreshing .ptr-indicator { opacity:1; }
+
+/* Command Palette */
+.cp-overlay { position:fixed; inset:0; background:rgba(0,0,0,.65); z-index:2500; display:flex; align-items:flex-start; justify-content:center; padding-top:14vh; opacity:0; visibility:hidden; transition:opacity .2s, visibility .2s; }
+.cp-overlay.open { opacity:1; visibility:visible; }
+.cp-dialog { background:var(--surface); border:1px solid var(--border); border-radius:14px; width:420px; max-width:90vw; box-shadow:0 16px 48px rgba(0,0,0,.55); overflow:hidden; }
+.cp-dialog input { width:100%; padding:16px 20px; background:transparent; border:none; border-bottom:1px solid var(--border); color:var(--text); font-size:.95rem; outline:none; }
+.cp-dialog input::placeholder { color:#555; }
+.cp-list { max-height:200px; overflow-y:auto; }
+.cp-item { padding:11px 20px; cursor:pointer; font-size:.82rem; display:flex; align-items:center; gap:10px; transition:background .12s; }
+.cp-item:hover, .cp-item.active { background:rgba(124,111,247,.15); }
+.cp-item .cp-icon { font-size:1rem; }
+.cp-item .cp-label { flex:1; }
+.cp-item .cp-badge { font-size:.68rem; color:var(--text-dim); background:var(--surface-2); padding:2px 7px; border-radius:4px; }
+
+/* Tree View */
+.tree { text-align:left; width:100%; max-width:200px; font-size:.82rem; }
+.tree-folder { cursor:pointer; user-select:none; padding:3px 0; transition:color .15s; }
+.tree-folder:hover { color:var(--accent); }
+.tree-folder .tree-arrow { display:inline-block; width:16px; font-size:.6rem; transition:transform .2s; color:var(--text-dim); }
+.tree-folder.open > .tree-arrow { transform:rotate(90deg); }
+.tree-children { display:none; padding-left:18px; }
+.tree-folder.open > .tree-children { display:block; }
+.tree-file { padding:3px 0; color:var(--text-dim); }
+
+/* Floating Label */
+.fl-wrap { position:relative; width:100%; max-width:240px; }
+.fl-wrap input { width:100%; padding:18px 14px 8px; background:var(--surface); border:2px solid var(--border); border-radius:var(--radius-sm); color:var(--text); font-size:.9rem; outline:none; transition:border-color var(--transition); }
+.fl-wrap input:focus { border-color:var(--accent); }
+.fl-wrap label { position:absolute; left:16px; top:14px; font-size:.85rem; color:var(--text-dim); transition:all .2s ease; pointer-events:none; }
+.fl-wrap input:focus + label,
+.fl-wrap input:not(:placeholder-shown) + label { top:4px; font-size:.65rem; color:var(--accent); }
+
+/* Keyboard Shortcuts */
+.kbd-grid { display:flex; flex-direction:column; gap:6px; width:100%; max-width:260px; }
+.kbd-row { display:flex; align-items:center; gap:8px; font-size:.8rem; }
+.kbd-row .kbd-desc { flex:1; color:var(--text-dim); text-align:right; font-size:.78rem; }
+.kbd-row kbd { padding:4px 8px; background:var(--surface); border:1px solid var(--border); border-radius:5px; font-family:inherit; font-size:.73rem; color:var(--text); box-shadow:0 1.5px 0 var(--border); min-width:22px; text-align:center; }
+
+/* ============================================================
    Footer
    ============================================================ */
 .footer {
@@ -1840,6 +1906,117 @@ body {
     </div>
     <div class="card-feedback" id="fabFeedback">➕ 点击 + 按钮展开/收起子操作</div>
     <div class="card-explanation"><strong>FAB</strong>（Floating Action Button / 悬浮操作按钮）悬浮在页面右下角，代表当前页面<em>最核心的操作</em>。Material Design 的标志性组件——一个按钮承载主要行动。</div>
+  </article>
+
+  <!-- 44. Timeline -->
+  <article class="card" id="card-timeline">
+    <div class="card-header"><span class="icon">📅</span><h3>Timeline</h3><span class="cn-tag">时间线</span></div>
+    <div class="card-demo">
+      <div class="timeline">
+        <div class="tl-item"><div class="tl-time">2024.01</div><div class="tl-title">项目立项</div><div class="tl-detail">确定产品方向与核心功能范围，组建设计团队。</div></div>
+        <div class="tl-item"><div class="tl-time">2024.06</div><div class="tl-title">设计评审</div><div class="tl-detail">完成高保真原型，通过内部设计评审。</div></div>
+        <div class="tl-item"><div class="tl-time">2024.12</div><div class="tl-title">正式上线 🚀</div><div class="tl-detail">产品发布，首月用户突破 10 万。</div></div>
+      </div>
+    </div>
+    <div class="card-feedback" id="timelineFeedback">👆 点击时间节点标题展开详情</div>
+    <div class="card-explanation"><strong>Timeline</strong>（时间线）以垂直或水平方式展示<em>按时间排序的事件序列</em>。常用于项目进度、订单追踪、版本历史——让用户对时间轴一目了然。</div>
+  </article>
+
+  <!-- 45. Split Button -->
+  <article class="card" id="card-splitbtn">
+    <div class="card-header"><span class="icon">✂️</span><h3>Split Button</h3><span class="cn-tag">分裂按钮</span></div>
+    <div class="card-demo">
+      <div class="split-btn-group" id="splitGroup">
+        <button class="split-btn-main" id="splitMain">保存</button>
+        <button class="split-btn-arrow" id="splitArrow">▾</button>
+        <div class="split-dd" id="splitDD">
+          <div class="dd-opt">💾 保存草稿</div>
+          <div class="dd-opt">📤 保存并发布</div>
+          <div class="dd-opt">📋 另存为模板</div>
+        </div>
+      </div>
+    </div>
+    <div class="card-feedback" id="splitbtnFeedback">👆 点击 ▾ 箭头展开更多保存选项</div>
+    <div class="card-explanation"><strong>Split Button</strong>（分裂按钮）将<em>默认操作</em>和<em>更多选项</em>合并到一个按钮组中。主按钮一键执行最常用操作，箭头提供备选方案——兼顾效率与灵活。</div>
+  </article>
+
+  <!-- 46. Pull to Refresh -->
+  <article class="card" id="card-ptr">
+    <div class="card-header"><span class="icon">⬇️</span><h3>Pull to Refresh</h3><span class="cn-tag">下拉刷新</span></div>
+    <div class="card-demo">
+      <div class="ptr-area" id="ptrArea">
+        <div class="ptr-indicator" id="ptrIndicator">↻ 释放以刷新</div>
+        <div class="ptr-content" id="ptrContent">
+          <div>📋 最新消息</div>
+          <div style="font-size:.73rem;color:var(--text-dim);">下拉此处触发刷新</div>
+        </div>
+      </div>
+    </div>
+    <div class="card-feedback" id="ptrFeedback">⬇️ 鼠标按住向下拖拽，模拟下拉刷新</div>
+    <div class="card-explanation"><strong>Pull to Refresh</strong>（下拉刷新）是移动端经典手势——在列表顶部向下拖拽触发内容刷新。它把<em>物理手势和系统反馈</em>结合，让刷新操作变得自然直观。</div>
+  </article>
+
+  <!-- 47. Command Palette -->
+  <article class="card" id="card-cmdpalette">
+    <div class="card-header"><span class="icon">⌨️</span><h3>Command Palette</h3><span class="cn-tag">命令面板</span></div>
+    <div class="card-demo">
+      <button class="snackbar-trigger" id="cpTrigger" style="background:var(--accent);">Ctrl+K 打开命令面板</button>
+    </div>
+    <div class="card-feedback" id="cmdFeedback">⌨️ 点击按钮打开命令面板，输入关键词过滤</div>
+    <div class="card-explanation"><strong>Command Palette</strong>（命令面板）是通过快捷键唤出的<em>全局搜索+命令入口</em>。不用记住菜单位置，输入关键词即可快速执行操作——VS Code、Figma 等工具的标配。</div>
+  </article>
+
+  <!-- 48. Tree View -->
+  <article class="card" id="card-tree">
+    <div class="card-header"><span class="icon">🌳</span><h3>Tree View</h3><span class="cn-tag">树形视图</span></div>
+    <div class="card-demo">
+      <div class="tree">
+        <div class="tree-folder"><span class="tree-arrow">▶</span> 📁 src</div>
+        <div class="tree-children">
+          <div class="tree-folder"><span class="tree-arrow">▶</span> 📁 components</div>
+          <div class="tree-children">
+            <div class="tree-file">📄 Button.tsx</div>
+            <div class="tree-file">📄 Modal.tsx</div>
+          </div>
+          <div class="tree-folder"><span class="tree-arrow">▶</span> 📁 utils</div>
+          <div class="tree-children">
+            <div class="tree-file">📄 format.ts</div>
+          </div>
+          <div class="tree-file">📄 index.ts</div>
+        </div>
+      </div>
+    </div>
+    <div class="card-feedback" id="treeFeedback">👆 点击文件夹前面的箭头展开子目录</div>
+    <div class="card-explanation"><strong>Tree View</strong>（树形视图）用<em>层级缩进</em>展示嵌套的父子关系。文件管理器、组织架构、分类目录——可无限嵌套，清晰表达从属结构。</div>
+  </article>
+
+  <!-- 49. Floating Label -->
+  <article class="card" id="card-floatlabel">
+    <div class="card-header"><span class="icon">🏷️</span><h3>Floating Label</h3><span class="cn-tag">浮动标签</span></div>
+    <div class="card-demo">
+      <div class="fl-wrap">
+        <input type="text" id="flInput" placeholder=" ">
+        <label for="flInput">电子邮件</label>
+      </div>
+    </div>
+    <div class="card-feedback" id="floatlabelFeedback">👆 点击输入框，观察标签向上浮动</div>
+    <div class="card-explanation"><strong>Floating Label</strong>（浮动标签）是 Material Design 的经典输入框模式。占位符文字在输入框获得焦点或已有内容时<em>缩小并上浮</em>——节省空间的同时始终保持标签可见。</div>
+  </article>
+
+  <!-- 50. Keyboard Shortcuts -->
+  <article class="card" id="card-shortcuts">
+    <div class="card-header"><span class="icon">⌨️</span><h3>Keyboard Shortcuts</h3><span class="cn-tag">键盘快捷键</span></div>
+    <div class="card-demo">
+      <div class="kbd-grid">
+        <div class="kbd-row"><span class="kbd-desc">保存</span><kbd>Ctrl</kbd> + <kbd>S</kbd></div>
+        <div class="kbd-row"><span class="kbd-desc">撤销</span><kbd>Ctrl</kbd> + <kbd>Z</kbd></div>
+        <div class="kbd-row"><span class="kbd-desc">查找</span><kbd>Ctrl</kbd> + <kbd>F</kbd></div>
+        <div class="kbd-row"><span class="kbd-desc">全选</span><kbd>Ctrl</kbd> + <kbd>A</kbd></div>
+      </div>
+      <div style="font-size:.72rem;color:var(--text-dim);margin-top:6px;">在本页试试按 <kbd style="background:var(--surface);border:1px solid var(--border);padding:2px 6px;border-radius:3px;">Ctrl+S</kbd></div>
+    </div>
+    <div class="card-feedback" id="shortcutsFeedback">⌨️ 在页面任意位置按下 Ctrl+S 试试</div>
+    <div class="card-explanation"><strong>Keyboard Shortcuts</strong>（键盘快捷键）让熟练用户<em>不用鼠标就能完成操作</em>。好的产品会渐进式展示快捷键——新手靠鼠标，熟手靠键盘，各有路径。</div>
   </article>
 
 </main>
@@ -2888,6 +3065,214 @@ body {
     menu.addEventListener('click', function(e) {
       if (e.target.classList.contains('fab-sub')) {
         setFeedback('fabFeedback', '✅ 已选择子操作——FAB 收纳核心行动，一个按钮承载主要功能', true);
+      }
+    });
+  })();
+
+  // ==================== 44. Timeline ====================
+  (function() {
+    var titles = document.querySelectorAll('#card-timeline .tl-title');
+    if (!titles.length) return;
+    titles.forEach(function(t) {
+      t.addEventListener('click', function() {
+        var detail = this.nextElementSibling;
+        var isOpen = detail.classList.contains('open');
+        // 关闭其他
+        titles.forEach(function(tt) { tt.nextElementSibling.classList.remove('open'); });
+        if (!isOpen) {
+          detail.classList.add('open');
+          setFeedback('timelineFeedback', '✅ 已展开「' + this.textContent + '」的详情——时间线支持点击展开查看细节', true);
+        } else {
+          setFeedback('timelineFeedback', '👆 点击时间节点标题展开详情', false);
+        }
+      });
+    });
+  })();
+
+  // ==================== 45. Split Button ====================
+  (function() {
+    var arrow = $('#splitArrow');
+    var dd = $('#splitDD');
+    var main = $('#splitMain');
+    if (!arrow || !dd || !main) return;
+    arrow.addEventListener('click', function(e) {
+      e.stopPropagation();
+      dd.classList.toggle('show');
+    });
+    main.addEventListener('click', function() {
+      setFeedback('splitbtnFeedback', '✅ 已执行「保存」——主按钮一键完成最常用操作', true);
+    });
+    dd.addEventListener('click', function(e) {
+      if (e.target.classList.contains('dd-opt')) {
+        dd.classList.remove('show');
+        setFeedback('splitbtnFeedback', '✅ 已选择「' + e.target.textContent.trim() + '」——箭头提供备选方案', true);
+      }
+    });
+    document.addEventListener('click', function() { dd.classList.remove('show'); });
+  })();
+
+  // ==================== 46. Pull to Refresh ====================
+  (function() {
+    var area = $('#ptrArea');
+    var content = $('#ptrContent');
+    var indicator = $('#ptrIndicator');
+    if (!area || !content || !indicator) return;
+    var startY = 0, pulling = false, refreshing = false;
+    area.addEventListener('mousedown', function(e) {
+      if (refreshing) return;
+      startY = e.clientY;
+      pulling = true;
+    });
+    area.addEventListener('mousemove', function(e) {
+      if (!pulling || refreshing) return;
+      var dy = e.clientY - startY;
+      if (dy > 20) {
+        content.style.transform = 'translateY(' + Math.min(dy - 20, 40) + 'px)';
+        indicator.style.opacity = Math.min((dy - 20) / 30, 1);
+        if (dy > 50) indicator.textContent = '↻ 释放以刷新';
+        else indicator.textContent = '↓ 继续下拉';
+      }
+    });
+    area.addEventListener('mouseup', function() {
+      if (!pulling) return;
+      pulling = false;
+      var dy = parseFloat(content.style.transform.replace(/[^0-9.]/g,'')) || 0;
+      if (dy > 30 && !refreshing) {
+        refreshing = true;
+        indicator.textContent = '⟳ 正在刷新…';
+        indicator.style.opacity = '1';
+        content.style.transform = 'translateY(36px)';
+        setFeedback('ptrFeedback', '✅ 正在刷新——模拟下拉刷新手势的完整流程', true);
+        setTimeout(function() {
+          content.style.transform = 'translateY(0)';
+          indicator.textContent = '✅ 刷新完成！';
+          setTimeout(function() {
+            indicator.style.opacity = '0';
+            refreshing = false;
+            setFeedback('ptrFeedback', '⬇️ 鼠标按住向下拖拽，模拟下拉刷新', false);
+          }, 800);
+        }, 1200);
+      } else if (!refreshing) {
+        content.style.transform = 'translateY(0)';
+        indicator.style.opacity = '0';
+      }
+    });
+    area.addEventListener('mouseleave', function() {
+      if (pulling && !refreshing) {
+        pulling = false;
+        content.style.transform = 'translateY(0)';
+        indicator.style.opacity = '0';
+      }
+    });
+  })();
+
+  // ==================== 47. Command Palette ====================
+  (function() {
+    var trigger = $('#cpTrigger');
+    if (!trigger) return;
+    var commands = [
+      { icon:'📁', label:'打开文件', badge:'Ctrl+O' },
+      { icon:'💾', label:'保存文件', badge:'Ctrl+S' },
+      { icon:'📋', label:'复制选中内容', badge:'Ctrl+C' },
+      { icon:'📌', label:'粘贴', badge:'Ctrl+V' },
+      { icon:'🔍', label:'搜索项目', badge:'Ctrl+F' },
+      { icon:'↩️', label:'撤销操作', badge:'Ctrl+Z' },
+      { icon:'🔄', label:'重做', badge:'Ctrl+Y' },
+      { icon:'⚙️', label:'打开设置', badge:'Ctrl+,' }
+    ];
+
+    var overlay = document.createElement('div');
+    overlay.className = 'cp-overlay';
+    overlay.id = 'cpOverlay';
+    overlay.innerHTML = '<div class="cp-dialog"><input id="cpInput" placeholder="输入命令关键词…" autocomplete="off"><div class="cp-list" id="cpList"></div></div>';
+    document.body.appendChild(overlay);
+
+    var cpInput = $('#cpInput');
+    var cpList = $('#cpList');
+
+    function renderList(filter) {
+      var f = (filter || '').toLowerCase();
+      var filtered = commands.filter(function(c) { return c.label.toLowerCase().includes(f); });
+      cpList.innerHTML = filtered.map(function(c, i) {
+        return '<div class="cp-item' + (i === 0 ? ' active' : '') + '"><span class="cp-icon">' + c.icon + '</span><span class="cp-label">' + c.label + '</span><span class="cp-badge">' + c.badge + '</span></div>';
+      }).join('');
+    }
+
+    trigger.addEventListener('click', function() {
+      overlay.classList.add('open');
+      renderList();
+      setTimeout(function() { cpInput.focus(); }, 150);
+      setFeedback('cmdFeedback', '✅ 命令面板已打开——输入关键词快速定位命令', true);
+    });
+
+    cpInput.addEventListener('input', function() { renderList(this.value); });
+
+    cpInput.addEventListener('keydown', function(e) {
+      if (e.key === 'Escape') { overlay.classList.remove('open'); setFeedback('cmdFeedback', '⌨️ 点击按钮打开命令面板，输入关键词过滤', false); }
+      if (e.key === 'Enter') {
+        var active = cpList.querySelector('.cp-item.active .cp-label');
+        if (active) {
+          setFeedback('cmdFeedback', '✅ 已执行「' + active.textContent + '」——命令面板让操作快如闪电', true);
+          overlay.classList.remove('open');
+          setTimeout(function() { setFeedback('cmdFeedback', '⌨️ 点击按钮打开命令面板，输入关键词过滤', false); }, 2000);
+        }
+      }
+    });
+
+    cpList.addEventListener('click', function(e) {
+      var item = e.target.closest('.cp-item');
+      if (item) {
+        var label = item.querySelector('.cp-label').textContent;
+        setFeedback('cmdFeedback', '✅ 已执行「' + label + '」——命令面板让操作快如闪电', true);
+        overlay.classList.remove('open');
+        setTimeout(function() { setFeedback('cmdFeedback', '⌨️ 点击按钮打开命令面板，输入关键词过滤', false); }, 2000);
+      }
+    });
+
+    overlay.addEventListener('click', function(e) { if (e.target === overlay) { overlay.classList.remove('open'); setFeedback('cmdFeedback', '⌨️ 点击按钮打开命令面板，输入关键词过滤', false); } });
+  })();
+
+  // ==================== 48. Tree View ====================
+  (function() {
+    var folders = document.querySelectorAll('#card-tree .tree-folder');
+    if (!folders.length) return;
+    folders.forEach(function(f) {
+      f.addEventListener('click', function(e) {
+        e.stopPropagation();
+        this.classList.toggle('open');
+        setFeedback('treeFeedback', this.classList.contains('open') ? '✅ 文件夹已展开——树形视图逐层揭示子内容' : '👆 点击文件夹前面的箭头展开子目录', this.classList.contains('open'));
+      });
+    });
+  })();
+
+  // ==================== 49. Floating Label ====================
+  // 纯 CSS（:placeholder-shown），JS 仅更新反馈
+  (function() {
+    var input = $('#flInput');
+    if (!input) return;
+    input.addEventListener('focus', function() { setFeedback('floatlabelFeedback', '✅ 标签已上浮——Material Design 浮动标签节省空间、保持可读性', true); });
+    input.addEventListener('blur', function() { setFeedback('floatlabelFeedback', '👆 点击输入框，观察标签向上浮动', false); });
+  })();
+
+  // ==================== 50. Keyboard Shortcuts ====================
+  (function() {
+    var handled = false;
+    document.addEventListener('keydown', function(e) {
+      if ((e.ctrlKey || e.metaKey) && e.key === 's') {
+        e.preventDefault();
+        setFeedback('shortcutsFeedback', '✅ 你按下了 Ctrl+S！——键盘快捷键让熟手操作更高效', true);
+        handled = true;
+        setTimeout(function() {
+          if (handled) { setFeedback('shortcutsFeedback', '⌨️ 在页面任意位置按下 Ctrl+S 试试', false); handled = false; }
+        }, 3000);
+      }
+      if ((e.ctrlKey || e.metaKey) && e.key === 'z') {
+        e.preventDefault();
+        setFeedback('shortcutsFeedback', '✅ 你按下了 Ctrl+Z！——撤销是最高频的快捷键之一', true);
+        handled = true;
+        setTimeout(function() {
+          if (handled) { setFeedback('shortcutsFeedback', '⌨️ 在页面任意位置按下 Ctrl+S 试试', false); handled = false; }
+        }, 3000);
       }
     });
   })();
