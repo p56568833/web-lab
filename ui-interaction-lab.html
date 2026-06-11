@@ -1121,7 +1121,7 @@ body {
 .tree-folder .tree-arrow { display:inline-block; width:16px; font-size:.6rem; transition:transform .2s; color:var(--text-dim); }
 .tree-folder.open > .tree-arrow { transform:rotate(90deg); }
 .tree-children { display:none; padding-left:18px; }
-.tree-folder.open > .tree-children { display:block; }
+.tree-folder.open + .tree-children { display:block; }
 .tree-file { padding:3px 0; color:var(--text-dim); }
 
 /* Floating Label */
