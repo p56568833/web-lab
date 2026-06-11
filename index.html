@@ -1,0 +1,1159 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>UI Interaction Lab — 交互式 UI 术语学习实验室</title>
+<style>
+/* ============================================================
+   CSS Variables & Reset
+   ============================================================ */
+:root {
+  --bg: #09090f;
+  --surface: #151520;
+  --surface-2: #1c1c2e;
+  --border: #2a2a3e;
+  --text: #e2e2ec;
+  --text-dim: #9898b0;
+  --accent: #7c6ff7;
+  --accent-glow: rgba(124,111,247,0.35);
+  --green: #3dd6a8;
+  --green-glow: rgba(61,214,168,0.3);
+  --red: #f75676;
+  --orange: #f7a156;
+  --blue: #56b8f7;
+  --radius: 14px;
+  --radius-sm: 8px;
+  --shadow-card: 0 1px 2px rgba(0,0,0,.4), 0 4px 16px rgba(0,0,0,.25);
+  --shadow-lg: 0 2px 4px rgba(0,0,0,.5), 0 8px 32px rgba(0,0,0,.35);
+  --transition: 0.25s cubic-bezier(.4,0,.2,1);
+}
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+html { scroll-behavior: smooth; font-size: 16px; }
+
+body {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC',
+               'Microsoft YaHei', sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  min-height: 100vh;
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+  background-image:
+    radial-gradient(ellipse at 15% 10%, rgba(124,111,247,.07) 0%, transparent 55%),
+    radial-gradient(ellipse at 85% 90%, rgba(61,214,168,.05) 0%, transparent 55%),
+    radial-gradient(ellipse at 50% 50%, rgba(86,184,247,.03) 0%, transparent 60%);
+}
+
+/* ============================================================
+   Header
+   ============================================================ */
+.header {
+  text-align: center;
+  padding: 56px 24px 36px;
+  max-width: 780px;
+  margin: 0 auto;
+}
+.header .badge {
+  display: inline-block;
+  font-size: .8rem;
+  font-weight: 600;
+  letter-spacing: .06em;
+  text-transform: uppercase;
+  color: var(--accent);
+  background: rgba(124,111,247,.12);
+  padding: 5px 14px;
+  border-radius: 20px;
+  margin-bottom: 16px;
+}
+.header h1 {
+  font-size: 2.6rem;
+  font-weight: 800;
+  letter-spacing: -.02em;
+  background: linear-gradient(135deg, #c4b5fd 0%, #7c6ff7 40%, #3dd6a8 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  margin-bottom: 8px;
+}
+.header .subtitle {
+  font-size: 1.1rem;
+  color: var(--text-dim);
+  max-width: 520px;
+  margin: 0 auto;
+}
+
+/* ============================================================
+   Grid
+   ============================================================ */
+.card-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+  gap: 22px;
+  padding: 0 24px 64px;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+/* ============================================================
+   Card Base
+   ============================================================ */
+.card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  overflow: hidden;
+  transition: border-color var(--transition), box-shadow var(--transition);
+}
+.card:hover {
+  border-color: #3d3d5c;
+  box-shadow: var(--shadow-lg);
+}
+
+.card-header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 20px 20px 0;
+}
+.card-header .icon { font-size: 1.6rem; line-height: 1; }
+.card-header h3 {
+  font-size: 1.15rem;
+  font-weight: 700;
+  flex: 1;
+}
+.card-header .cn-tag {
+  font-size: .75rem;
+  color: var(--text-dim);
+  background: var(--surface-2);
+  padding: 3px 10px;
+  border-radius: 12px;
+}
+
+.card-demo {
+  margin: 16px 20px;
+  padding: 24px 20px;
+  background: var(--surface-2);
+  border-radius: var(--radius-sm);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 14px;
+  position: relative;
+  min-height: 100px;
+  justify-content: center;
+}
+
+.card-feedback {
+  margin: 0 20px;
+  font-size: .82rem;
+  color: var(--text-dim);
+  min-height: 22px;
+  text-align: center;
+  transition: color .2s;
+}
+.card-feedback.active { color: var(--green); }
+
+.card-explanation {
+  margin: 10px 20px 20px;
+  font-size: .82rem;
+  color: var(--text-dim);
+  line-height: 1.65;
+  border-top: 1px solid var(--border);
+  padding-top: 12px;
+}
+
+/* ============================================================
+   Demo: Hover
+   ============================================================ */
+.hover-btn {
+  padding: 14px 36px;
+  background: var(--accent);
+  color: #fff;
+  border: none;
+  border-radius: 10px;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: transform .25s ease, box-shadow .25s ease, background .25s ease;
+  box-shadow: 0 4px 14px var(--accent-glow);
+  user-select: none;
+}
+.hover-btn:hover {
+  transform: scale(1.08);
+  box-shadow: 0 8px 28px rgba(124,111,247,.55);
+  background: #907df7;
+}
+
+/* ============================================================
+   Demo: Active
+   ============================================================ */
+.active-btn {
+  padding: 14px 36px;
+  background: #3dd6a8;
+  color: #0a0a16;
+  border: none;
+  border-radius: 10px;
+  font-size: 1rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: transform .1s ease, box-shadow .1s ease, background .1s ease;
+  box-shadow: 0 4px 14px var(--green-glow);
+  user-select: none;
+}
+.active-btn:active {
+  transform: scale(.94);
+  box-shadow: 0 1px 4px rgba(61,214,168,.2);
+  background: #2bbf92;
+}
+
+/* ============================================================
+   Demo: Focus
+   ============================================================ */
+.focus-input {
+  width: 100%;
+  max-width: 260px;
+  padding: 12px 16px;
+  background: var(--surface);
+  border: 2px solid var(--border);
+  border-radius: var(--radius-sm);
+  color: var(--text);
+  font-size: .95rem;
+  outline: none;
+  transition: border-color var(--transition), box-shadow var(--transition);
+}
+.focus-input:focus {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 4px rgba(124,111,247,.18);
+}
+.focus-input::placeholder { color: #555; }
+
+/* ============================================================
+   Demo: Disabled
+   ============================================================ */
+.btn-row { display: flex; gap: 12px; flex-wrap: wrap; justify-content: center; }
+.btn-enabled {
+  padding: 11px 24px;
+  background: var(--accent);
+  color: #fff;
+  border: none;
+  border-radius: var(--radius-sm);
+  font-weight: 600;
+  cursor: pointer;
+  transition: opacity var(--transition);
+}
+.btn-enabled:hover { opacity: .85; }
+.btn-disabled {
+  padding: 11px 24px;
+  background: #3a3a50;
+  color: #6a6a80;
+  border: none;
+  border-radius: var(--radius-sm);
+  font-weight: 600;
+  cursor: not-allowed;
+  opacity: .55;
+  pointer-events: none;
+}
+
+/* ============================================================
+   Demo: Transition
+   ============================================================ */
+.transition-box {
+  width: 64px; height: 64px;
+  background: var(--accent);
+  border-radius: 12px;
+  transition: all .6s cubic-bezier(.4,0,.2,1);
+}
+.transition-box.state-b {
+  background: var(--green);
+  border-radius: 50%;
+  transform: translateX(60px) rotate(180deg);
+}
+.transition-track {
+  width: 140px; height: 64px;
+  display: flex; align-items: center;
+}
+.transition-toggle {
+  padding: 9px 22px;
+  background: transparent;
+  color: var(--text);
+  border: 1.5px solid var(--border);
+  border-radius: 20px;
+  cursor: pointer;
+  font-size: .85rem;
+  transition: all var(--transition);
+}
+.transition-toggle:hover {
+  border-color: var(--accent);
+  color: var(--accent);
+}
+
+/* ============================================================
+   Demo: Micro-interaction
+   ============================================================ */
+.like-btn {
+  width: 56px; height: 56px;
+  border-radius: 50%;
+  border: none;
+  background: var(--surface);
+  cursor: pointer;
+  font-size: 1.6rem;
+  display: flex; align-items: center; justify-content: center;
+  transition: transform .2s ease, background .2s ease, box-shadow .2s ease;
+  position: relative;
+  box-shadow: 0 2px 8px rgba(0,0,0,.3);
+}
+.like-btn:hover { transform: scale(1.08); }
+.like-btn.liked {
+  background: #f75676;
+  box-shadow: 0 4px 18px rgba(247,86,118,.45);
+  animation: heartPop .35s ease;
+}
+.like-btn .heart-icon { transition: transform .2s ease; }
+.like-btn.liked .heart-icon { transform: scale(1.2); }
+
+@keyframes heartPop {
+  0% { transform: scale(1); }
+  30% { transform: scale(1.25); }
+  60% { transform: scale(.92); }
+  100% { transform: scale(1); }
+}
+
+.particle {
+  position: absolute;
+  width: 6px; height: 6px;
+  border-radius: 50%;
+  background: #f75676;
+  pointer-events: none;
+  animation: particleFly .6s ease-out forwards;
+}
+@keyframes particleFly {
+  0% { opacity: 1; transform: translate(0,0) scale(1); }
+  100% { opacity: 0; transform: translate(var(--dx),var(--dy)) scale(0); }
+}
+
+/* ============================================================
+   Demo: Loading
+   ============================================================ */
+.loading-area {
+  display: flex; flex-direction: column; align-items: center; gap: 14px;
+}
+.spinner {
+  width: 36px; height: 36px;
+  border: 3.5px solid var(--border);
+  border-top-color: var(--accent);
+  border-radius: 50%;
+  animation: spin .7s linear infinite;
+  display: none;
+}
+.spinner.visible { display: block; }
+@keyframes spin { to { transform: rotate(360deg); } }
+
+.checkmark {
+  font-size: 2.2rem;
+  display: none;
+  animation: popIn .4s ease;
+}
+.checkmark.visible { display: block; }
+@keyframes popIn {
+  0% { transform: scale(0); opacity: 0; }
+  60% { transform: scale(1.2); }
+  100% { transform: scale(1); opacity: 1; }
+}
+
+.load-trigger {
+  padding: 11px 26px;
+  background: var(--accent);
+  color: #fff;
+  border: none;
+  border-radius: 20px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all var(--transition);
+}
+.load-trigger:hover { opacity: .85; }
+.load-trigger:disabled { opacity: .45; cursor: not-allowed; }
+
+/* ============================================================
+   Demo: Tooltip
+   ============================================================ */
+.tooltip-wrap {
+  position: relative;
+  display: inline-block;
+}
+.tooltip-trigger {
+  padding: 10px 22px;
+  background: var(--surface);
+  border: 1.5px dashed var(--border);
+  border-radius: 20px;
+  cursor: default;
+  font-size: .9rem;
+  color: var(--text);
+  transition: all var(--transition);
+  user-select: none;
+}
+.tooltip-wrap:hover .tooltip-trigger {
+  border-color: var(--blue);
+  color: var(--blue);
+}
+.tooltip-bubble {
+  position: absolute;
+  bottom: calc(100% + 10px);
+  left: 50%;
+  transform: translateX(-50%);
+  background: #252540;
+  color: var(--text);
+  padding: 8px 16px;
+  border-radius: 8px;
+  font-size: .8rem;
+  white-space: nowrap;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity .2s ease, transform .2s ease;
+  transform: translateX(-50%) translateY(4px);
+  box-shadow: 0 4px 16px rgba(0,0,0,.4);
+}
+.tooltip-bubble::after {
+  content: '';
+  position: absolute;
+  top: 100%;
+  left: 50%;
+  transform: translateX(-50%);
+  border: 6px solid transparent;
+  border-top-color: #252540;
+}
+.tooltip-wrap:hover .tooltip-bubble {
+  opacity: 1;
+  transform: translateX(-50%) translateY(0);
+}
+
+/* ============================================================
+   Demo: Modal (in-card trigger + global overlay)
+   ============================================================ */
+.modal-trigger {
+  padding: 12px 28px;
+  background: var(--orange);
+  color: #0a0a16;
+  border: none;
+  border-radius: 20px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all var(--transition);
+}
+.modal-trigger:hover { opacity: .85; transform: scale(1.03); }
+
+/* Global modal overlay */
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,.65);
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity .25s ease;
+}
+.modal-overlay.open {
+  opacity: 1;
+  pointer-events: auto;
+}
+.modal-panel {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 28px 28px 22px;
+  max-width: 400px;
+  width: 90%;
+  box-shadow: 0 16px 48px rgba(0,0,0,.5);
+  transform: translateY(16px);
+  transition: transform .25s ease;
+}
+.modal-overlay.open .modal-panel { transform: translateY(0); }
+.modal-panel h4 { font-size: 1.2rem; margin-bottom: 8px; }
+.modal-panel p { font-size: .88rem; color: var(--text-dim); margin-bottom: 18px; line-height: 1.6; }
+.modal-close {
+  padding: 10px 24px;
+  background: var(--accent);
+  color: #fff;
+  border: none;
+  border-radius: 20px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: opacity var(--transition);
+}
+.modal-close:hover { opacity: .8; }
+
+/* ============================================================
+   Demo: Card Design
+   ============================================================ */
+.card-demo-card {
+  width: 100%;
+  max-width: 260px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  overflow: hidden;
+  transition: transform .3s ease, box-shadow .3s ease;
+  cursor: default;
+}
+.card-demo-card:hover {
+  transform: translateY(-6px);
+  box-shadow: 0 12px 32px rgba(0,0,0,.4);
+}
+.card-demo-img {
+  height: 100px;
+  background: linear-gradient(135deg, #2a2a4e 0%, #1e3a4a 100%);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 2.6rem;
+}
+.card-demo-body { padding: 14px; }
+.card-demo-body .title { font-weight: 700; font-size: .9rem; margin-bottom: 4px; }
+.card-demo-body .desc { font-size: .75rem; color: var(--text-dim); margin-bottom: 10px; }
+.card-demo-body .cta {
+  display: inline-block;
+  padding: 6px 16px;
+  background: var(--accent);
+  color: #fff;
+  border-radius: 14px;
+  font-size: .78rem;
+  font-weight: 600;
+}
+
+/* ============================================================
+   Demo: Toast
+   ============================================================ */
+.toast-trigger {
+  padding: 11px 26px;
+  background: var(--blue);
+  color: #0a0a16;
+  border: none;
+  border-radius: 20px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all var(--transition);
+}
+.toast-trigger:hover { opacity: .85; }
+
+/* Toast container — fixed */
+.toast-container {
+  position: fixed;
+  top: 20px;
+  right: 20px;
+  z-index: 1100;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  pointer-events: none;
+}
+.toast-item {
+  background: var(--surface-2);
+  border: 1px solid var(--border);
+  border-left: 4px solid var(--green);
+  padding: 13px 20px;
+  border-radius: 10px;
+  font-size: .85rem;
+  font-weight: 500;
+  box-shadow: 0 6px 20px rgba(0,0,0,.35);
+  pointer-events: auto;
+  animation: toastIn .35s ease, toastOut .3s ease 2.8s forwards;
+  max-width: 300px;
+}
+@keyframes toastIn {
+  from { opacity: 0; transform: translateX(40px); }
+  to { opacity: 1; transform: translateX(0); }
+}
+@keyframes toastOut {
+  from { opacity: 1; transform: translateX(0); }
+  to { opacity: 0; transform: translateX(40px); }
+}
+
+/* ============================================================
+   Demo: Skeleton
+   ============================================================ */
+.skeleton-area {
+  width: 100%;
+  max-width: 280px;
+}
+.skeleton-content {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+}
+.skeleton-avatar {
+  width: 44px; height: 44px;
+  border-radius: 50%;
+  background: #2a2a42;
+  flex-shrink: 0;
+}
+.skeleton-lines { flex: 1; display: flex; flex-direction: column; gap: 8px; }
+.skeleton-line {
+  height: 12px;
+  border-radius: 6px;
+  background: #2a2a42;
+}
+.skeleton-line.short { width: 60%; }
+
+/* shimmer */
+.skeleton-avatar.shimmer,
+.skeleton-line.shimmer {
+  background: linear-gradient(90deg, #2a2a42 25%, #38385a 50%, #2a2a42 75%);
+  background-size: 200% 100%;
+  animation: shimmer 1.6s ease-in-out infinite;
+}
+@keyframes shimmer {
+  0% { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
+}
+
+.real-content {
+  display: none;
+  gap: 12px;
+  align-items: center;
+}
+.real-content.visible { display: flex; }
+.real-content .avatar {
+  width: 44px; height: 44px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, var(--accent), var(--blue));
+  display: flex; align-items: center; justify-content: center;
+  font-size: 1.2rem;
+  flex-shrink: 0;
+}
+.real-content .info .name { font-weight: 700; font-size: .9rem; }
+.real-content .info .role { font-size: .78rem; color: var(--text-dim); }
+
+.skeleton-toggle {
+  margin-top: 10px;
+  padding: 8px 20px;
+  background: transparent;
+  color: var(--text);
+  border: 1.5px solid var(--border);
+  border-radius: 20px;
+  font-size: .82rem;
+  cursor: pointer;
+  transition: all var(--transition);
+}
+.skeleton-toggle:hover { border-color: var(--accent); color: var(--accent); }
+
+/* ============================================================
+   Footer
+   ============================================================ */
+.footer {
+  text-align: center;
+  padding: 28px 24px 40px;
+  font-size: .8rem;
+  color: #4a4a60;
+  border-top: 1px solid var(--border);
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+/* ============================================================
+   Responsive
+   ============================================================ */
+@media (max-width: 768px) {
+  .header h1 { font-size: 1.9rem; }
+  .card-grid { grid-template-columns: 1fr; padding: 0 14px 40px; }
+  .header { padding: 36px 18px 24px; }
+}
+</style>
+</head>
+<body>
+
+<!-- ============================================================
+     Header
+     ============================================================ -->
+<header class="header">
+  <span class="badge">🎨 Interactive Learning</span>
+  <h1>UI Interaction Lab</h1>
+  <p class="subtitle">
+    一个交互式 UI 术语学习实验室——不用死记硬背，用鼠标和手指<b>感受</b>每个术语的真实含义。
+  </p>
+</header>
+
+<!-- ============================================================
+     Card Grid
+     ============================================================ -->
+<main class="card-grid">
+
+  <!-- 1. Hover -->
+  <article class="card" id="card-hover">
+    <div class="card-header">
+      <span class="icon">🖱️</span><h3>Hover</h3>
+      <span class="cn-tag">悬停状态</span>
+    </div>
+    <div class="card-demo">
+      <button class="hover-btn" id="hoverDemoBtn">把鼠标移到我上面</button>
+    </div>
+    <div class="card-feedback" id="hoverFeedback">👆 试试将鼠标悬停在按钮上</div>
+    <div class="card-explanation">
+      <strong>Hover</strong>（悬停）指鼠标指针停留在某个 UI 元素上时触发的视觉反馈。它向用户传递一个关键信号：<em>"这个元素是可以交互的"</em>。常见表现包括颜色变化、阴影增强、轻微放大等。
+    </div>
+  </article>
+
+  <!-- 2. Active -->
+  <article class="card" id="card-active">
+    <div class="card-header">
+      <span class="icon">👆</span><h3>Active</h3>
+      <span class="cn-tag">按下瞬间</span>
+    </div>
+    <div class="card-demo">
+      <button class="active-btn" id="activeDemoBtn">按住我不放</button>
+    </div>
+    <div class="card-feedback" id="activeFeedback">🖱️ 按住按钮感受「按下」的瞬间</div>
+    <div class="card-explanation">
+      <strong>Active</strong>（激活态）是用户点击元素并按住不放时的瞬间状态。它给用户即时的物理反馈——"我确实按到了"。通常表现为元素缩小、颜色加深或阴影内陷。
+    </div>
+  </article>
+
+  <!-- 3. Focus -->
+  <article class="card" id="card-focus">
+    <div class="card-header">
+      <span class="icon">⌨️</span><h3>Focus</h3>
+      <span class="cn-tag">焦点状态</span>
+    </div>
+    <div class="card-demo">
+      <input class="focus-input" id="focusDemoInput" placeholder="点击这里输入内容…" />
+    </div>
+    <div class="card-feedback" id="focusFeedback">👆 点击输入框使其获得焦点</div>
+    <div class="card-explanation">
+      <strong>Focus</strong>（焦点）表示当前哪个元素正在接收键盘输入。清晰的焦点指示器（如高亮边框）对<em>无障碍访问</em>至关重要——它让键盘用户知道自己在页面的哪个位置。
+    </div>
+  </article>
+
+  <!-- 4. Disabled -->
+  <article class="card" id="card-disabled">
+    <div class="card-header">
+      <span class="icon">🚫</span><h3>Disabled</h3>
+      <span class="cn-tag">不可用状态</span>
+    </div>
+    <div class="card-demo">
+      <div class="btn-row">
+        <button class="btn-enabled">可用按钮</button>
+        <button class="btn-disabled" disabled>不可用按钮</button>
+      </div>
+    </div>
+    <div class="card-feedback" id="disabledFeedback">👀 对比两个按钮的视觉差异</div>
+    <div class="card-explanation">
+      <strong>Disabled</strong>（禁用态）表示某个操作当前不可用。通过降低透明度、变为灰色、移除交互光标，清晰告诉用户"这个按钮暂时不能点"——避免用户困惑为什么点了没反应。
+    </div>
+  </article>
+
+  <!-- 5. Transition -->
+  <article class="card" id="card-transition">
+    <div class="card-header">
+      <span class="icon">🌊</span><h3>Transition</h3>
+      <span class="cn-tag">过渡动画</span>
+    </div>
+    <div class="card-demo">
+      <div class="transition-track">
+        <div class="transition-box" id="transitionBox"></div>
+      </div>
+      <button class="transition-toggle" id="transitionToggle">切换状态</button>
+    </div>
+    <div class="card-feedback" id="transitionFeedback">🎯 点击按钮，观察方块如何平滑过渡</div>
+    <div class="card-explanation">
+      <strong>Transition</strong>（过渡）让元素在两种状态之间平滑变化，而不是突兀地跳变。它是流畅用户体验的基石——对比一下：<em>有过渡 vs 没有过渡</em>，哪个更舒服？
+    </div>
+  </article>
+
+  <!-- 6. Micro-interaction -->
+  <article class="card" id="card-micro">
+    <div class="card-header">
+      <span class="icon">💫</span><h3>Micro-interaction</h3>
+      <span class="cn-tag">微交互</span>
+    </div>
+    <div class="card-demo">
+      <button class="like-btn" id="likeBtn" aria-label="点赞">
+        <span class="heart-icon">🤍</span>
+      </button>
+      <span style="font-size:.82rem;color:var(--text-dim)" id="likeCount">0 次点赞</span>
+    </div>
+    <div class="card-feedback" id="microFeedback">❤️ 点击爱心，感受微交互的愉悦感</div>
+    <div class="card-explanation">
+      <strong>Micro-interaction</strong>（微交互）是完成单个小任务的短暂动画反馈。点赞、开关切换、下拉刷新——这些微小瞬间让产品变得<em>有生命力</em>，增强用户的情感连接。
+    </div>
+  </article>
+
+  <!-- 7. Loading -->
+  <article class="card" id="card-loading">
+    <div class="card-header">
+      <span class="icon">⏳</span><h3>Loading</h3>
+      <span class="cn-tag">加载状态</span>
+    </div>
+    <div class="card-demo">
+      <div class="loading-area">
+        <div class="spinner" id="spinner"></div>
+        <div class="checkmark" id="checkmark">✅</div>
+        <button class="load-trigger" id="loadTrigger">开始加载</button>
+      </div>
+    </div>
+    <div class="card-feedback" id="loadingFeedback">⏳ 点击按钮模拟数据加载过程</div>
+    <div class="card-explanation">
+      <strong>Loading</strong>（加载态）告诉用户"系统正在处理，请稍等"。好的加载设计能<em>降低用户的等待焦虑</em>——一个流畅的 spinner 或进度条让等待变得可接受，甚至愉悦。
+    </div>
+  </article>
+
+  <!-- 8. Tooltip -->
+  <article class="card" id="card-tooltip">
+    <div class="card-header">
+      <span class="icon">💬</span><h3>Tooltip</h3>
+      <span class="cn-tag">悬浮提示</span>
+    </div>
+    <div class="card-demo" style="padding-top:36px;padding-bottom:36px;">
+      <div class="tooltip-wrap">
+        <span class="tooltip-trigger">悬停我查看提示</span>
+        <span class="tooltip-bubble">📌 这是一个 Tooltip！</span>
+      </div>
+    </div>
+    <div class="card-feedback" id="tooltipFeedback">👆 将鼠标悬停在虚线框上</div>
+    <div class="card-explanation">
+      <strong>Tooltip</strong>（工具提示）是用户悬停或长按某个元素时出现的简短说明浮层。它提供<em>即时的上下文帮助</em>，不需要用户离开当前页面去查文档。
+    </div>
+  </article>
+
+  <!-- 9. Modal -->
+  <article class="card" id="card-modal">
+    <div class="card-header">
+      <span class="icon">📋</span><h3>Modal</h3>
+      <span class="cn-tag">模态弹窗</span>
+    </div>
+    <div class="card-demo">
+      <button class="modal-trigger" id="modalTrigger">打开弹窗</button>
+    </div>
+    <div class="card-feedback" id="modalFeedback">🔲 点击按钮打开一个模态弹窗</div>
+    <div class="card-explanation">
+      <strong>Modal</strong>（模态弹窗）是一个覆盖在主内容之上的对话框，强制用户与之交互后才能继续操作。它用于<em>聚焦用户注意力</em>——确认操作、填写表单、查看详情等场景。
+    </div>
+  </article>
+
+  <!-- 10. Card -->
+  <article class="card" id="card-card">
+    <div class="card-header">
+      <span class="icon">🃏</span><h3>Card</h3>
+      <span class="cn-tag">卡片设计</span>
+    </div>
+    <div class="card-demo">
+      <div class="card-demo-card">
+        <div class="card-demo-img">🖼️</div>
+        <div class="card-demo-body">
+          <div class="title">设计原则</div>
+          <div class="desc">卡片将相关内容分组，便于用户快速扫描和点击。</div>
+          <span class="cta">了解更多</span>
+        </div>
+      </div>
+    </div>
+    <div class="card-feedback" id="cardFeedback">🖱️ 将鼠标移到上方卡片上</div>
+    <div class="card-explanation">
+      <strong>Card</strong>（卡片）是 UI 设计中最常见的容器模式。它将相关信息打包成一个<em>可识别、可操作的单元</em>。卡片通常有清晰的边界、轻微阴影，悬停时会上浮。
+    </div>
+  </article>
+
+  <!-- 11. Toast -->
+  <article class="card" id="card-toast">
+    <div class="card-header">
+      <span class="icon">🔔</span><h3>Toast</h3>
+      <span class="cn-tag">轻提示</span>
+    </div>
+    <div class="card-demo">
+      <button class="toast-trigger" id="toastTrigger">显示通知</button>
+    </div>
+    <div class="card-feedback" id="toastFeedback">🔔 点击按钮查看右上角的 Toast 通知</div>
+    <div class="card-explanation">
+      <strong>Toast</strong>（轻提示）是一种短暂出现、自动消失的非模态反馈。它用于告知操作结果（"保存成功！"），<em>不打断用户当前流程</em>——出现几秒后自动消失。
+    </div>
+  </article>
+
+  <!-- 12. Skeleton -->
+  <article class="card" id="card-skeleton">
+    <div class="card-header">
+      <span class="icon">🦴</span><h3>Skeleton</h3>
+      <span class="cn-tag">骨架屏</span>
+    </div>
+    <div class="card-demo">
+      <div class="skeleton-area">
+        <div class="skeleton-content" id="skeletonPlaceholder">
+          <div class="skeleton-avatar shimmer"></div>
+          <div class="skeleton-lines">
+            <div class="skeleton-line shimmer"></div>
+            <div class="skeleton-line short shimmer"></div>
+          </div>
+        </div>
+        <div class="real-content" id="realContent">
+          <div class="avatar">🙋</div>
+          <div class="info">
+            <div class="name">张小 UI</div>
+            <div class="role">产品设计师</div>
+          </div>
+        </div>
+        <button class="skeleton-toggle" id="skeletonToggle">切换加载状态</button>
+      </div>
+    </div>
+    <div class="card-feedback" id="skeletonFeedback">🔄 点击按钮在骨架屏和真实内容之间切换</div>
+    <div class="card-explanation">
+      <strong>Skeleton</strong>（骨架屏）是内容加载前的占位符。它勾勒出即将出现的内容的<em>大致形状</em>，让用户感知到页面正在加载，减少等待的不确定感。
+    </div>
+  </article>
+
+</main>
+
+<!-- ============================================================
+     Modal Overlay (global, outside card flow)
+     ============================================================ -->
+<div class="modal-overlay" id="modalOverlay">
+  <div class="modal-panel">
+    <h4>👋 这是一个 Modal 弹窗</h4>
+    <p>
+      模态弹窗会覆盖页面其余部分，阻止用户与背景内容交互。
+      你需要先处理弹窗中的内容（阅读、确认或关闭），然后才能继续操作页面。
+      这在需要用户<strong>集中注意力</strong>做出决策时非常有用。
+    </p>
+    <button class="modal-close" id="modalClose">关闭弹窗</button>
+  </div>
+</div>
+
+<!-- ============================================================
+     Toast Container (global, fixed top-right)
+     ============================================================ -->
+<div class="toast-container" id="toastContainer"></div>
+
+<!-- Footer -->
+<footer class="footer">
+  UI Interaction Lab — 通过交互学习 UI 设计术语 · 将鼠标放上去、点下去、输入进去，感受每个概念
+</footer>
+
+<!-- ============================================================
+     JavaScript
+     ============================================================ -->
+<script>
+(function() {
+  'use strict';
+
+  // ==================== 辅助函数 ====================
+  const $ = (sel, ctx) => (ctx || document).querySelector(sel);
+  const setFeedback = (id, text, active) => {
+    const el = document.getElementById(id);
+    if (!el) return;
+    el.textContent = text;
+    el.classList.toggle('active', !!active);
+  };
+
+  // ==================== 1. Hover ====================
+  (function() {
+    const btn = $('#hoverDemoBtn');
+    const fb = $('#hoverFeedback');
+    if (!btn) return;
+    btn.addEventListener('mouseenter', () => setFeedback('hoverFeedback', '✅ 悬停状态激活！按钮放大、阴影增强、颜色变亮', true));
+    btn.addEventListener('mouseleave', () => setFeedback('hoverFeedback', '👆 试试将鼠标悬停在按钮上', false));
+  })();
+
+  // ==================== 2. Active ====================
+  (function() {
+    const btn = $('#activeDemoBtn');
+    if (!btn) return;
+    btn.addEventListener('mousedown', () => setFeedback('activeFeedback', '✅ 按下状态！按钮缩小、颜色加深——这是即时的物理反馈', true));
+    btn.addEventListener('mouseup', () => setFeedback('activeFeedback', '🖱️ 按住按钮感受「按下」的瞬间', false));
+    btn.addEventListener('mouseleave', () => setFeedback('activeFeedback', '🖱️ 按住按钮感受「按下」的瞬间', false));
+  })();
+
+  // ==================== 3. Focus ====================
+  (function() {
+    const input = $('#focusDemoInput');
+    if (!input) return;
+    input.addEventListener('focus', () => setFeedback('focusFeedback', '✅ 输入框获得焦点！边框高亮、出现光晕——键盘输入会到这里', true));
+    input.addEventListener('blur', () => setFeedback('focusFeedback', '👆 点击输入框使其获得焦点', false));
+  })();
+
+  // ==================== 4. Disabled — 静态对比，无需 JS ====================
+
+  // ==================== 5. Transition ====================
+  (function() {
+    const box = $('#transitionBox');
+    const toggle = $('#transitionToggle');
+    if (!box || !toggle) return;
+    let state = false;
+    toggle.addEventListener('click', () => {
+      state = !state;
+      box.classList.toggle('state-b', state);
+      setFeedback('transitionFeedback',
+        state
+          ? '✅ 方块平滑过渡到了新位置、新颜色、新形状——这就是 Transition 的魔力'
+          : '🎯 点击按钮，观察方块如何平滑过渡——颜色、形状、位置同时变化',
+        state);
+    });
+  })();
+
+  // ==================== 6. Micro-interaction (Like) ====================
+  (function() {
+    const btn = $('#likeBtn');
+    const icon = btn ? btn.querySelector('.heart-icon') : null;
+    const countEl = $('#likeCount');
+    if (!btn || !icon) return;
+    let liked = false;
+    let count = 0;
+
+    btn.addEventListener('click', function(e) {
+      liked = !liked;
+      count += liked ? 1 : -1;
+      icon.textContent = liked ? '❤️' : '🤍';
+      btn.classList.toggle('liked', liked);
+      countEl.textContent = count + ' 次点赞';
+      setFeedback('microFeedback',
+        liked
+          ? '✅ 点赞成功！注意心形动画和粒子效果——这就是微交互的情感价值'
+          : '❤️ 点击爱心，感受微交互的愉悦感',
+        liked);
+
+      // 粒子效果
+      if (liked) {
+        const rect = btn.getBoundingClientRect();
+        const cx = rect.left + rect.width / 2;
+        const cy = rect.top + rect.height / 2;
+        for (let i = 0; i < 8; i++) {
+          const particle = document.createElement('span');
+          particle.className = 'particle';
+          const angle = (Math.PI * 2 * i) / 8;
+          const dist = 18 + Math.random() * 14;
+          particle.style.setProperty('--dx', Math.cos(angle) * dist + 'px');
+          particle.style.setProperty('--dy', Math.sin(angle) * dist + 'px');
+          particle.style.left = '50%';
+          particle.style.top = '50%';
+          btn.appendChild(particle);
+          particle.addEventListener('animationend', () => particle.remove());
+        }
+      }
+    });
+  })();
+
+  // ==================== 7. Loading ====================
+  (function() {
+    const trigger = $('#loadTrigger');
+    const spinner = $('#spinner');
+    const check = $('#checkmark');
+    if (!trigger || !spinner || !check) return;
+
+    trigger.addEventListener('click', function() {
+      if (trigger.disabled) return;
+      trigger.disabled = true;
+      trigger.textContent = '加载中…';
+      spinner.classList.add('visible');
+      check.classList.remove('visible');
+      setFeedback('loadingFeedback', '⏳ 正在加载数据…（注意 spinner 旋转动画）', false);
+
+      setTimeout(() => {
+        spinner.classList.remove('visible');
+        check.classList.add('visible');
+        trigger.textContent = '重新加载';
+        trigger.disabled = false;
+        setFeedback('loadingFeedback', '✅ 加载完成！Spinner 消失，出现完成提示——用户知道操作结束了', true);
+      }, 2000);
+    });
+  })();
+
+  // ==================== 8. Tooltip — 纯 CSS hover，JS 仅更新反馈 ====================
+  (function() {
+    const wrap = document.querySelector('#card-tooltip .tooltip-wrap');
+    if (!wrap) return;
+    wrap.addEventListener('mouseenter', () => setFeedback('tooltipFeedback', '✅ 提示气泡出现了！它提供了额外的上下文信息', true));
+    wrap.addEventListener('mouseleave', () => setFeedback('tooltipFeedback', '👆 将鼠标悬停在虚线框上', false));
+  })();
+
+  // ==================== 9. Modal ====================
+  (function() {
+    const overlay = $('#modalOverlay');
+    const trigger = $('#modalTrigger');
+    const closeBtn = $('#modalClose');
+    if (!overlay || !trigger || !closeBtn) return;
+
+    const open = () => {
+      overlay.classList.add('open');
+      document.body.style.overflow = 'hidden';
+      setFeedback('modalFeedback', '✅ 弹窗已打开——背景被遮罩覆盖，焦点完全在弹窗内', true);
+    };
+    const close = () => {
+      overlay.classList.remove('open');
+      document.body.style.overflow = '';
+      setFeedback('modalFeedback', '🔲 点击按钮打开一个模态弹窗', false);
+    };
+
+    trigger.addEventListener('click', open);
+    closeBtn.addEventListener('click', close);
+    overlay.addEventListener('click', function(e) {
+      if (e.target === overlay) close();
+    });
+    document.addEventListener('keydown', function(e) {
+      if (e.key === 'Escape' && overlay.classList.contains('open')) close();
+    });
+  })();
+
+  // ==================== 10. Card Design ====================
+  (function() {
+    const card = document.querySelector('#card-card .card-demo-card');
+    if (!card) return;
+    card.addEventListener('mouseenter', () => setFeedback('cardFeedback', '✅ 卡片上浮、阴影增强——这就是 Card 的悬停效果，引导用户点击', true));
+    card.addEventListener('mouseleave', () => setFeedback('cardFeedback', '🖱️ 将鼠标移到上方卡片上', false));
+  })();
+
+  // ==================== 11. Toast ====================
+  (function() {
+    const trigger = $('#toastTrigger');
+    const container = $('#toastContainer');
+    if (!trigger || !container) return;
+
+    let toastId = 0;
+    trigger.addEventListener('click', () => {
+      toastId++;
+      const toast = document.createElement('div');
+      toast.className = 'toast-item';
+      toast.textContent = `✅ 操作成功！(第 ${toastId} 条通知)`;
+      container.appendChild(toast);
+
+      setFeedback('toastFeedback', `✅ Toast 通知已出现在右上角——3 秒后自动消失，不打断你的操作`, true);
+
+      // 动画结束后移除 DOM
+      toast.addEventListener('animationend', function(e) {
+        if (e.animationName === 'toastOut') {
+          toast.remove();
+          // 如果所有 toast 都移除了，恢复反馈文字
+          if (container.children.length === 0) {
+            setFeedback('toastFeedback', '🔔 点击按钮查看右上角的 Toast 通知', false);
+          }
+        }
+      });
+    });
+  })();
+
+  // ==================== 12. Skeleton ====================
+  (function() {
+    const toggle = $('#skeletonToggle');
+    const placeholder = $('#skeletonPlaceholder');
+    const real = $('#realContent');
+    if (!toggle || !placeholder || !real) return;
+
+    let loaded = false;
+    toggle.addEventListener('click', () => {
+      loaded = !loaded;
+      if (loaded) {
+        placeholder.style.display = 'none';
+        real.classList.add('visible');
+        toggle.textContent = '显示骨架屏';
+        setFeedback('skeletonFeedback', '✅ 真实内容已加载——骨架屏被替换为实际数据', true);
+      } else {
+        placeholder.style.display = 'flex';
+        real.classList.remove('visible');
+        toggle.textContent = '切换加载状态';
+        setFeedback('skeletonFeedback', '🔄 骨架屏占位中——用灰色形状勾勒出即将加载的内容轮廓', false);
+      }
+    });
+  })();
+
+})();
+</script>
+</body>
+</html>
