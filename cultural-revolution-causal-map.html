@@ -1,0 +1,1356 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>文化大革命为什么爆发？— 因果图谱</title>
+<style>
+:root {
+  --ink: #171715;
+  --ink-2: #22211e;
+  --paper: #eee6d7;
+  --paper-2: #d7c9b4;
+  --paper-3: #f7f1e6;
+  --muted: #84786a;
+  --line: rgba(238, 230, 215, .2);
+  --line-dark: rgba(38, 35, 31, .18);
+  --red: #8f2f2b;
+  --red-soft: rgba(143, 47, 43, .15);
+  --blue: #3f5967;
+  --moss: #59614b;
+  --gold: #a98243;
+  --shadow: 0 18px 60px rgba(0, 0, 0, .25);
+  --radius: 8px;
+  --font-song: "Noto Serif SC", "Source Han Serif SC", "Songti SC", SimSun, serif;
+  --font-hei: "Microsoft YaHei", "PingFang SC", "Noto Sans SC", sans-serif;
+}
+
+* { box-sizing: border-box; }
+
+html { scroll-behavior: smooth; }
+
+body {
+  margin: 0;
+  font-family: var(--font-hei);
+  color: var(--ink);
+  background:
+    linear-gradient(90deg, rgba(255,255,255,.025) 1px, transparent 1px),
+    linear-gradient(rgba(255,255,255,.018) 1px, transparent 1px),
+    radial-gradient(circle at 16% 18%, rgba(143,47,43,.18), transparent 28%),
+    radial-gradient(circle at 88% 4%, rgba(63,89,103,.16), transparent 24%),
+    #191815;
+  background-size: 44px 44px, 44px 44px, auto, auto, auto;
+}
+
+body::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 20;
+  opacity: .23;
+  background-image:
+    radial-gradient(rgba(255,255,255,.55) .55px, transparent .55px),
+    radial-gradient(rgba(0,0,0,.55) .45px, transparent .45px);
+  background-size: 5px 5px, 7px 7px;
+  mix-blend-mode: overlay;
+}
+
+button, input { font: inherit; }
+
+button {
+  border: 0;
+  cursor: pointer;
+}
+
+a { color: inherit; }
+
+.page {
+  overflow: hidden;
+}
+
+.hero {
+  min-height: 92vh;
+  display: grid;
+  place-items: center;
+  position: relative;
+  padding: 48px 20px 72px;
+  color: var(--paper);
+}
+
+.hero::after {
+  content: "";
+  position: absolute;
+  left: 50%;
+  bottom: 18px;
+  width: min(1180px, calc(100% - 32px));
+  height: 1px;
+  transform: translateX(-50%);
+  background: linear-gradient(90deg, transparent, rgba(238,230,215,.35), transparent);
+}
+
+.archive-board {
+  width: min(1120px, 100%);
+  min-height: 620px;
+  position: relative;
+  border: 1px solid rgba(238,230,215,.18);
+  background:
+    linear-gradient(135deg, rgba(238,230,215,.08), transparent 42%),
+    linear-gradient(180deg, rgba(255,255,255,.045), transparent),
+    #201f1c;
+  box-shadow: var(--shadow);
+  overflow: hidden;
+}
+
+.archive-board::before {
+  content: "";
+  position: absolute;
+  inset: 34px;
+  border: 1px solid rgba(238,230,215,.12);
+  pointer-events: none;
+}
+
+.hero-copy {
+  position: relative;
+  z-index: 2;
+  max-width: 760px;
+  padding: 112px 44px 64px;
+}
+
+.kicker {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 20px;
+  color: rgba(238,230,215,.72);
+  letter-spacing: .16em;
+  font-size: 12px;
+}
+
+.kicker::before {
+  content: "";
+  width: 42px;
+  height: 1px;
+  background: var(--red);
+}
+
+h1, h2, h3, p { margin-top: 0; }
+
+h1 {
+  font-family: var(--font-song);
+  font-size: clamp(44px, 8vw, 92px);
+  line-height: 1.03;
+  letter-spacing: 0;
+  margin-bottom: 22px;
+  font-weight: 700;
+}
+
+.hero-copy p {
+  max-width: 650px;
+  color: rgba(238,230,215,.8);
+  font-size: clamp(17px, 2vw, 22px);
+  line-height: 1.8;
+  margin-bottom: 34px;
+}
+
+.primary-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 12px;
+  min-height: 46px;
+  padding: 0 22px;
+  border: 1px solid rgba(238,230,215,.36);
+  color: var(--paper);
+  background: rgba(143,47,43,.22);
+  transition: transform .25s ease, background .25s ease, border-color .25s ease;
+}
+
+.primary-btn:hover {
+  transform: translateY(-2px);
+  background: rgba(143,47,43,.36);
+  border-color: rgba(238,230,215,.62);
+}
+
+.primary-btn .arrow {
+  width: 28px;
+  height: 1px;
+  background: currentColor;
+  position: relative;
+}
+
+.primary-btn .arrow::after {
+  content: "";
+  position: absolute;
+  right: 0;
+  top: -4px;
+  width: 8px;
+  height: 8px;
+  border-right: 1px solid currentColor;
+  border-top: 1px solid currentColor;
+  transform: rotate(45deg);
+}
+
+.floating-file {
+  position: absolute;
+  width: 160px;
+  min-height: 96px;
+  padding: 14px;
+  border: 1px solid rgba(238,230,215,.22);
+  background: rgba(238,230,215,.09);
+  color: rgba(238,230,215,.72);
+  box-shadow: 0 18px 44px rgba(0,0,0,.18);
+  backdrop-filter: blur(7px);
+  animation: drift 7s ease-in-out infinite;
+}
+
+.floating-file span {
+  display: block;
+  font-size: 12px;
+  color: rgba(238,230,215,.45);
+  margin-bottom: 12px;
+}
+
+.floating-file strong {
+  font-family: var(--font-song);
+  font-size: 20px;
+  font-weight: 600;
+}
+
+.f1 { right: 9%; top: 13%; transform: rotate(3deg); animation-delay: -.5s; }
+.f2 { right: 19%; bottom: 15%; transform: rotate(-4deg); animation-delay: -2s; }
+.f3 { left: 22%; bottom: 8%; transform: rotate(2deg); animation-delay: -3s; }
+.f4 { right: 4%; top: 43%; transform: rotate(-2deg); animation-delay: -4.2s; }
+.f5 { left: 49%; top: 8%; transform: rotate(-3deg); animation-delay: -1.4s; }
+.f6 { left: auto; right: 38%; top: auto; bottom: 6%; transform: rotate(4deg); animation-delay: -5s; }
+
+@keyframes drift {
+  0%, 100% { translate: 0 0; }
+  50% { translate: 0 -12px; }
+}
+
+.content {
+  background:
+    linear-gradient(90deg, rgba(23,23,21,.035) 1px, transparent 1px),
+    linear-gradient(rgba(23,23,21,.032) 1px, transparent 1px),
+    var(--paper);
+  background-size: 34px 34px;
+}
+
+.section {
+  width: min(1160px, calc(100% - 32px));
+  margin: 0 auto;
+  padding: 88px 0;
+  position: relative;
+}
+
+.section-title {
+  display: grid;
+  grid-template-columns: minmax(160px, 240px) 1fr;
+  gap: 34px;
+  align-items: end;
+  margin-bottom: 34px;
+}
+
+.section-title small {
+  color: var(--red);
+  letter-spacing: .13em;
+  font-weight: 700;
+  font-size: 12px;
+}
+
+.section-title h2 {
+  font-family: var(--font-song);
+  font-size: clamp(30px, 4.8vw, 58px);
+  line-height: 1.14;
+  margin-bottom: 0;
+  font-weight: 700;
+}
+
+.overview {
+  padding: 92px 0;
+}
+
+.overview blockquote {
+  margin: 0;
+  padding: 0 0 0 28px;
+  border-left: 3px solid var(--red);
+  font-family: var(--font-song);
+  font-size: clamp(24px, 3.6vw, 43px);
+  line-height: 1.65;
+  color: #26231f;
+}
+
+.timeline-layout {
+  display: grid;
+  grid-template-columns: 360px 1fr;
+  gap: 38px;
+  align-items: start;
+}
+
+.timeline {
+  position: relative;
+  padding-left: 28px;
+}
+
+.timeline::before {
+  content: "";
+  position: absolute;
+  left: 8px;
+  top: 12px;
+  bottom: 12px;
+  width: 1px;
+  background: var(--line-dark);
+}
+
+.time-node {
+  display: grid;
+  grid-template-columns: 90px 1fr;
+  gap: 12px;
+  width: 100%;
+  padding: 11px 0;
+  background: none;
+  color: var(--ink);
+  text-align: left;
+  position: relative;
+  transition: transform .2s ease, color .2s ease;
+}
+
+.time-node::before {
+  content: "";
+  position: absolute;
+  left: -25px;
+  top: 20px;
+  width: 10px;
+  height: 10px;
+  border: 1px solid var(--red);
+  background: var(--paper);
+  transform: rotate(45deg);
+  transition: background .2s ease, scale .2s ease;
+}
+
+.time-node:hover,
+.time-node.active {
+  color: var(--red);
+  transform: translateX(4px);
+}
+
+.time-node:hover::before,
+.time-node.active::before {
+  background: var(--red);
+  scale: 1.22;
+}
+
+.time-node b {
+  font-family: var(--font-song);
+  font-size: 20px;
+}
+
+.time-node span {
+  color: inherit;
+  line-height: 1.55;
+}
+
+.panel {
+  border: 1px solid var(--line-dark);
+  background:
+    linear-gradient(180deg, rgba(255,255,255,.62), rgba(255,255,255,.25)),
+    var(--paper-3);
+  box-shadow: 0 10px 34px rgba(63,48,32,.08);
+}
+
+.event-card {
+  position: sticky;
+  top: 24px;
+  min-height: 420px;
+}
+
+.event-head {
+  display: flex;
+  justify-content: space-between;
+  gap: 20px;
+  padding: 24px;
+  border-bottom: 1px solid var(--line-dark);
+}
+
+.event-head h3 {
+  font-family: var(--font-song);
+  font-size: 28px;
+  margin-bottom: 0;
+}
+
+.stamp {
+  align-self: start;
+  color: var(--red);
+  border: 1px solid rgba(143,47,43,.45);
+  padding: 4px 8px;
+  transform: rotate(2deg);
+  font-size: 12px;
+}
+
+.event-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+}
+
+.event-grid article {
+  min-height: 260px;
+  padding: 24px;
+  border-right: 1px solid var(--line-dark);
+}
+
+.event-grid article:last-child { border-right: 0; }
+
+.eyebrow {
+  color: var(--muted);
+  font-size: 12px;
+  letter-spacing: .12em;
+  margin-bottom: 14px;
+  font-weight: 700;
+}
+
+.event-grid p,
+.detail-box p,
+.reason-card p,
+.role-detail p,
+.myth-answer p,
+.flow-detail p,
+.pressure-text p,
+.final p {
+  line-height: 1.8;
+  margin-bottom: 0;
+}
+
+.network-wrap {
+  display: grid;
+  grid-template-columns: 1fr 360px;
+  gap: 30px;
+  align-items: stretch;
+}
+
+.network {
+  min-height: 620px;
+  position: relative;
+  overflow: hidden;
+}
+
+.network svg {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+}
+
+.network line,
+.network path {
+  stroke: rgba(38,35,31,.2);
+  stroke-width: 1.3;
+  transition: stroke .2s ease, stroke-width .2s ease, opacity .2s ease;
+}
+
+.network .link-active {
+  stroke: var(--red);
+  stroke-width: 2.6;
+  opacity: .88;
+}
+
+.cause-node {
+  position: absolute;
+  width: 174px;
+  min-height: 108px;
+  padding: 15px;
+  border: 1px solid rgba(38,35,31,.2);
+  background: rgba(247,241,230,.88);
+  color: var(--ink);
+  text-align: left;
+  box-shadow: 0 10px 28px rgba(63,48,32,.08);
+  transition: transform .25s ease, border-color .25s ease, background .25s ease;
+}
+
+.cause-node:hover,
+.cause-node.active,
+.cause-node.related {
+  transform: translateY(-4px);
+  border-color: rgba(143,47,43,.6);
+  background: #fff8ec;
+}
+
+.cause-node b {
+  display: block;
+  font-family: var(--font-song);
+  font-size: 18px;
+  margin-bottom: 8px;
+}
+
+.cause-node span {
+  display: block;
+  color: var(--muted);
+  line-height: 1.55;
+  font-size: 13px;
+}
+
+.center-node {
+  left: 50%;
+  top: 50%;
+  width: 210px;
+  min-height: 124px;
+  transform: translate(-50%, -50%);
+  color: var(--paper);
+  background: #2a2520;
+  border-color: rgba(238,230,215,.28);
+  display: grid;
+  align-content: center;
+}
+
+.center-node:hover,
+.center-node.active {
+  transform: translate(-50%, -54%);
+  background: #332a24;
+}
+
+.n-ideology { left: 7%; top: 9%; }
+.n-route { left: 40%; top: 6%; }
+.n-authority { right: 7%; top: 16%; }
+.n-cult { right: 8%; bottom: 18%; }
+.n-mobilize { left: 40%; bottom: 5%; }
+.n-institution { left: 8%; bottom: 18%; }
+.n-international { left: 3%; top: 44%; }
+
+.detail-box {
+  min-height: 620px;
+  padding: 28px;
+}
+
+.detail-box h3,
+.reason-card h3,
+.role-detail h3,
+.flow-detail h3,
+.pressure-text h3 {
+  font-family: var(--font-song);
+  font-size: 28px;
+  margin-bottom: 14px;
+}
+
+.detail-box .tag-list,
+.reason-card .tag-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 22px;
+}
+
+.tag {
+  display: inline-flex;
+  min-height: 28px;
+  align-items: center;
+  padding: 0 9px;
+  color: var(--red);
+  background: var(--red-soft);
+  border: 1px solid rgba(143,47,43,.18);
+  font-size: 12px;
+}
+
+.reason-grid {
+  display: grid;
+  grid-template-columns: repeat(7, minmax(260px, 1fr));
+  gap: 16px;
+  overflow-x: auto;
+  padding-bottom: 12px;
+  scroll-snap-type: x proximity;
+}
+
+.reason-card {
+  min-height: 372px;
+  padding: 22px;
+  scroll-snap-align: start;
+  position: relative;
+}
+
+.reason-card::before {
+  content: attr(data-index);
+  position: absolute;
+  right: 18px;
+  top: 18px;
+  color: rgba(143,47,43,.28);
+  font-family: var(--font-song);
+  font-size: 38px;
+}
+
+.reason-card h3 {
+  max-width: 190px;
+}
+
+.reason-card details {
+  margin-top: 18px;
+}
+
+.reason-card summary {
+  color: var(--red);
+  cursor: pointer;
+  list-style: none;
+}
+
+.reason-card summary::-webkit-details-marker { display: none; }
+
+.reason-card details p {
+  margin-top: 12px;
+  color: #39342e;
+}
+
+.flow {
+  display: grid;
+  grid-template-columns: repeat(7, minmax(132px, 1fr));
+  gap: 12px;
+  margin-bottom: 22px;
+}
+
+.flow-step {
+  min-height: 118px;
+  padding: 16px;
+  border: 1px solid var(--line-dark);
+  background: rgba(247,241,230,.72);
+  text-align: left;
+  position: relative;
+  transition: transform .2s ease, border-color .2s ease, background .2s ease;
+}
+
+.flow-step::after {
+  content: "";
+  position: absolute;
+  top: 50%;
+  right: -12px;
+  width: 12px;
+  height: 1px;
+  background: var(--line-dark);
+}
+
+.flow-step:last-child::after { display: none; }
+
+.flow-step b {
+  display: block;
+  color: var(--red);
+  margin-bottom: 12px;
+  font-family: var(--font-song);
+  font-size: 22px;
+}
+
+.flow-step.active,
+.flow-step:hover {
+  transform: translateY(-3px);
+  border-color: rgba(143,47,43,.5);
+  background: #fff8ec;
+}
+
+.flow-detail {
+  padding: 24px;
+}
+
+.roles {
+  display: grid;
+  grid-template-columns: 300px 1fr;
+  gap: 22px;
+}
+
+.role-list {
+  display: grid;
+  gap: 10px;
+}
+
+.role-btn {
+  min-height: 54px;
+  padding: 0 18px;
+  text-align: left;
+  border: 1px solid var(--line-dark);
+  background: rgba(247,241,230,.72);
+  color: var(--ink);
+  transition: transform .2s ease, background .2s ease, border-color .2s ease;
+}
+
+.role-btn:hover,
+.role-btn.active {
+  transform: translateX(4px);
+  border-color: rgba(143,47,43,.5);
+  background: #fff8ec;
+}
+
+.role-detail {
+  min-height: 440px;
+  padding: 30px;
+  display: grid;
+  align-content: center;
+}
+
+.role-detail .role-mark {
+  width: 90px;
+  height: 90px;
+  margin-bottom: 22px;
+  border: 1px solid rgba(143,47,43,.42);
+  display: grid;
+  place-items: center;
+  color: var(--red);
+  font-family: var(--font-song);
+  font-size: 38px;
+  transform: rotate(-2deg);
+}
+
+.myths {
+  display: grid;
+  grid-template-columns: repeat(5, minmax(210px, 1fr));
+  gap: 14px;
+  overflow-x: auto;
+  padding-bottom: 12px;
+}
+
+.myth-card {
+  min-height: 260px;
+  perspective: 1200px;
+}
+
+.myth-inner {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  min-height: 260px;
+  transform-style: preserve-3d;
+  transition: transform .45s ease;
+}
+
+.myth-card.flipped .myth-inner { transform: rotateY(180deg); }
+
+.myth-face {
+  position: absolute;
+  inset: 0;
+  backface-visibility: hidden;
+  padding: 22px;
+  border: 1px solid var(--line-dark);
+  background: rgba(247,241,230,.86);
+  display: grid;
+  align-content: space-between;
+}
+
+.myth-answer {
+  transform: rotateY(180deg);
+  background: #fff8ec;
+}
+
+.myth-face h3 {
+  font-family: var(--font-song);
+  font-size: 22px;
+  line-height: 1.45;
+}
+
+.myth-face small {
+  color: var(--red);
+  letter-spacing: .1em;
+}
+
+.pressure {
+  display: grid;
+  grid-template-columns: 1fr 380px;
+  gap: 24px;
+}
+
+.sliders {
+  padding: 28px;
+  display: grid;
+  gap: 22px;
+}
+
+.slider-row {
+  display: grid;
+  grid-template-columns: 148px 1fr 42px;
+  gap: 16px;
+  align-items: center;
+}
+
+.slider-row label {
+  font-weight: 700;
+  color: #332f2a;
+}
+
+.slider-row input[type="range"] {
+  width: 100%;
+  accent-color: var(--red);
+}
+
+.slider-row output {
+  color: var(--red);
+  text-align: right;
+  font-family: var(--font-song);
+}
+
+.pressure-text {
+  padding: 28px;
+  display: grid;
+  align-content: center;
+}
+
+.pressure-meter {
+  height: 6px;
+  background: rgba(38,35,31,.12);
+  margin-bottom: 26px;
+  overflow: hidden;
+}
+
+.pressure-meter span {
+  display: block;
+  width: 0;
+  height: 100%;
+  background: linear-gradient(90deg, var(--moss), var(--gold), var(--red));
+  transition: width .25s ease;
+}
+
+.final {
+  color: var(--paper);
+  background: #1e1d1a;
+}
+
+.final .section {
+  padding: 100px 0;
+}
+
+.final h2 {
+  font-family: var(--font-song);
+  font-size: clamp(34px, 5vw, 64px);
+  margin-bottom: 26px;
+}
+
+.final p {
+  max-width: 860px;
+  color: rgba(238,230,215,.8);
+  font-size: 18px;
+}
+
+.final .last-line {
+  max-width: 920px;
+  margin: 38px 0 30px;
+  font-family: var(--font-song);
+  font-size: clamp(28px, 4.2vw, 52px);
+  line-height: 1.38;
+  color: var(--paper);
+}
+
+.reveal {
+  opacity: 0;
+  transform: translateY(22px);
+  transition: opacity .7s ease, transform .7s ease;
+}
+
+.reveal.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+@media (max-width: 980px) {
+  .archive-board { min-height: 700px; }
+  .hero-copy { padding: 96px 28px 220px; }
+  .floating-file { width: 138px; min-height: 82px; }
+  .timeline-layout,
+  .network-wrap,
+  .roles,
+  .pressure {
+    grid-template-columns: 1fr;
+  }
+  .event-card { position: static; }
+  .event-grid { grid-template-columns: 1fr; }
+  .event-grid article { border-right: 0; border-bottom: 1px solid var(--line-dark); }
+  .event-grid article:last-child { border-bottom: 0; }
+  .section-title { grid-template-columns: 1fr; gap: 10px; }
+  .flow { grid-template-columns: 1fr; }
+  .flow-step::after { display: none; }
+  .network { min-height: 760px; }
+  .center-node { top: 47%; }
+  .n-ideology { left: 4%; top: 5%; }
+  .n-route { left: 52%; top: 4%; }
+  .n-authority { right: 4%; top: 24%; }
+  .n-cult { right: 5%; bottom: 16%; }
+  .n-mobilize { left: 44%; bottom: 3%; }
+  .n-institution { left: 4%; bottom: 14%; }
+  .n-international { left: 3%; top: 31%; }
+}
+
+@media (max-width: 640px) {
+  .hero { min-height: auto; padding-top: 18px; }
+  .archive-board { min-height: 760px; }
+  .hero-copy { padding: 72px 20px 260px; }
+  .floating-file { width: 126px; padding: 12px; }
+  .f5 { display: none; }
+  .section { width: min(100% - 24px, 1160px); padding: 64px 0; }
+  .overview blockquote { padding-left: 18px; }
+  .time-node { grid-template-columns: 82px 1fr; }
+  .network { min-height: 900px; }
+  .cause-node { width: 148px; min-height: 104px; padding: 12px; }
+  .center-node { width: 170px; }
+  .n-route { left: 49%; }
+  .n-authority { top: 20%; }
+  .n-international { top: 35%; }
+  .slider-row { grid-template-columns: 1fr; gap: 8px; }
+  .slider-row output { text-align: left; }
+}
+</style>
+</head>
+<body>
+<main class="page">
+  <section class="hero">
+    <div class="archive-board">
+      <div class="hero-copy">
+        <div class="kicker">DIGITAL ARCHIVE / CAUSAL MAP</div>
+        <h1>文化大革命为什么爆发？</h1>
+        <p>不是一个口号造成十年动荡，而是一套政治判断、权力结构和社会动员机制共同失控。</p>
+        <button class="primary-btn" data-scroll="#map"><span>展开因果图谱</span><i class="arrow"></i></button>
+      </div>
+      <div class="floating-file f1"><span>档案 01</span><strong>意识形态</strong></div>
+      <div class="floating-file f2"><span>档案 02</span><strong>权力结构</strong></div>
+      <div class="floating-file f3"><span>档案 03</span><strong>群众动员</strong></div>
+      <div class="floating-file f4"><span>档案 04</span><strong>个人崇拜</strong></div>
+      <div class="floating-file f5"><span>档案 05</span><strong>制度失衡</strong></div>
+      <div class="floating-file f6"><span>档案 06</span><strong>国际环境</strong></div>
+    </div>
+  </section>
+
+  <div class="content">
+    <section class="section overview reveal">
+      <blockquote>文化大革命的爆发，是因为政治判断把许多社会问题重新解释为阶级斗争问题；最高权威绕过常规组织发动群众；个人崇拜强化了绝对忠诚；制度约束不足又使运动难以及时停止。</blockquote>
+    </section>
+
+    <section class="section reveal" id="timeline">
+      <div class="section-title">
+        <small>CHRONOLOGY</small>
+        <h2>从政策调整到全国性运动的时间线</h2>
+      </div>
+      <div class="timeline-layout">
+        <div class="timeline" id="timelineList"></div>
+        <div class="panel event-card" id="eventCard"></div>
+      </div>
+    </section>
+
+    <section class="section reveal" id="map">
+      <div class="section-title">
+        <small>CAUSAL NETWORK</small>
+        <h2>七个因素如何共同推向爆发</h2>
+      </div>
+      <div class="network-wrap">
+        <div class="panel network" id="network">
+          <svg viewBox="0 0 900 620" preserveAspectRatio="none" aria-hidden="true">
+            <line data-link="ideology center" x1="165" y1="105" x2="450" y2="310"></line>
+            <line data-link="route center" x1="450" y1="85" x2="450" y2="310"></line>
+            <line data-link="authority center" x1="735" y1="145" x2="450" y2="310"></line>
+            <line data-link="cult center" x1="735" y1="475" x2="450" y2="310"></line>
+            <line data-link="mobilize center" x1="450" y1="545" x2="450" y2="310"></line>
+            <line data-link="institution center" x1="165" y1="475" x2="450" y2="310"></line>
+            <line data-link="international center" x1="130" y1="310" x2="450" y2="310"></line>
+            <path data-link="international ideology" d="M130 310 C120 160 90 92 165 105"></path>
+            <path data-link="route authority" d="M450 85 C600 62 690 82 735 145"></path>
+            <path data-link="cult mobilize" d="M735 475 C640 565 550 580 450 545"></path>
+            <path data-link="institution mobilize" d="M165 475 C260 560 350 575 450 545"></path>
+            <path data-link="ideology route" d="M165 105 C260 48 360 46 450 85"></path>
+          </svg>
+          <button class="cause-node center-node active" data-cause="center"><b>文化大革命爆发</b><span>多重因素交织后，一场政治运动迅速扩展为全国性社会动荡。</span></button>
+          <button class="cause-node n-ideology" data-cause="ideology"><b>阶级斗争扩大化</b><span>社会、文化和组织问题被纳入斗争框架。</span></button>
+          <button class="cause-node n-route" data-cause="route"><b>党内路线分歧</b><span>政策调整与继续革命设想之间的张力加剧。</span></button>
+          <button class="cause-node n-authority" data-cause="authority"><b>最高权威与组织体系冲突</b><span>常规党政组织受到绕开和冲击。</span></button>
+          <button class="cause-node n-cult" data-cause="cult"><b>个人崇拜</b><span>政治判断被压缩为忠诚表态。</span></button>
+          <button class="cause-node n-mobilize" data-cause="mobilize"><b>群众动员机制</b><span>青年学生和群众组织成为扩散力量。</span></button>
+          <button class="cause-node n-institution" data-cause="institution"><b>制度性约束不足</b><span>稳定边界被运动逻辑压倒。</span></button>
+          <button class="cause-node n-international" data-cause="international"><b>反修防修与国际背景</b><span>中苏分裂强化国内意识形态焦虑。</span></button>
+        </div>
+        <div class="panel detail-box" id="causeDetail"></div>
+      </div>
+    </section>
+
+    <section class="section reveal" id="reasons">
+      <div class="section-title">
+        <small>ARCHIVE CARDS</small>
+        <h2>原因卡片：不是单一答案，而是结构叠加</h2>
+      </div>
+      <div class="reason-grid" id="reasonGrid"></div>
+    </section>
+
+    <section class="section reveal" id="path">
+      <div class="section-title">
+        <small>ESCALATION PATH</small>
+        <h2>为什么从一篇文章，走向全国性运动？</h2>
+      </div>
+      <div class="flow" id="flowList"></div>
+      <div class="panel flow-detail" id="flowDetail"></div>
+    </section>
+
+    <section class="section reveal" id="roles">
+      <div class="section-title">
+        <small>PERSPECTIVES</small>
+        <h2>不同人看到的是同一场运动吗？</h2>
+      </div>
+      <div class="roles">
+        <div class="role-list" id="roleList"></div>
+        <div class="panel role-detail" id="roleDetail"></div>
+      </div>
+    </section>
+
+    <section class="section reveal" id="myths">
+      <div class="section-title">
+        <small>MISREADINGS</small>
+        <h2>常见误解与纠正</h2>
+      </div>
+      <div class="myths" id="mythList"></div>
+    </section>
+
+    <section class="section reveal" id="pressure">
+      <div class="section-title">
+        <small>THRESHOLD</small>
+        <h2>压力叠加如何越过制度承受能力</h2>
+      </div>
+      <div class="pressure">
+        <div class="panel sliders" id="sliders"></div>
+        <div class="panel pressure-text">
+          <div class="pressure-meter"><span id="pressureBar"></span></div>
+          <h3 id="pressureTitle">低压力</h3>
+          <p id="pressureDesc">矛盾存在，但仍可能通过常规制度和政策讨论处理。</p>
+        </div>
+      </div>
+    </section>
+  </div>
+
+  <section class="final">
+    <div class="section reveal">
+      <h2>所以，文化大革命为什么爆发？</h2>
+      <p>它不是一个简单答案。它爆发于一种特殊的历史结构：阶级斗争判断被不断扩大，党内路线分歧被政治化，最高权威绕开常规组织发动群众，个人崇拜削弱了纠错能力，制度约束不足使运动失去边界。于是，文化批判变成政治斗争，政治斗争变成群众运动，群众运动又反过来冲击整个社会秩序。</p>
+      <div class="last-line">历史的危险，往往不在于矛盾存在，而在于社会失去处理矛盾的稳定机制。</div>
+      <button class="primary-btn" data-scroll="#map"><span>重新查看因果图谱</span><i class="arrow"></i></button>
+    </div>
+  </section>
+</main>
+
+<script>
+const timeline = [
+  { year: "1956", title: "中共八大提出主要矛盾变化", what: "会议强调国内主要矛盾已经变化，发展生产力和制度建设被放到重要位置。", change: "这提供了一条更重视建设和治理秩序的方向。", push: "此后关于继续革命、阶级斗争和政策调整的理解差异，成为后续分歧的重要背景。", cause: ["route", "institution"] },
+  { year: "1957", title: "反右运动扩大化", what: "思想领域和知识分子群体承受更高政治压力。", change: "公开讨论空间收缩，批评与政治风险之间的距离缩短。", push: "文化、教育和思想表达更容易被放入政治斗争框架。", cause: ["ideology", "institution"] },
+  { year: "1958—1961", title: "大跃进和人民公社化运动", what: "激进经济和社会动员造成严重困难。", change: "国家治理随后出现调整需求，也暴露出动员式治理的风险。", push: "调整政策与继续革命设想之间的张力逐渐累积。", cause: ["route", "mobilize"] },
+  { year: "1962", title: "七千人大会后的政策调整", what: "对困难时期的经验进行总结，恢复秩序和调整政策成为重点。", change: "党内对责任、路线和未来方向的判断进一步分化。", push: "政策调整可能被重新解释为修正主义倾向，路线分歧被政治化。", cause: ["route", "authority"] },
+  { year: "1963—1965", title: "社会主义教育运动", what: "阶级斗争话语再次强化，基层政治教育和组织整顿展开。", change: "社会问题更容易被上升为政治立场问题。", push: "为后来更大规模的政治动员提供了话语和组织经验。", cause: ["ideology", "mobilize"] },
+  { year: "1965", title: "批判《海瑞罢官》", what: "文艺批评被赋予强烈政治含义，文化领域成为突破口。", change: "文化、历史解释和现实政治之间的界限被打通。", push: "一篇文章本身不是决定因素，关键在于它被放入政治斗争框架。", cause: ["ideology", "authority"] },
+  { year: "1966 年 5 月", title: "文化大革命正式发动", what: "政治运动以更明确的形式展开，批判对象指向党内和社会多个领域。", change: "常规组织程序受到冲击，政治动员规模扩大。", push: "运动逻辑开始超出单一文化批判范围。", cause: ["authority", "mobilize", "institution"] },
+  { year: "1966 年 8 月", title: "红卫兵运动迅速扩大", what: "青年学生和群众组织在高度政治化氛围中被动员。", change: "学校和社会秩序受到剧烈影响。", push: "群众动员在缺少稳定边界时进一步推动运动扩散。", cause: ["cult", "mobilize"] },
+  { year: "1967", title: "夺权与群众组织冲突加剧", what: "不同组织和派别围绕权力、身份和路线发生激烈冲突。", change: "地方治理和社会秩序高度不稳定。", push: "制度性约束不足使冲突难以及时收束。", cause: ["mobilize", "institution"] },
+  { year: "1968—1969", title: "秩序重建与上山下乡", what: "政治和社会秩序开始以新的方式重建，大规模青年上山下乡展开。", change: "运动造成的社会结构影响进入家庭、教育和职业路径。", push: "治理重点转向恢复控制，但许多后果已深入日常生活。", cause: ["institution", "mobilize"] },
+  { year: "1971", title: "林彪事件", what: "高层政治格局发生重大变化。", change: "个人崇拜、权力结构和政治信任问题受到冲击。", push: "运动内部逻辑的矛盾进一步暴露。", cause: ["cult", "authority"] },
+  { year: "1976", title: "文化大革命结束", what: "毛泽东逝世后，“四人帮”被粉碎，文化大革命结束。", change: "国家开始重新评价这段历史并恢复制度秩序。", push: "它留下的经验教训集中指向制度边界、权力约束和社会纠错能力。", cause: ["institution"] }
+];
+
+const causes = {
+  center: {
+    title: "文化大革命爆发",
+    brief: "它不是某一个事件突然造成的，而是多种结构性因素在特定历史条件下相互叠加。",
+    detail: "最高领袖对阶级斗争和修正主义危险的判断、党内路线分歧、个人崇拜、群众动员机制、制度约束不足和国际环境共同作用，使一场政治运动迅速扩展为全国性的社会动荡。",
+    tags: ["综合结果", "政治运动", "社会动荡"]
+  },
+  ideology: {
+    title: "阶级斗争扩大化",
+    brief: "许多政策、文化和组织问题被重新解释为阶级斗争问题。",
+    detail: "当分歧不再只是治理方式或政策选择的不同，而被理解为路线斗争、阶级立场甚至政治敌我问题时，冲突就更容易升级，文化、教育和干部路线都可能进入斗争框架。",
+    tags: ["反修防修", "文化批判", "政治定性"]
+  },
+  route: {
+    title: "党内路线分歧",
+    brief: "大跃进后的调整政策与继续革命的政治设想之间存在张力。",
+    detail: "恢复秩序、发展生产和调整经济的政策在实践中有现实需要，但也可能被怀疑为修正主义倾向。由此，技术性治理分歧被推向政治路线斗争。",
+    tags: ["政策调整", "路线斗争", "大跃进后"]
+  },
+  authority: {
+    title: "最高权威与组织体系冲突",
+    brief: "常规党政体系被认为可能产生官僚化和修正主义，因此群众被动员起来冲击既有组织。",
+    detail: "文化大革命的特殊性在于，它不只是通过常规组织发动，而是通过群众运动、批判和造反来冲击既有权力结构。当最高权威能够直接发动群众绕开常规程序，制度秩序就会变得脆弱。",
+    tags: ["权力结构", "组织体系", "当权派"]
+  },
+  cult: {
+    title: "个人崇拜",
+    brief: "当政治判断高度依附于个人权威，复杂问题会被压缩成忠诚表态。",
+    detail: "个人崇拜会削弱正常讨论和纠错机制。人们为了证明政治正确，可能不断提高表态强度，形成忠诚竞争和激进化倾向。",
+    tags: ["忠诚竞争", "政治仪式", "纠错削弱"]
+  },
+  mobilize: {
+    title: "群众动员机制",
+    brief: "青年学生和群众组织被赋予革命行动的正当性，运动迅速扩散。",
+    detail: "群众并非简单的盲目群体。他们处在特定教育、宣传、社会评价和政治参与结构中。参与运动可能被理解为证明革命性、获得政治身份和改变社会位置的方式。",
+    tags: ["红卫兵", "社会参与", "身份变化"]
+  },
+  institution: {
+    title: "制度性约束不足",
+    brief: "缺少稳定的法律和制度边界，使政治运动难以及时停止。",
+    detail: "制度的作用不是消灭矛盾，而是给矛盾提供可控的解决渠道。当正常的党政程序、法律秩序、学校秩序和干部任免机制被运动逻辑压倒，社会就会进入高度不确定状态。",
+    tags: ["程序边界", "权力约束", "社会秩序"]
+  },
+  international: {
+    title: "反修防修与国际背景",
+    brief: "中苏分裂和对修正主义的警惕，加深了国内政治焦虑。",
+    detail: "国际环境不是唯一原因，但它提供了重要背景。对修正主义的恐惧不仅是外交问题，也被投射到国内政治判断中，强化了阶级斗争扩大化的逻辑。",
+    tags: ["中苏分裂", "修正主义焦虑", "意识形态"]
+  }
+};
+
+const reasonOrder = ["ideology", "route", "authority", "cult", "mobilize", "institution", "international"];
+
+const relations = {
+  ideology: "与国际背景相互强化，并为文化批判转化为政治斗争提供解释框架。",
+  route: "与大跃进后的政策调整相连，也使最高权威与组织体系的矛盾更尖锐。",
+  authority: "与制度约束不足相互作用，使政治动员更容易绕开常规程序。",
+  cult: "与群众动员结合后，容易形成忠诚竞争和表态升级。",
+  mobilize: "与个人崇拜和制度边界弱化结合后，运动更容易扩散到基层社会。",
+  institution: "与所有因素相连，因为缺少边界会放大每一种压力。",
+  international: "通过反修防修话语，强化国内阶级斗争和路线斗争判断。"
+};
+
+const flow = [
+  ["文艺批判", "文化领域先成为可见突破口，文艺、历史和教育问题被集中讨论。"],
+  ["意识形态定性", "批评不再只是学术或文艺判断，而被赋予政治立场含义。"],
+  ["上升为路线斗争", "问题被纳入阶级斗争和修正主义危险的框架。"],
+  ["指向党内当权派", "批判对象从作品和观点转向组织体系中的具体权力位置。"],
+  ["群众被动员", "青年学生和群众组织获得参与政治行动的正当性。"],
+  ["秩序被冲击", "学校、机关和地方治理结构承受直接冲击。"],
+  ["全国性运动形成", "文化批判最终扩展为覆盖政治权力、组织体系和社会秩序的运动。"]
+];
+
+const roles = [
+  ["青年学生", "在高度政治化的教育环境中，参与运动可能意味着证明自己的革命性，也可能意味着获得一种新的政治身份和行动权力。", "学"],
+  ["普通教师", "教育和知识权威受到冲击。原本的师生关系、课堂秩序和学术评价被政治标准重新定义。", "教"],
+  ["基层干部", "他们既可能成为运动对象，也可能被要求表态和参与运动。基层治理在政治压力下变得高度不稳定。", "干"],
+  ["工人群众", "工厂和单位里的政治动员改变了日常工作秩序，也让不同群体围绕身份、评价和组织归属产生新的压力。", "工"],
+  ["知识分子", "思想、学术、文艺和历史解释都可能被纳入政治审查。知识身份本身变得不安全。", "知"],
+  ["高层政治人物", "他们处于路线判断、权力结构和组织安全高度交织的位置，政治表态和联盟关系都带有强烈风险。", "政"],
+  ["普通家庭", "宏大的政治运动进入日常生活，影响升学、工作、亲属关系、社会评价和安全感。", "家"]
+];
+
+const myths = [
+  ["文化大革命只是文化领域的争论。", "它以文化和意识形态问题为突破口，但很快扩展为政治权力、组织体系和社会秩序的全面冲击。"],
+  ["文化大革命只是群众自发爆发。", "群众参与很重要，但运动的发动与高层政治判断、组织动员、宣传系统和权力结构密切相关。"],
+  ["只要看几个标志性事件就能理解文化大革命。", "标志性事件只是表层节点。真正需要理解的是背后的因果结构：为什么这些事件会被允许发生、被鼓励扩大，并且难以及时停止。"],
+  ["文化大革命只是个人性格造成的。", "个人权威极其重要，但它之所以能够产生如此巨大影响，还与制度约束不足、组织运行方式、意识形态框架和群众动员机制有关。"],
+  ["文化大革命离普通人很远。", "它深刻影响教育、家庭、职业、身份评价和日常安全感。宏大政治运动最终会进入普通人的生活。"]
+];
+
+const sliderNames = ["意识形态紧张", "党内路线冲突", "个人权威集中", "群众动员强度", "制度约束弱化"];
+
+function renderTimeline() {
+  const list = document.querySelector("#timelineList");
+  list.innerHTML = timeline.map((item, index) => `
+    <button class="time-node ${index === 0 ? "active" : ""}" data-time="${index}" title="${item.title}">
+      <b>${item.year}</b><span>${item.title}</span>
+    </button>
+  `).join("");
+  list.addEventListener("click", (event) => {
+    const btn = event.target.closest(".time-node");
+    if (!btn) return;
+    const index = Number(btn.dataset.time);
+    document.querySelectorAll(".time-node").forEach(node => node.classList.toggle("active", node === btn));
+    showEvent(index);
+    highlightCauses(timeline[index].cause);
+  });
+  showEvent(0);
+}
+
+function showEvent(index) {
+  const item = timeline[index];
+  document.querySelector("#eventCard").innerHTML = `
+    <div class="event-head">
+      <h3>${item.year}：${item.title}</h3>
+      <span class="stamp">EVENT FILE</span>
+    </div>
+    <div class="event-grid">
+      <article><div class="eyebrow">发生了什么</div><p>${item.what}</p></article>
+      <article><div class="eyebrow">它改变了什么</div><p>${item.change}</p></article>
+      <article><div class="eyebrow">如何推动后续局势</div><p>${item.push}</p></article>
+    </div>
+  `;
+}
+
+function renderCauseDetail(key = "center") {
+  const cause = causes[key];
+  document.querySelector("#causeDetail").innerHTML = `
+    <div class="eyebrow">SELECTED NODE</div>
+    <h3>${cause.title}</h3>
+    <p><strong>${cause.brief}</strong></p>
+    <p style="margin-top:16px">${cause.detail}</p>
+    <div class="tag-list">${cause.tags.map(tag => `<span class="tag">${tag}</span>`).join("")}</div>
+  `;
+}
+
+function relatedFor(key) {
+  const map = {
+    center: Object.keys(causes),
+    ideology: ["center", "international", "route"],
+    route: ["center", "ideology", "authority"],
+    authority: ["center", "route", "institution"],
+    cult: ["center", "mobilize"],
+    mobilize: ["center", "cult", "institution"],
+    institution: ["center", "mobilize", "authority"],
+    international: ["center", "ideology"]
+  };
+  return map[key] || ["center"];
+}
+
+function highlightCauses(keys) {
+  const set = new Set(keys);
+  document.querySelectorAll(".cause-node").forEach(node => {
+    node.classList.toggle("related", set.has(node.dataset.cause));
+  });
+  window.setTimeout(() => {
+    document.querySelectorAll(".cause-node.related").forEach(node => node.classList.remove("related"));
+  }, 1300);
+}
+
+function activateCause(key) {
+  const related = new Set(relatedFor(key));
+  related.add(key);
+  document.querySelectorAll(".cause-node").forEach(node => {
+    node.classList.toggle("active", node.dataset.cause === key);
+    node.classList.toggle("related", node.dataset.cause !== key && related.has(node.dataset.cause));
+  });
+  document.querySelectorAll("#network svg [data-link]").forEach(line => {
+    const parts = line.dataset.link.split(" ");
+    line.classList.toggle("link-active", parts.includes(key) || key === "center");
+  });
+  renderCauseDetail(key);
+}
+
+function renderNetwork() {
+  document.querySelectorAll(".cause-node").forEach(node => {
+    node.addEventListener("mouseenter", () => activateCause(node.dataset.cause));
+    node.addEventListener("focus", () => activateCause(node.dataset.cause));
+    node.addEventListener("click", () => activateCause(node.dataset.cause));
+  });
+  activateCause("center");
+}
+
+function renderReasons() {
+  document.querySelector("#reasonGrid").innerHTML = reasonOrder.map((key, index) => {
+    const cause = causes[key];
+    return `
+      <article class="panel reason-card" data-index="0${index + 1}">
+        <h3>${cause.title}</h3>
+        <p><strong>${cause.brief}</strong></p>
+        <details open>
+          <summary>深层解释</summary>
+          <p>${cause.detail}</p>
+        </details>
+        <details>
+          <summary>与其他原因的关系</summary>
+          <p>${relations[key]}</p>
+        </details>
+      </article>
+    `;
+  }).join("");
+}
+
+function renderFlow() {
+  const list = document.querySelector("#flowList");
+  list.innerHTML = flow.map((item, index) => `
+    <button class="flow-step ${index === 0 ? "active" : ""}" data-flow="${index}">
+      <b>${index + 1}</b>${item[0]}
+    </button>
+  `).join("");
+  list.addEventListener("click", (event) => {
+    const btn = event.target.closest(".flow-step");
+    if (!btn) return;
+    const index = Number(btn.dataset.flow);
+    document.querySelectorAll(".flow-step").forEach(step => step.classList.toggle("active", step === btn));
+    showFlow(index);
+  });
+  showFlow(0);
+}
+
+function showFlow(index) {
+  const [title, text] = flow[index];
+  document.querySelector("#flowDetail").innerHTML = `<h3>${title}</h3><p>${text}</p>`;
+}
+
+function renderRoles() {
+  const list = document.querySelector("#roleList");
+  list.innerHTML = roles.map((role, index) => `<button class="role-btn ${index === 0 ? "active" : ""}" data-role="${index}">${role[0]}</button>`).join("");
+  list.addEventListener("click", (event) => {
+    const btn = event.target.closest(".role-btn");
+    if (!btn) return;
+    const index = Number(btn.dataset.role);
+    document.querySelectorAll(".role-btn").forEach(node => node.classList.toggle("active", node === btn));
+    showRole(index);
+    highlightCauses(index < 2 ? ["mobilize", "ideology"] : ["institution", "authority"]);
+  });
+  showRole(0);
+}
+
+function showRole(index) {
+  const [title, text, mark] = roles[index];
+  document.querySelector("#roleDetail").innerHTML = `<div class="role-mark">${mark}</div><h3>${title}</h3><p>${text}</p>`;
+}
+
+function renderMyths() {
+  document.querySelector("#mythList").innerHTML = myths.map((myth, index) => `
+    <button class="myth-card" data-myth="${index}" aria-label="查看误解纠正">
+      <span class="myth-inner">
+        <span class="myth-face"><small>MISREADING 0${index + 1}</small><h3>${myth[0]}</h3><small>点击查看纠正</small></span>
+        <span class="myth-face myth-answer"><small>CORRECTION</small><p>${myth[1]}</p><small>再次点击返回</small></span>
+      </span>
+    </button>
+  `).join("");
+  document.querySelector("#mythList").addEventListener("click", (event) => {
+    const card = event.target.closest(".myth-card");
+    if (card) card.classList.toggle("flipped");
+  });
+}
+
+function renderSliders() {
+  const wrap = document.querySelector("#sliders");
+  wrap.innerHTML = sliderNames.map((name, index) => `
+    <div class="slider-row">
+      <label for="s${index}">${name}</label>
+      <input id="s${index}" type="range" min="0" max="100" value="${[46, 52, 58, 48, 62][index]}">
+      <output for="s${index}">${[46, 52, 58, 48, 62][index]}</output>
+    </div>
+  `).join("");
+  wrap.addEventListener("input", updatePressure);
+  updatePressure();
+}
+
+function updatePressure() {
+  const values = [...document.querySelectorAll("#sliders input")].map(input => Number(input.value));
+  document.querySelectorAll("#sliders output").forEach((output, index) => output.textContent = values[index]);
+  const avg = Math.round(values.reduce((sum, value) => sum + value, 0) / values.length);
+  const levels = [
+    [35, "低压力", "矛盾存在，但仍可能通过常规制度和政策讨论处理。"],
+    [58, "中压力", "政治分歧开始被意识形态化，正常讨论空间缩小。"],
+    [80, "高压力", "忠诚表态、群众动员和组织冲击相互强化，局势进入高度不稳定状态。"],
+    [101, "极高压力", "当权威、动员和斗争逻辑压倒制度边界，运动就可能迅速扩展为全国性动荡。"]
+  ];
+  const level = levels.find(item => avg < item[0]);
+  document.querySelector("#pressureBar").style.width = `${avg}%`;
+  document.querySelector("#pressureTitle").textContent = level[1];
+  document.querySelector("#pressureDesc").textContent = level[2];
+}
+
+function setupReveal() {
+  const observer = new IntersectionObserver(entries => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) entry.target.classList.add("visible");
+    });
+  }, { threshold: .12 });
+  document.querySelectorAll(".reveal").forEach(item => observer.observe(item));
+}
+
+function setupScrollButtons() {
+  document.querySelectorAll("[data-scroll]").forEach(button => {
+    button.addEventListener("click", () => {
+      document.querySelector(button.dataset.scroll)?.scrollIntoView({ behavior: "smooth", block: "start" });
+    });
+  });
+}
+
+renderTimeline();
+renderNetwork();
+renderReasons();
+renderFlow();
+renderRoles();
+renderMyths();
+renderSliders();
+setupReveal();
+setupScrollButtons();
+</script>
+</body>
+</html>

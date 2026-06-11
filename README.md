@@ -14,6 +14,14 @@
 
 > 🔗 在线体验：https://p56568833.github.io/web-lab/ui-interaction-lab.html
 
+### 🗂 文化大革命因果图谱
+
+**[cultural-revolution-causal-map.html](./cultural-revolution-causal-map.html)**  —  交互式历史因果理解页面
+
+一个克制的数字历史展厅，用时间线、因果网络、原因档案卡、角色视角、误解纠正和压力叠加滑块，帮助理解文化大革命的爆发并非单一事件造成，而是政治判断、路线分歧、最高权威、群众动员、个人崇拜、制度约束不足和国际背景共同作用的结果。
+
+> 🔗 在线体验：https://p56568833.github.io/web-lab/cultural-revolution-causal-map.html
+
 ---
 
 ## 🚧 待添加
@@ -22,7 +30,6 @@
 
 | # | 项目 | 文件 | 说明 |
 |---|------|------|------|
-| 2 | — | — | — |
 | 3 | — | — | — |
 
 ---
