@@ -881,6 +881,198 @@ body {
 .nested-tooltip .nt-body .nt-trigger:hover { color: #c7d2fe; }
 
 /* ============================================================
+   Demo: Drag & Drop
+   ============================================================ */
+.drag-list { display:flex; flex-direction:column; gap:6px; width:100%; max-width:240px; }
+.drag-item {
+  padding:10px 14px; background:var(--surface); border:1px solid var(--border);
+  border-radius:8px; cursor:grab; user-select:none; font-size:.85rem;
+  transition:box-shadow .2s, transform .15s, opacity .2s;
+  display:flex; align-items:center; gap:10px;
+}
+.drag-item:active { cursor:grabbing; }
+.drag-item.drag-over { border-color:var(--accent); box-shadow:0 0 0 2px var(--accent-glow); }
+.drag-item.dragging { opacity:.4; transform:scale(.96); }
+.drag-handle { color:#555; font-size:.9rem; }
+
+/* Snackbar */
+.snackbar-area { position:relative; width:100%; max-width:260px; min-height:50px; overflow:hidden; }
+.snackbar-msg {
+  position:absolute; bottom:0; left:0; right:0;
+  background:#333; color:#fff; padding:12px 16px; border-radius:8px;
+  font-size:.8rem; display:flex; align-items:center; justify-content:space-between;
+  transform:translateY(60px); opacity:0; transition:transform .3s ease, opacity .3s ease;
+}
+.snackbar-msg.show { transform:translateY(0); opacity:1; }
+.snackbar-msg .snackbar-action { color:#fbbf24; font-weight:600; background:none; border:none; cursor:pointer; font-size:.78rem; padding:4px 8px; }
+.snackbar-trigger { padding:8px 20px; background:var(--orange); color:#0a0a16; border:none; border-radius:20px; font-size:.82rem; font-weight:600; cursor:pointer; }
+
+/* Confirm Dialog */
+.confirm-overlay { position:fixed; inset:0; background:rgba(0,0,0,.6); z-index:1050; display:flex; align-items:center; justify-content:center; opacity:0; visibility:hidden; transition:opacity .25s, visibility .25s; }
+.confirm-overlay.open { opacity:1; visibility:visible; }
+.confirm-box { background:var(--surface); border:1px solid var(--border); border-radius:14px; padding:24px; max-width:320px; text-align:center; box-shadow:0 12px 40px rgba(0,0,0,.5); }
+.confirm-box h4 { margin:0 0 8px; font-size:1rem; }
+.confirm-box p { font-size:.82rem; color:var(--text-dim); margin:0 0 18px; }
+.confirm-actions { display:flex; gap:10px; justify-content:center; }
+.confirm-actions button { padding:8px 20px; border-radius:8px; font-size:.82rem; font-weight:600; cursor:pointer; border:none; }
+.confirm-cancel { background:var(--surface-2); color:var(--text); }
+.confirm-delete { background:var(--red); color:#fff; }
+
+/* Avatar */
+.avatar-wrap { position:relative; display:inline-block; }
+.avatar-circle {
+  width:56px; height:56px; border-radius:50%;
+  background:linear-gradient(135deg, var(--accent), var(--blue));
+  display:flex; align-items:center; justify-content:center;
+  font-size:1.4rem; font-weight:700; color:#fff;
+}
+.avatar-dot {
+  position:absolute; bottom:3px; right:3px;
+  width:14px; height:14px; border-radius:50%; background:#3dd6a8;
+  border:2.5px solid var(--surface-2);
+}
+.avatar-dot.offline { background:#666; }
+
+/* Chip / Tag */
+.chip-row { display:flex; gap:8px; flex-wrap:wrap; justify-content:center; }
+.chip {
+  padding:6px 14px; background:var(--surface); border:1px solid var(--border);
+  border-radius:20px; font-size:.78rem; display:flex; align-items:center; gap:6px;
+  transition:all var(--transition);
+}
+.chip .chip-x { cursor:pointer; color:#888; font-weight:700; font-size:.9rem; line-height:1; transition:color .15s; }
+.chip .chip-x:hover { color:var(--red); }
+
+/* Input Mask */
+.mask-input {
+  width:100%; max-width:240px; padding:12px 16px; background:var(--surface);
+  border:2px solid var(--border); border-radius:var(--radius-sm);
+  color:var(--text); font-size:1rem; outline:none; letter-spacing:1px;
+  transition:border-color var(--transition);
+}
+.mask-input:focus { border-color:var(--accent); }
+
+/* Password */
+.pwd-wrap { position:relative; width:100%; max-width:240px; }
+.pwd-wrap input { width:100%; padding:12px 44px 12px 16px; background:var(--surface); border:2px solid var(--border); border-radius:var(--radius-sm); color:var(--text); font-size:.95rem; outline:none; transition:border-color var(--transition); }
+.pwd-wrap input:focus { border-color:var(--accent); }
+.pwd-toggle { position:absolute; right:12px; top:50%; transform:translateY(-50%); background:none; border:none; cursor:pointer; font-size:1.1rem; padding:0; }
+
+/* Stepper */
+.stepper { display:flex; align-items:center; gap:0; }
+.step-dot {
+  width:32px; height:32px; border-radius:50%; background:var(--surface);
+  border:2.5px solid var(--border); display:flex; align-items:center; justify-content:center;
+  font-size:.75rem; font-weight:700; color:var(--text-dim); transition:all .3s;
+}
+.step-dot.done { background:var(--accent); border-color:var(--accent); color:#fff; }
+.step-dot.current { border-color:var(--accent); color:var(--accent); box-shadow:0 0 0 4px var(--accent-glow); }
+.step-line { width:32px; height:3px; background:var(--border); border-radius:2px; transition:background .3s; }
+.step-line.done { background:var(--accent); }
+.step-btns { display:flex; gap:8px; margin-top:10px; }
+.step-btns button { padding:6px 16px; border-radius:6px; font-size:.78rem; cursor:pointer; border:1.5px solid var(--border); background:transparent; color:var(--text); transition:all var(--transition); }
+.step-btns button:hover:not(:disabled) { border-color:var(--accent); color:var(--accent); }
+.step-btns button:disabled { opacity:.4; cursor:not-allowed; }
+
+/* Rating */
+.stars { display:flex; gap:4px; }
+.star { font-size:1.8rem; cursor:pointer; color:#444; transition:color .15s, transform .15s; user-select:none; }
+.star.hover { color:#f7a156; transform:scale(1.15); }
+.star.filled { color:#f7a156; }
+
+/* Autocomplete */
+.ac-wrap { position:relative; width:100%; max-width:240px; }
+.ac-wrap input { width:100%; padding:12px 16px; background:var(--surface); border:2px solid var(--border); border-radius:var(--radius-sm); color:var(--text); font-size:.9rem; outline:none; transition:border-color var(--transition); }
+.ac-wrap input:focus { border-color:var(--accent); }
+.ac-dropdown { position:absolute; top:100%; left:0; right:0; background:var(--surface); border:1px solid var(--border); border-radius:0 0 8px 8px; max-height:140px; overflow-y:auto; display:none; z-index:5; }
+.ac-dropdown.show { display:block; }
+.ac-option { padding:10px 14px; cursor:pointer; font-size:.82rem; transition:background .15s; }
+.ac-option:hover { background:rgba(124,111,247,.12); }
+
+/* Dropdown */
+.dd-wrap { position:relative; display:inline-block; }
+.dd-btn { padding:10px 20px; background:var(--surface); border:1.5px solid var(--border); border-radius:8px; color:var(--text); font-size:.85rem; cursor:pointer; display:flex; align-items:center; gap:8px; transition:all var(--transition); }
+.dd-btn:hover { border-color:var(--accent); }
+.dd-menu { position:absolute; top:100%; left:0; margin-top:4px; background:var(--surface); border:1px solid var(--border); border-radius:8px; min-width:130px; display:none; z-index:5; overflow:hidden; }
+.dd-menu.show { display:block; }
+.dd-opt { padding:10px 16px; cursor:pointer; font-size:.82rem; transition:background .15s; }
+.dd-opt:hover { background:rgba(124,111,247,.12); }
+
+/* Pagination */
+.pgn { display:flex; gap:4px; align-items:center; }
+.pgn-btn { width:32px; height:32px; border-radius:6px; border:1.5px solid var(--border); background:transparent; color:var(--text-dim); font-size:.8rem; cursor:pointer; transition:all var(--transition); display:flex; align-items:center; justify-content:center; }
+.pgn-btn:hover { border-color:var(--accent); color:var(--accent); }
+.pgn-btn.active { background:var(--accent); border-color:var(--accent); color:#fff; }
+.pgn-btn:disabled { opacity:.35; cursor:not-allowed; }
+
+/* Carousel */
+.crsl { position:relative; width:100%; max-width:230px; overflow:hidden; border-radius:10px; }
+.crsl-track { display:flex; transition:transform .4s ease; }
+.crsl-slide { min-width:100%; padding:28px 20px; text-align:center; font-size:.85rem; background:var(--surface); display:flex; flex-direction:column; align-items:center; gap:8px; box-sizing:border-box; }
+.crsl-slide .slide-icon { font-size:2rem; }
+.crsl-dots { display:flex; gap:6px; margin-top:8px; }
+.crsl-dot { width:8px; height:8px; border-radius:50%; background:var(--border); cursor:pointer; transition:background .2s; }
+.crsl-dot.active { background:var(--accent); }
+
+/* Parallax Tilt */
+.tilt-card {
+  width:180px; height:100px; background:linear-gradient(135deg, #2a1a4e, #1a2a4e);
+  border-radius:12px; display:flex; align-items:center; justify-content:center;
+  font-size:.9rem; font-weight:600; transition:transform .1s ease-out, box-shadow .1s ease-out;
+  box-shadow:0 6px 20px rgba(0,0,0,.3); cursor:default; user-select:none;
+  perspective:400px;
+}
+
+/* Glassmorphism */
+.glass-card {
+  width:200px; padding:20px; border-radius:16px;
+  background:rgba(255,255,255,.06);
+  backdrop-filter:blur(16px); -webkit-backdrop-filter:blur(16px);
+  border:1px solid rgba(255,255,255,.12);
+  text-align:center; font-size:.85rem; color:var(--text);
+}
+.glass-card .glass-icon { font-size:2rem; margin-bottom:6px; }
+
+/* Dark Mode */
+.dm-box {
+  padding:20px; border-radius:12px; transition:background .4s, color .4s;
+  background:var(--surface-2); color:var(--text);
+  text-align:center; font-size:.85rem; width:100%; max-width:240px;
+}
+.dm-box.light { background:#f0f0f5; color:#1a1a2e; }
+.dm-box.light .dm-toggle { border-color:#ccc; color:#1a1a2e; }
+.dm-toggle { padding:8px 18px; border:1.5px solid var(--border); border-radius:20px; background:transparent; color:var(--text); font-size:.8rem; cursor:pointer; transition:all var(--transition); }
+
+/* Context Menu */
+.cm-area { padding:14px 24px; border:2px dashed var(--border); border-radius:10px; font-size:.85rem; cursor:context-menu; user-select:none; }
+.cm-menu { position:fixed; background:var(--surface); border:1px solid var(--border); border-radius:10px; min-width:150px; box-shadow:0 8px 24px rgba(0,0,0,.5); z-index:3000; display:none; overflow:hidden; }
+.cm-menu.show { display:block; }
+.cm-item { padding:10px 16px; cursor:pointer; font-size:.82rem; transition:background .15s; display:flex; align-items:center; gap:8px; }
+.cm-item:hover { background:rgba(124,111,247,.15); }
+
+/* Slider / Range */
+.rng-wrap { width:100%; max-width:220px; }
+.rng-wrap input[type=range] { width:100%; accent-color:var(--accent); }
+
+/* Bottom Sheet */
+.bs-overlay { position:fixed; inset:0; z-index:1000; background:rgba(0,0,0,.5); opacity:0; visibility:hidden; transition:opacity .3s, visibility .3s; }
+.bs-overlay.open { opacity:1; visibility:visible; }
+.bs-panel { position:fixed; bottom:0; left:0; right:0; z-index:1001; background:var(--surface); border-radius:18px 18px 0 0; padding:20px 24px 28px; transform:translateY(100%); transition:transform .35s cubic-bezier(.4,0,.2,1); max-height:40vh; overflow-y:auto; }
+.bs-overlay.open .bs-panel { transform:translateY(0); }
+.bs-handle { width:36px; height:5px; background:#555; border-radius:3px; margin:0 auto 14px; }
+
+/* FAB */
+.fab-area { position:relative; height:120px; display:flex; align-items:flex-end; justify-content:center; }
+.fab-btn { width:48px; height:48px; border-radius:50%; background:var(--accent); color:#fff; border:none; font-size:1.4rem; cursor:pointer; box-shadow:0 4px 16px var(--accent-glow); transition:transform .3s ease, box-shadow .3s ease; position:relative; z-index:2; }
+.fab-btn:hover { transform:scale(1.08); }
+.fab-menu { position:absolute; bottom:56px; display:flex; flex-direction:column; gap:8px; align-items:center; pointer-events:none; }
+.fab-sub { width:38px; height:38px; border-radius:50%; border:none; font-size:1rem; cursor:pointer; opacity:0; transform:translateY(8px); transition:opacity .25s, transform .25s; pointer-events:none; }
+.fab-menu.open .fab-sub { opacity:1; transform:translateY(0); pointer-events:auto; }
+.fab-sub:nth-child(1) { background:var(--green); transition-delay:.05s; }
+.fab-sub:nth-child(2) { background:var(--blue); transition-delay:.1s; }
+.fab-sub:nth-child(3) { background:var(--orange); transition-delay:.15s; }
+
+/* ============================================================
    Footer
    ============================================================ */
 .footer {
@@ -1369,6 +1561,285 @@ body {
     <div class="card-explanation">
       <strong>Nested Tooltip</strong>（嵌套提示/级联提示）允许用户从一层解释<em>逐层深入</em>到下一层，形成知识探索的纵深。P 社游戏以此闻名——你不用离开当前界面，就能在层层提示中理解整个复杂系统。
     </div>
+  </article>
+
+  <!-- 24. Drag & Drop -->
+  <article class="card" id="card-drag">
+    <div class="card-header"><span class="icon">🖐️</span><h3>Drag &amp; Drop</h3><span class="cn-tag">拖拽排序</span></div>
+    <div class="card-demo">
+      <div class="drag-list" id="dragList">
+        <div class="drag-item" draggable="true"><span class="drag-handle">⋮⋮</span> 设计稿评审</div>
+        <div class="drag-item" draggable="true"><span class="drag-handle">⋮⋮</span> 前端开发</div>
+        <div class="drag-item" draggable="true"><span class="drag-handle">⋮⋮</span> 用户测试</div>
+      </div>
+    </div>
+    <div class="card-feedback" id="dragFeedback">🖐️ 按住拖拽手柄上下移动，给任务重新排序</div>
+    <div class="card-explanation"><strong>Drag &amp; Drop</strong>（拖拽排序）让用户通过<em>直接操作</em>来重新排列列表项，比点击上下箭头更直观自然。常见于任务管理、文件排序、看板工具。</div>
+  </article>
+
+  <!-- 25. Snackbar -->
+  <article class="card" id="card-snackbar">
+    <div class="card-header"><span class="icon">📲</span><h3>Snackbar</h3><span class="cn-tag">底部消息条</span></div>
+    <div class="card-demo">
+      <div class="snackbar-area">
+        <button class="snackbar-trigger" id="snackbarTrigger">删除一条记录</button>
+        <div class="snackbar-msg" id="snackbarMsg">
+          已删除「设计稿 v3」
+          <button class="snackbar-action" id="snackbarUndo">撤销</button>
+        </div>
+      </div>
+    </div>
+    <div class="card-feedback" id="snackbarFeedback">📲 点击按钮触发底部消息条——注意「撤销」操作按钮</div>
+    <div class="card-explanation"><strong>Snackbar</strong>（底部消息条）与 Toast 类似，但通常<em>出现在底部</em>并附带一个操作按钮（如「撤销」）。它给用户提供了即时修正的机会。</div>
+  </article>
+
+  <!-- 26. Confirm Dialog -->
+  <article class="card" id="card-confirm">
+    <div class="card-header"><span class="icon">⚠️</span><h3>Confirm Dialog</h3><span class="cn-tag">确认对话框</span></div>
+    <div class="card-demo">
+      <button class="snackbar-trigger" id="confirmTrigger" style="background:var(--red);">删除项目</button>
+    </div>
+    <div class="card-feedback" id="confirmFeedback">⚠️ 点击按钮，对危险操作进行二次确认</div>
+    <div class="card-explanation"><strong>Confirm Dialog</strong>（确认对话框）在用户执行<em>不可逆操作</em>（如删除、退出）前要求二次确认。它是防止误操作的最后一道防线。</div>
+  </article>
+
+  <!-- 27. Avatar -->
+  <article class="card" id="card-avatar">
+    <div class="card-header"><span class="icon">👤</span><h3>Avatar</h3><span class="cn-tag">头像</span></div>
+    <div class="card-demo">
+      <div class="avatar-wrap">
+        <div class="avatar-circle">张</div>
+        <div class="avatar-dot" id="avatarDot"></div>
+      </div>
+      <button class="badge-trigger" id="avatarToggle">切换在线状态</button>
+    </div>
+    <div class="card-feedback" id="avatarFeedback">🟢 绿色圆点表示用户在线——点击按钮切换</div>
+    <div class="card-explanation"><strong>Avatar</strong>（头像）是用户的视觉标识。当没有头像图片时，显示<em>首字母缩写</em>（fallback）；角标可表示在线状态，让协作者一目了然。</div>
+  </article>
+
+  <!-- 28. Chip / Tag -->
+  <article class="card" id="card-chip">
+    <div class="card-header"><span class="icon">🏷️</span><h3>Chip / Tag</h3><span class="cn-tag">标签/筹码</span></div>
+    <div class="card-demo">
+      <div class="chip-row" id="chipRow">
+        <span class="chip">设计 <span class="chip-x">×</span></span>
+        <span class="chip">前端 <span class="chip-x">×</span></span>
+        <span class="chip">用户体验 <span class="chip-x">×</span></span>
+      </div>
+    </div>
+    <div class="card-feedback" id="chipFeedback">🏷️ 点击标签上的 × 移除筛选条件</div>
+    <div class="card-explanation"><strong>Chip / Tag</strong>（标签/筹码）用于展示<em>可删除的</em>已选项或属性。常见于搜索筛选、邮件标签——用户可以快速添加或移除。</div>
+  </article>
+
+  <!-- 29. Input Mask -->
+  <article class="card" id="card-mask">
+    <div class="card-header"><span class="icon">📞</span><h3>Input Mask</h3><span class="cn-tag">输入掩码</span></div>
+    <div class="card-demo">
+      <input class="mask-input" id="maskInput" placeholder="输入手机号…" maxlength="13">
+    </div>
+    <div class="card-feedback" id="maskFeedback">📞 输入 11 位数字，自动格式化为手机号</div>
+    <div class="card-explanation"><strong>Input Mask</strong>（输入掩码）在用户输入时<em>自动格式化</em>内容，如手机号、信用卡号、日期。它减少了格式错误，让输入体验更流畅。</div>
+  </article>
+
+  <!-- 30. Password Field -->
+  <article class="card" id="card-password">
+    <div class="card-header"><span class="icon">🔒</span><h3>Password</h3><span class="cn-tag">密码可见</span></div>
+    <div class="card-demo">
+      <div class="pwd-wrap">
+        <input type="password" id="pwdInput" placeholder="输入密码…" value="hello123">
+        <button class="pwd-toggle" id="pwdToggle">👁️</button>
+      </div>
+    </div>
+    <div class="card-feedback" id="passwordFeedback">👁️ 点击眼睛图标切换密码可见/隐藏</div>
+    <div class="card-explanation"><strong>Password Visibility Toggle</strong>（密码可见切换）让用户<em>确认自己输入的内容</em>，减少输错密码的挫败感。这个小设计显著降低了登录失败率。</div>
+  </article>
+
+  <!-- 31. Stepper -->
+  <article class="card" id="card-stepper">
+    <div class="card-header"><span class="icon">🪜</span><h3>Stepper</h3><span class="cn-tag">步骤条</span></div>
+    <div class="card-demo">
+      <div class="stepper">
+        <div class="step-dot done" id="step1">1</div><div class="step-line done" id="line1"></div>
+        <div class="step-dot current" id="step2">2</div><div class="step-line" id="line2"></div>
+        <div class="step-dot" id="step3">3</div>
+      </div>
+      <div class="step-btns">
+        <button id="stepPrev" disabled>上一步</button>
+        <button id="stepNext">下一步</button>
+      </div>
+    </div>
+    <div class="card-feedback" id="stepperFeedback">📍 当前在第 2 步——点击按钮前进或后退</div>
+    <div class="card-explanation"><strong>Stepper</strong>（步骤条/向导）将复杂流程拆分为有序步骤。它告诉用户<em>“你在哪、还要走多远”</em>，降低长表单的放弃率。</div>
+  </article>
+
+  <!-- 32. Rating -->
+  <article class="card" id="card-rating">
+    <div class="card-header"><span class="icon">⭐</span><h3>Rating</h3><span class="cn-tag">星级评分</span></div>
+    <div class="card-demo">
+      <div class="stars" id="stars">
+        <span class="star">★</span><span class="star">★</span><span class="star">★</span><span class="star">★</span><span class="star">★</span>
+      </div>
+      <span style="font-size:.8rem;color:var(--text-dim)" id="ratingLabel">点击星星评分</span>
+    </div>
+    <div class="card-feedback" id="ratingFeedback">⭐ 悬停星星预览评分，点击确认</div>
+    <div class="card-explanation"><strong>Rating</strong>（星级评分）用直观的视觉符号收集用户评价。悬停时<em>高亮预览</em>，点击确认——瞬间完成，不需要填写冗长的问卷。</div>
+  </article>
+
+  <!-- 33. Autocomplete -->
+  <article class="card" id="card-autocomplete">
+    <div class="card-header"><span class="icon">🔍</span><h3>Autocomplete</h3><span class="cn-tag">自动完成</span></div>
+    <div class="card-demo">
+      <div class="ac-wrap" id="acWrap">
+        <input id="acInput" placeholder="搜索城市…" autocomplete="off">
+        <div class="ac-dropdown" id="acDropdown"></div>
+      </div>
+    </div>
+    <div class="card-feedback" id="autocompleteFeedback">🔍 输入「北」或「上」试试自动补全</div>
+    <div class="card-explanation"><strong>Autocomplete</strong>（自动完成/搜索建议）在用户输入时实时展示匹配结果。它<em>减少输入成本</em>，同时引导用户选择有效的选项。</div>
+  </article>
+
+  <!-- 34. Dropdown -->
+  <article class="card" id="card-dropdown">
+    <div class="card-header"><span class="icon">📋</span><h3>Dropdown</h3><span class="cn-tag">下拉菜单</span></div>
+    <div class="card-demo">
+      <div class="dd-wrap" id="ddWrap">
+        <button class="dd-btn" id="ddBtn">选择分类 ▾</button>
+        <div class="dd-menu" id="ddMenu">
+          <div class="dd-opt">🎨 设计</div>
+          <div class="dd-opt">💻 开发</div>
+          <div class="dd-opt">📊 产品</div>
+        </div>
+      </div>
+    </div>
+    <div class="card-feedback" id="dropdownFeedback">📋 点击按钮展开下拉选项列表</div>
+    <div class="card-explanation"><strong>Dropdown</strong>（下拉菜单）将多个选项收纳到一个按钮中，点击展开。它<em>节省界面空间</em>，适用于选项较多且不需要频繁切换的场景。</div>
+  </article>
+
+  <!-- 35. Pagination -->
+  <article class="card" id="card-pagination">
+    <div class="card-header"><span class="icon">📄</span><h3>Pagination</h3><span class="cn-tag">分页导航</span></div>
+    <div class="card-demo">
+      <div class="pgn" id="pagination">
+        <button class="pgn-btn" disabled>‹</button>
+        <button class="pgn-btn active">1</button>
+        <button class="pgn-btn">2</button>
+        <button class="pgn-btn">3</button>
+        <button class="pgn-btn">4</button>
+        <button class="pgn-btn">5</button>
+        <button class="pgn-btn">›</button>
+      </div>
+    </div>
+    <div class="card-feedback" id="paginationFeedback">📄 点击页码切换——当前在第 1 页</div>
+    <div class="card-explanation"><strong>Pagination</strong>（分页导航）将大量内容拆分为多页，避免一次加载过多数据。它同时给用户<em>位置感和导航控制权</em>。</div>
+  </article>
+
+  <!-- 36. Carousel -->
+  <article class="card" id="card-carousel">
+    <div class="card-header"><span class="icon">🎠</span><h3>Carousel</h3><span class="cn-tag">轮播</span></div>
+    <div class="card-demo">
+      <div class="crsl" id="carousel">
+        <div class="crsl-track" id="crslTrack">
+          <div class="crsl-slide"><span class="slide-icon">🎨</span>探索创意设计</div>
+          <div class="crsl-slide"><span class="slide-icon">💻</span>编写优雅代码</div>
+          <div class="crsl-slide"><span class="slide-icon">🚀</span>发布上线产品</div>
+        </div>
+      </div>
+      <div class="crsl-dots" id="crslDots">
+        <span class="crsl-dot active"></span><span class="crsl-dot"></span><span class="crsl-dot"></span>
+      </div>
+    </div>
+    <div class="card-feedback" id="carouselFeedback">🎠 轮播自动播放中——点击圆点可跳转</div>
+    <div class="card-explanation"><strong>Carousel</strong>（轮播）在同一位置循环展示多张内容卡片。它<em>在有限空间内展示更多信息</em>——常见于产品展示、 Banner 广告和引导页。</div>
+  </article>
+
+  <!-- 37. Parallax Tilt -->
+  <article class="card" id="card-tilt">
+    <div class="card-header"><span class="icon">🔄</span><h3>Parallax Tilt</h3><span class="cn-tag">视差倾斜</span></div>
+    <div class="card-demo">
+      <div class="tilt-card" id="tiltCard">🖱️ 移动鼠标</div>
+    </div>
+    <div class="card-feedback" id="tiltFeedback">🖱️ 在本卡片 demo 区域内移动鼠标，感受 3D 倾斜</div>
+    <div class="card-explanation"><strong>Parallax Tilt</strong>（视差倾斜）让元素跟随鼠标位置产生<em>微小的 3D 旋转</em>，营造立体深度感。常用于卡片、登录框，让平面设计“活”起来。</div>
+  </article>
+
+  <!-- 38. Glassmorphism -->
+  <article class="card" id="card-glass">
+    <div class="card-header"><span class="icon">🫧</span><h3>Glassmorphism</h3><span class="cn-tag">玻璃态</span></div>
+    <div class="card-demo" style="background:linear-gradient(135deg,#6c63ff22,#3dd6a822);border-radius:20px;padding:28px;">
+      <div class="glass-card">
+        <div class="glass-icon">🫧</div>
+        <div>毛玻璃效果</div>
+        <div style="font-size:.72rem;color:var(--text-dim);margin-top:4px;">backdrop-filter: blur()</div>
+      </div>
+    </div>
+    <div class="card-feedback" id="glassFeedback">👀 观察卡片背景透过玻璃的模糊效果</div>
+    <div class="card-explanation"><strong>Glassmorphism</strong>（玻璃态/毛玻璃）通过半透明背景 + backdrop-filter 模糊，让元素<em>悬浮在彩色背景上</em>。层次感强、现代感十足，2020 年后广泛应用。</div>
+  </article>
+
+  <!-- 39. Dark Mode -->
+  <article class="card" id="card-darkmode">
+    <div class="card-header"><span class="icon">🌓</span><h3>Dark Mode</h3><span class="cn-tag">深色模式</span></div>
+    <div class="card-demo">
+      <div class="dm-box" id="dmBox">
+        <div style="font-size:1.5rem;margin-bottom:8px;">🌓</div>
+        <div id="dmLabel">当前：深色模式</div>
+        <button class="dm-toggle" id="dmToggle" style="margin-top:8px;">切换为浅色</button>
+      </div>
+    </div>
+    <div class="card-feedback" id="darkmodeFeedback">🌓 点击按钮在这个区域切换深色/浅色主题</div>
+    <div class="card-explanation"><strong>Dark Mode</strong>（深色模式）提供浅色/深色两套配色方案。它<em>降低屏幕亮度、减少眼睛疲劳</em>，同时在某些屏幕（OLED）上更省电。</div>
+  </article>
+
+  <!-- 40. Context Menu -->
+  <article class="card" id="card-contextmenu">
+    <div class="card-header"><span class="icon">🖱️</span><h3>Context Menu</h3><span class="cn-tag">右键菜单</span></div>
+    <div class="card-demo">
+      <div class="cm-area" id="cmArea">在此区域内点击右键</div>
+    </div>
+    <div class="card-feedback" id="contextmenuFeedback">🖱️ 在虚线区域内点击鼠标右键</div>
+    <div class="card-explanation"><strong>Context Menu</strong>（右键菜单/上下文菜单）根据用户点击位置<em>动态显示相关操作</em>。它是桌面端最高效的快捷操作入口——不需要先找到工具栏再点按钮。</div>
+  </article>
+
+  <!-- 41. Slider -->
+  <article class="card" id="card-slider">
+    <div class="card-header"><span class="icon">🎚️</span><h3>Range Slider</h3><span class="cn-tag">范围滑块</span></div>
+    <div class="card-demo">
+      <div class="rng-wrap">
+        <input type="range" id="rangeSlider" min="0" max="100" value="50">
+        <div style="text-align:center;font-size:.85rem;margin-top:6px;">
+          <span style="color:var(--text-dim)">预算：</span><strong id="rangeValue">50</strong><span style="color:var(--text-dim)"> 万</span>
+        </div>
+      </div>
+    </div>
+    <div class="card-feedback" id="sliderFeedback">🎚️ 拖动滑块调整预算数值</div>
+    <div class="card-explanation"><strong>Range Slider</strong>（范围滑块）让用户在<em>连续区间内选择数值</em>。相比直接输入数字，滑块更直观——可以快速“感受”数值的变化幅度。</div>
+  </article>
+
+  <!-- 42. Bottom Sheet -->
+  <article class="card" id="card-bottomsheet">
+    <div class="card-header"><span class="icon">📥</span><h3>Bottom Sheet</h3><span class="cn-tag">底部面板</span></div>
+    <div class="card-demo">
+      <button class="snackbar-trigger" id="bsTrigger" style="background:var(--accent);">打开底部面板</button>
+    </div>
+    <div class="card-feedback" id="bottomsheetFeedback">📥 点击按钮从底部弹出操作面板</div>
+    <div class="card-explanation"><strong>Bottom Sheet</strong>（底部面板）从屏幕底部滑出，提供一组补充操作。它<em>不离开当前页面</em>——适合移动端的分享、筛选、快捷操作场景。</div>
+  </article>
+
+  <!-- 43. FAB -->
+  <article class="card" id="card-fab">
+    <div class="card-header"><span class="icon">➕</span><h3>FAB</h3><span class="cn-tag">悬浮操作按钮</span></div>
+    <div class="card-demo">
+      <div class="fab-area">
+        <div class="fab-menu" id="fabMenu">
+          <button class="fab-sub">📝</button>
+          <button class="fab-sub">📷</button>
+          <button class="fab-sub">📁</button>
+        </div>
+        <button class="fab-btn" id="fabBtn">+</button>
+      </div>
+    </div>
+    <div class="card-feedback" id="fabFeedback">➕ 点击 + 按钮展开/收起子操作</div>
+    <div class="card-explanation"><strong>FAB</strong>（Floating Action Button / 悬浮操作按钮）悬浮在页面右下角，代表当前页面<em>最核心的操作</em>。Material Design 的标志性组件——一个按钮承载主要行动。</div>
   </article>
 
 </main>
@@ -2015,6 +2486,410 @@ body {
         })(initialTriggers[k]);
       }
     }
+  })();
+
+  // ==================== 24. Drag & Drop ====================
+  (function() {
+    var list = $('#dragList');
+    if (!list) return;
+    var items = list.querySelectorAll('.drag-item');
+    var dragSrc = null;
+
+    function handleDragStart(e) {
+      dragSrc = this;
+      this.classList.add('dragging');
+      e.dataTransfer.effectAllowed = 'move';
+    }
+    function handleDragOver(e) {
+      e.preventDefault();
+      e.dataTransfer.dropEffect = 'move';
+      this.classList.add('drag-over');
+    }
+    function handleDragLeave() { this.classList.remove('drag-over'); }
+    function handleDrop(e) {
+      e.preventDefault();
+      this.classList.remove('drag-over');
+      if (dragSrc !== this) {
+        var parent = this.parentNode;
+        var children = Array.from(parent.children);
+        var srcIdx = children.indexOf(dragSrc);
+        var dstIdx = children.indexOf(this);
+        if (srcIdx < dstIdx) {
+          parent.insertBefore(dragSrc, this.nextSibling);
+        } else {
+          parent.insertBefore(dragSrc, this);
+        }
+        setFeedback('dragFeedback', '✅ 已重新排序——这就是 Drag & Drop 的直观体验', true);
+      }
+    }
+    function handleDragEnd() {
+      this.classList.remove('dragging');
+      items.forEach(function(it) { it.classList.remove('drag-over'); });
+    }
+
+    items.forEach(function(item) {
+      item.addEventListener('dragstart', handleDragStart);
+      item.addEventListener('dragover', handleDragOver);
+      item.addEventListener('dragleave', handleDragLeave);
+      item.addEventListener('drop', handleDrop);
+      item.addEventListener('dragend', handleDragEnd);
+    });
+  })();
+
+  // ==================== 25. Snackbar ====================
+  (function() {
+    var trigger = $('#snackbarTrigger');
+    var msg = $('#snackbarMsg');
+    var undo = $('#snackbarUndo');
+    if (!trigger || !msg) return;
+    var timer = null;
+    trigger.addEventListener('click', function() {
+      clearTimeout(timer);
+      msg.classList.add('show');
+      setFeedback('snackbarFeedback', '📲 Snackbar 已弹出——出现在底部、附带「撤销」操作按钮', true);
+      timer = setTimeout(function() {
+        msg.classList.remove('show');
+        setFeedback('snackbarFeedback', '📲 点击按钮触发底部消息条——注意「撤销」操作按钮', false);
+      }, 5000);
+    });
+    undo.addEventListener('click', function() {
+      clearTimeout(timer);
+      msg.classList.remove('show');
+      setFeedback('snackbarFeedback', '✅ 已撤销删除——Snackbar 的操作按钮让用户有反悔机会', true);
+      setTimeout(function() { setFeedback('snackbarFeedback', '📲 点击按钮触发底部消息条——注意「撤销」操作按钮', false); }, 2500);
+    });
+  })();
+
+  // ==================== 26. Confirm Dialog ====================
+  (function() {
+    var trigger = $('#confirmTrigger');
+    if (!trigger) return;
+    // 创建全局确认弹窗
+    var overlay = document.createElement('div');
+    overlay.className = 'confirm-overlay';
+    overlay.id = 'confirmOverlay';
+    overlay.innerHTML = '<div class="confirm-box"><h4>⚠️ 确认删除</h4><p>此操作不可撤销。确定要删除「设计稿 v3」吗？</p><div class="confirm-actions"><button class="confirm-cancel" id="confirmCancel">取消</button><button class="confirm-delete" id="confirmDelete">确认删除</button></div></div>';
+    document.body.appendChild(overlay);
+
+    var cancelBtn = $('#confirmCancel');
+    var deleteBtn = $('#confirmDelete');
+
+    trigger.addEventListener('click', function() {
+      overlay.classList.add('open');
+      setFeedback('confirmFeedback', '⚠️ 确认弹窗已打开——对危险操作进行二次确认', true);
+    });
+    cancelBtn.addEventListener('click', function() {
+      overlay.classList.remove('open');
+      setFeedback('confirmFeedback', '⚠️ 点击按钮，对危险操作进行二次确认', false);
+    });
+    deleteBtn.addEventListener('click', function() {
+      overlay.classList.remove('open');
+      setFeedback('confirmFeedback', '✅ 已确认删除——Confirm Dialog 防止了误操作（实际并未删除）', true);
+    });
+    overlay.addEventListener('click', function(e) { if (e.target === overlay) { overlay.classList.remove('open'); setFeedback('confirmFeedback', '⚠️ 点击按钮，对危险操作进行二次确认', false); } });
+  })();
+
+  // ==================== 27. Avatar ====================
+  (function() {
+    var btn = $('#avatarToggle');
+    var dot = $('#avatarDot');
+    if (!btn || !dot) return;
+    var online = true;
+    btn.addEventListener('click', function() {
+      online = !online;
+      dot.classList.toggle('offline', !online);
+      setFeedback('avatarFeedback', online ? '🟢 用户在线——绿色状态指示让协作更高效' : '⚫ 用户离线——灰色角标清楚表示不可用状态', online);
+      btn.textContent = online ? '切换离线状态' : '切换在线状态';
+    });
+  })();
+
+  // ==================== 28. Chip / Tag ====================
+  (function() {
+    var row = $('#chipRow');
+    if (!row) return;
+    row.addEventListener('click', function(e) {
+      if (e.target.classList.contains('chip-x')) {
+        var chip = e.target.parentElement;
+        var text = chip.textContent.replace('×', '').trim();
+        chip.style.opacity = '0';
+        chip.style.transform = 'scale(.8)';
+        setTimeout(function() { chip.remove(); });
+        setFeedback('chipFeedback', '✅ 已移除标签「' + text + '」——标签支持快速增删筛选条件', true);
+        // 如果全删了，3 秒后重置
+        if (row.querySelectorAll('.chip').length <= 1) {
+          setTimeout(function() {
+            row.innerHTML = '<span class="chip">设计 <span class="chip-x">×</span></span><span class="chip">前端 <span class="chip-x">×</span></span><span class="chip">用户体验 <span class="chip-x">×</span></span>';
+            setFeedback('chipFeedback', '🏷️ 点击标签上的 × 移除筛选条件', false);
+          }, 2000);
+        }
+      }
+    });
+  })();
+
+  // ==================== 29. Input Mask (手机号) ====================
+  (function() {
+    var input = $('#maskInput');
+    if (!input) return;
+    input.addEventListener('input', function(e) {
+      var val = this.value.replace(/\D/g, '');
+      if (val.length === 0) { this.value = ''; return; }
+      if (val.length <= 3) { this.value = val; }
+      else if (val.length <= 7) { this.value = val.slice(0,3) + ' ' + val.slice(3); }
+      else { this.value = val.slice(0,3) + ' ' + val.slice(3,7) + ' ' + val.slice(7,11); }
+      if (val.length >= 11) setFeedback('maskFeedback', '✅ 手机号格式化完成：' + this.value + '——输入掩码自动添加了空格分隔', true);
+      else setFeedback('maskFeedback', '📞 输入 11 位数字，自动格式化为手机号', false);
+    });
+  })();
+
+  // ==================== 30. Password Toggle ====================
+  (function() {
+    var toggle = $('#pwdToggle');
+    var input = $('#pwdInput');
+    if (!toggle || !input) return;
+    toggle.addEventListener('click', function() {
+      var visible = input.type === 'text';
+      input.type = visible ? 'password' : 'text';
+      toggle.textContent = visible ? '👁️' : '🙈';
+      setFeedback('passwordFeedback', visible ? '👁️ 密码已隐藏——保护隐私' : '🙈 密码可见——可以确认输入内容是否正确', !visible);
+    });
+  })();
+
+  // ==================== 31. Stepper ====================
+  (function() {
+    var prev = $('#stepPrev');
+    var next = $('#stepNext');
+    if (!prev || !next) return;
+    var step = 2;
+    var dots = [$('#step1'), $('#step2'), $('#step3')];
+    var lines = [$('#line1'), $('#line2')];
+    function updateUI() {
+      dots.forEach(function(d, i) {
+        d.classList.remove('done', 'current');
+        if (i < step - 1) d.classList.add('done');
+        else if (i === step - 1) d.classList.add('current');
+      });
+      lines.forEach(function(l, i) { l.classList.toggle('done', i < step - 1); });
+      prev.disabled = step === 1;
+      next.disabled = step === 3;
+    }
+    prev.addEventListener('click', function() { if (step > 1) { step--; updateUI(); setFeedback('stepperFeedback', '📍 已回到第 ' + step + ' 步——步骤条支持前进和回退', true); } });
+    next.addEventListener('click', function() { if (step < 3) { step++; updateUI(); setFeedback('stepperFeedback', step === 3 ? '✅ 已到达最后一步——用户清楚知道自己在流程末尾' : '📍 已前进到第 ' + step + ' 步', true); } });
+  })();
+
+  // ==================== 32. Rating ====================
+  (function() {
+    var stars = document.querySelectorAll('#stars .star');
+    var label = $('#ratingLabel');
+    if (!stars.length) return;
+    var rating = 0;
+    stars.forEach(function(star, i) {
+      star.addEventListener('mouseenter', function() {
+        for (var j = 0; j < stars.length; j++) stars[j].classList.toggle('hover', j <= i);
+      });
+      star.addEventListener('mouseleave', function() {
+        stars.forEach(function(s, j) { s.classList.remove('hover'); s.classList.toggle('filled', j < rating); });
+      });
+      star.addEventListener('click', function() {
+        rating = i + 1;
+        stars.forEach(function(s, j) { s.classList.toggle('filled', j < rating); });
+        label.textContent = rating + ' / 5 星';
+        setFeedback('ratingFeedback', '✅ 已评分 ' + rating + ' 星——星级评分让用户轻松表达满意度', true);
+      });
+    });
+  })();
+
+  // ==================== 33. Autocomplete ====================
+  (function() {
+    var input = $('#acInput');
+    var dropdown = $('#acDropdown');
+    if (!input || !dropdown) return;
+    var cities = ['北京', '上海', '广州', '深圳', '杭州', '成都', '南京', '武汉', '西安', '重庆', '长沙', '苏州'];
+    input.addEventListener('input', function() {
+      var val = this.value.trim();
+      if (!val) { dropdown.innerHTML = ''; dropdown.classList.remove('show'); return; }
+      var filtered = cities.filter(function(c) { return c.includes(val); });
+      dropdown.innerHTML = filtered.map(function(c) { return '<div class="ac-option">' + c + '</div>'; }).join('');
+      dropdown.classList.toggle('show', filtered.length > 0);
+      setFeedback('autocompleteFeedback', filtered.length ? '🔍 找到 ' + filtered.length + ' 个匹配城市' : '🔍 输入「北」或「上」试试自动补全', filtered.length > 0);
+    });
+    dropdown.addEventListener('click', function(e) {
+      if (e.target.classList.contains('ac-option')) {
+        input.value = e.target.textContent;
+        dropdown.classList.remove('show');
+        setFeedback('autocompleteFeedback', '✅ 已选择「' + e.target.textContent + '」——自动完成让输入更快更准', true);
+      }
+    });
+    document.addEventListener('click', function(e) { if (!input.parentElement.contains(e.target)) dropdown.classList.remove('show'); });
+  })();
+
+  // ==================== 34. Dropdown ====================
+  (function() {
+    var btn = $('#ddBtn');
+    var menu = $('#ddMenu');
+    if (!btn || !menu) return;
+    btn.addEventListener('click', function(e) { e.stopPropagation(); menu.classList.toggle('show'); });
+    menu.addEventListener('click', function(e) {
+      if (e.target.classList.contains('dd-opt')) {
+        btn.innerHTML = e.target.textContent + ' ▾';
+        menu.classList.remove('show');
+        setFeedback('dropdownFeedback', '✅ 已选择「' + e.target.textContent.trim() + '」——下拉菜单收纳选项、节省空间', true);
+      }
+    });
+    document.addEventListener('click', function() { menu.classList.remove('show'); });
+  })();
+
+  // ==================== 35. Pagination ====================
+  (function() {
+    var pgn = $('#pagination');
+    if (!pgn) return;
+    pgn.addEventListener('click', function(e) {
+      if (!e.target.classList.contains('pgn-btn') || e.target.disabled) return;
+      var t = e.target.textContent;
+      if (t === '‹' || t === '›') return;
+      pgn.querySelectorAll('.pgn-btn').forEach(function(b) { b.classList.remove('active'); });
+      e.target.classList.add('active');
+      setFeedback('paginationFeedback', '📄 已跳转到第 ' + t + ' 页——分页给用户清晰的位置感和导航控制', true);
+    });
+  })();
+
+  // ==================== 36. Carousel ====================
+  (function() {
+    var track = $('#crslTrack');
+    var dots = document.querySelectorAll('#crslDots .crsl-dot');
+    if (!track || !dots.length) return;
+    var idx = 0;
+    var total = 3;
+    var autoTimer;
+    function goTo(i) {
+      idx = i;
+      track.style.transform = 'translateX(-' + (idx * 100) + '%)';
+      dots.forEach(function(d, j) { d.classList.toggle('active', j === idx); });
+    }
+    function next() { goTo((idx + 1) % total); }
+    autoTimer = setInterval(next, 3000);
+    dots.forEach(function(dot, i) {
+      dot.addEventListener('click', function() { clearInterval(autoTimer); goTo(i); autoTimer = setInterval(next, 3000); setFeedback('carouselFeedback', '✅ 已跳转到第 ' + (i+1) + ' 张——圆点指示器让你知道当前位置', true); });
+    });
+  })();
+
+  // ==================== 37. Parallax Tilt ====================
+  (function() {
+    var card = $('#tiltCard');
+    var demo = $('#card-tilt .card-demo');
+    if (!card || !demo) return;
+    demo.addEventListener('mousemove', function(e) {
+      var rect = demo.getBoundingClientRect();
+      var x = (e.clientX - rect.left) / rect.width - 0.5;
+      var y = (e.clientY - rect.top) / rect.height - 0.5;
+      card.style.transform = 'perspective(400px) rotateY(' + (x * 15) + 'deg) rotateX(' + (-y * 15) + 'deg)';
+      card.style.boxShadow = (x * 15) + 'px ' + (y * 15) + 'px 30px rgba(124,111,247,.25)';
+      setFeedback('tiltFeedback', '🔄 卡片跟随鼠标倾斜——3D 视差让平面设计有了深度', true);
+    });
+    demo.addEventListener('mouseleave', function() {
+      card.style.transform = 'perspective(400px) rotateY(0) rotateX(0)';
+      card.style.boxShadow = '0 6px 20px rgba(0,0,0,.3)';
+      setFeedback('tiltFeedback', '🖱️ 在本卡片 demo 区域内移动鼠标，感受 3D 倾斜', false);
+    });
+  })();
+
+  // ==================== 38. Glassmorphism ====================
+  // 纯 CSS 展示，无需 JS
+
+  // ==================== 39. Dark Mode ====================
+  (function() {
+    var box = $('#dmBox');
+    var btn = $('#dmToggle');
+    var label = $('#dmLabel');
+    if (!box || !btn || !label) return;
+    var dark = true;
+    btn.addEventListener('click', function() {
+      dark = !dark;
+      box.classList.toggle('light', !dark);
+      label.textContent = dark ? '当前：深色模式' : '当前：浅色模式';
+      btn.textContent = dark ? '切换为浅色' : '切换为深色';
+      setFeedback('darkmodeFeedback', dark ? '🌙 已切换为深色——降低屏幕亮度，减少眼疲劳' : '☀️ 已切换为浅色——适合明亮环境阅读', true);
+    });
+  })();
+
+  // ==================== 40. Context Menu ====================
+  (function() {
+    var area = $('#cmArea');
+    if (!area) return;
+    // 创建全局右键菜单
+    var menu = document.createElement('div');
+    menu.className = 'cm-menu';
+    menu.innerHTML = '<div class="cm-item">📋 复制</div><div class="cm-item">📌 粘贴</div><div class="cm-item">✂️ 剪切</div><div class="cm-item" style="border-top:1px solid var(--border);">🗑️ 删除</div>';
+    document.body.appendChild(menu);
+
+    area.addEventListener('contextmenu', function(e) {
+      e.preventDefault();
+      menu.style.left = e.clientX + 'px';
+      menu.style.top = e.clientY + 'px';
+      menu.classList.add('show');
+      setFeedback('contextmenuFeedback', '✅ 右键菜单已弹出——根据上下文显示相关操作', true);
+    });
+    menu.addEventListener('click', function(e) {
+      if (e.target.classList.contains('cm-item')) {
+        setFeedback('contextmenuFeedback', '✅ 已选择「' + e.target.textContent.trim() + '」——上下文菜单是最快的快捷操作方式', true);
+        menu.classList.remove('show');
+      }
+    });
+    document.addEventListener('click', function() { menu.classList.remove('show'); });
+    document.addEventListener('contextmenu', function(e) { if (!area.contains(e.target)) menu.classList.remove('show'); });
+  })();
+
+  // ==================== 41. Range Slider ====================
+  (function() {
+    var slider = $('#rangeSlider');
+    var display = $('#rangeValue');
+    if (!slider || !display) return;
+    slider.addEventListener('input', function() {
+      display.textContent = this.value;
+      setFeedback('sliderFeedback', '🎚️ 预算调整为 ' + this.value + ' 万——滑块让连续数值的选择变得直观', true);
+    });
+  })();
+
+  // ==================== 42. Bottom Sheet ====================
+  (function() {
+    var trigger = $('#bsTrigger');
+    if (!trigger) return;
+    var overlay = document.createElement('div');
+    overlay.className = 'bs-overlay';
+    overlay.id = 'bsOverlay';
+    overlay.innerHTML = '<div class="bs-panel"><div class="bs-handle"></div><h4 style="margin:0 0 8px;">📥 操作选项</h4><p style="font-size:.82rem;color:var(--text-dim);margin:0 0 12px;">底部面板（Bottom Sheet）从屏幕底部滑出，适合移动端的快捷操作。</p><div style="display:flex;gap:8px;flex-wrap:wrap;"><button class="chip" style="cursor:pointer;">📷 拍照</button><button class="chip" style="cursor:pointer;">🖼️ 从相册选择</button><button class="chip" style="cursor:pointer;">📁 浏览文件</button></div></div>';
+    document.body.appendChild(overlay);
+
+    trigger.addEventListener('click', function() {
+      overlay.classList.add('open');
+      setFeedback('bottomsheetFeedback', '✅ 底部面板已弹出——从屏幕底部滑入，适合移动端操作', true);
+    });
+    overlay.addEventListener('click', function(e) {
+      if (e.target === overlay || e.target.classList.contains('chip')) {
+        if (e.target.classList.contains('chip')) setFeedback('bottomsheetFeedback', '✅ 已选择「' + e.target.textContent.trim() + '」——底部面板支持快捷操作', true);
+        overlay.classList.remove('open');
+        setTimeout(function() { if (!overlay.classList.contains('open')) setFeedback('bottomsheetFeedback', '📥 点击按钮从底部弹出操作面板', false); }, 2500);
+      }
+    });
+  })();
+
+  // ==================== 43. FAB ====================
+  (function() {
+    var btn = $('#fabBtn');
+    var menu = $('#fabMenu');
+    if (!btn || !menu) return;
+    var open = false;
+    btn.addEventListener('click', function() {
+      open = !open;
+      menu.classList.toggle('open', open);
+      btn.textContent = open ? '×' : '+';
+      btn.style.transform = open ? 'rotate(45deg)' : 'rotate(0)';
+      setFeedback('fabFeedback', open ? '✅ FAB 展开——三个子操作按钮依次弹出' : '➕ 点击 + 按钮展开/收起子操作', open);
+    });
+    menu.addEventListener('click', function(e) {
+      if (e.target.classList.contains('fab-sub')) {
+        setFeedback('fabFeedback', '✅ 已选择子操作——FAB 收纳核心行动，一个按钮承载主要功能', true);
+      }
+    });
   })();
 
 })();
