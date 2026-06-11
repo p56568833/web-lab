@@ -1,0 +1,2521 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>页岩气勘探开发交互词典</title>
+  <style>
+    :root {
+      --bg: #09090f;
+      --panel: rgba(18, 18, 30, 0.84);
+      --panel-2: rgba(23, 24, 39, 0.92);
+      --panel-3: rgba(13, 14, 24, 0.76);
+      --line: rgba(160, 153, 255, 0.18);
+      --line-strong: rgba(124, 111, 247, 0.46);
+      --text: #f3f1ff;
+      --muted: #a9a2c7;
+      --soft: #746f91;
+      --purple: #7c6ff7;
+      --cyan: #3dd6a8;
+      --blue: #5ea8ff;
+      --orange: #ffb45c;
+      --red: #ff667c;
+      --shadow: 0 18px 60px rgba(0, 0, 0, 0.42);
+      --radius: 12px;
+      --radius-sm: 8px;
+      --ease: cubic-bezier(.2, .8, .2, 1);
+      --font: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", "Microsoft YaHei", "PingFang SC", sans-serif;
+    }
+
+    * { box-sizing: border-box; }
+
+    html {
+      scroll-behavior: smooth;
+      color-scheme: dark;
+    }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      background:
+        radial-gradient(circle at 18% 12%, rgba(124, 111, 247, .16), transparent 32rem),
+        radial-gradient(circle at 86% 18%, rgba(61, 214, 168, .11), transparent 30rem),
+        radial-gradient(circle at 50% 96%, rgba(94, 168, 255, .12), transparent 36rem),
+        var(--bg);
+      color: var(--text);
+      font-family: var(--font);
+      line-height: 1.55;
+      overflow-x: hidden;
+    }
+
+    body::before {
+      content: "";
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      opacity: .16;
+      background-image:
+        linear-gradient(rgba(255,255,255,.035) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255,255,255,.035) 1px, transparent 1px);
+      background-size: 42px 42px;
+      mask-image: linear-gradient(to bottom, #000, transparent 82%);
+      z-index: -1;
+    }
+
+    button, input, select {
+      font: inherit;
+    }
+
+    button {
+      border: 0;
+      cursor: pointer;
+    }
+
+    button:disabled {
+      opacity: .55;
+      cursor: not-allowed;
+      filter: saturate(.6);
+    }
+
+    button:focus-visible,
+    input:focus-visible,
+    .chip:focus-visible,
+    .term-card:focus-visible,
+    .node:focus-visible {
+      outline: 2px solid rgba(61, 214, 168, .85);
+      outline-offset: 3px;
+    }
+
+    .page {
+      width: min(1440px, calc(100% - 32px));
+      margin: 0 auto;
+      padding: 34px 0 80px;
+    }
+
+    .sr-only {
+      position: absolute;
+      width: 1px;
+      height: 1px;
+      padding: 0;
+      margin: -1px;
+      overflow: hidden;
+      clip: rect(0, 0, 0, 0);
+      white-space: nowrap;
+      border: 0;
+    }
+
+    .hero {
+      position: relative;
+      padding: 34px 0 22px;
+      text-align: center;
+      animation: riseIn .55s var(--ease) both;
+    }
+
+    .badges {
+      display: flex;
+      justify-content: center;
+      gap: 8px;
+      flex-wrap: wrap;
+      margin-bottom: 22px;
+    }
+
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
+      padding: 7px 10px;
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      color: #d8d2ff;
+      background: rgba(17, 18, 31, .72);
+      box-shadow: inset 0 1px 0 rgba(255,255,255,.06);
+      font-size: 12px;
+      letter-spacing: .01em;
+    }
+
+    .badge::before {
+      content: "";
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: var(--cyan);
+      box-shadow: 0 0 14px rgba(61, 214, 168, .7);
+    }
+
+    h1 {
+      margin: 0;
+      font-size: clamp(36px, 6vw, 76px);
+      line-height: 1.03;
+      letter-spacing: 0;
+      font-weight: 850;
+      background: linear-gradient(100deg, #ddd9ff 0%, var(--purple) 38%, var(--cyan) 78%);
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+    }
+
+    .subtitle {
+      width: min(900px, 100%);
+      margin: 18px auto 0;
+      color: #c3bddb;
+      font-size: clamp(16px, 2vw, 20px);
+    }
+
+    .intro-panel {
+      width: min(1060px, 100%);
+      margin: 28px auto 0;
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 20px;
+      align-items: center;
+      text-align: left;
+      padding: 18px;
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      background: linear-gradient(180deg, rgba(26, 26, 43, .82), rgba(13, 14, 24, .82));
+      box-shadow: var(--shadow);
+    }
+
+    .intro-panel p {
+      margin: 0;
+      color: var(--muted);
+      font-size: 14px;
+    }
+
+    .disclaimer {
+      display: flex;
+      gap: 10px;
+      align-items: flex-start;
+      margin-top: 12px;
+      padding: 11px 12px;
+      color: #f6d7b5;
+      background: rgba(255, 180, 92, .1);
+      border: 1px solid rgba(255, 180, 92, .28);
+      border-radius: var(--radius-sm);
+      font-size: 13px;
+    }
+
+    .mode-box {
+      min-width: 190px;
+      padding: 12px;
+      border: 1px solid var(--line);
+      border-radius: var(--radius-sm);
+      background: rgba(255,255,255,.035);
+    }
+
+    .switch-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 12px;
+      color: #e9e5ff;
+      font-size: 13px;
+      font-weight: 700;
+    }
+
+    .switch {
+      width: 54px;
+      height: 30px;
+      border-radius: 999px;
+      background: rgba(124, 111, 247, .24);
+      border: 1px solid rgba(124, 111, 247, .4);
+      padding: 3px;
+      transition: .25s var(--ease);
+    }
+
+    .switch .knob {
+      width: 22px;
+      height: 22px;
+      display: block;
+      border-radius: 50%;
+      background: var(--purple);
+      box-shadow: 0 0 16px rgba(124, 111, 247, .4);
+      transition: transform .25s var(--ease), background .25s var(--ease);
+    }
+
+    .switch.on {
+      background: rgba(61, 214, 168, .18);
+      border-color: rgba(61, 214, 168, .4);
+    }
+
+    .switch.on .knob {
+      transform: translateX(24px);
+      background: var(--cyan);
+    }
+
+    .toolbar {
+      position: sticky;
+      top: 0;
+      z-index: 30;
+      margin: 24px 0;
+      padding: 14px;
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      background: rgba(10, 10, 17, .78);
+      backdrop-filter: blur(18px);
+      box-shadow: 0 14px 42px rgba(0,0,0,.32);
+    }
+
+    .search-row {
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 12px;
+      align-items: center;
+    }
+
+    .search-wrap {
+      position: relative;
+    }
+
+    .search-wrap svg {
+      position: absolute;
+      left: 13px;
+      top: 50%;
+      transform: translateY(-50%);
+      width: 18px;
+      height: 18px;
+      color: var(--soft);
+      pointer-events: none;
+    }
+
+    #searchInput {
+      width: 100%;
+      height: 46px;
+      padding: 0 14px 0 42px;
+      border: 1px solid var(--line);
+      border-radius: var(--radius-sm);
+      color: var(--text);
+      background: rgba(255,255,255,.045);
+      transition: border-color .25s var(--ease), box-shadow .25s var(--ease), background .25s var(--ease);
+    }
+
+    #searchInput:focus {
+      border-color: rgba(61, 214, 168, .68);
+      box-shadow: 0 0 0 4px rgba(61, 214, 168, .12);
+      background: rgba(255,255,255,.065);
+    }
+
+    .reset-btn,
+    .primary-btn,
+    .ghost-btn,
+    .step-btn,
+    .icon-btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      border-radius: var(--radius-sm);
+      color: var(--text);
+      border: 1px solid var(--line);
+      background: rgba(255,255,255,.055);
+      transition: transform .22s var(--ease), border-color .22s var(--ease), background .22s var(--ease), box-shadow .22s var(--ease);
+      user-select: none;
+    }
+
+    .reset-btn,
+    .primary-btn,
+    .ghost-btn,
+    .step-btn { min-height: 38px; padding: 9px 12px; }
+
+    .primary-btn {
+      border-color: rgba(61, 214, 168, .34);
+      background: linear-gradient(135deg, rgba(124,111,247,.35), rgba(61,214,168,.22));
+      box-shadow: 0 10px 24px rgba(61, 214, 168, .1);
+      font-weight: 750;
+    }
+
+    .reset-btn:hover,
+    .primary-btn:hover,
+    .ghost-btn:hover,
+    .step-btn:hover,
+    .icon-btn:hover {
+      transform: translateY(-1px);
+      border-color: rgba(61, 214, 168, .48);
+      background: rgba(255,255,255,.08);
+    }
+
+    .reset-btn:active,
+    .primary-btn:active,
+    .ghost-btn:active,
+    .step-btn:active,
+    .icon-btn:active {
+      transform: translateY(0) scale(.98);
+    }
+
+    .chips {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+      margin-top: 12px;
+    }
+
+    .chip {
+      padding: 8px 12px;
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      color: #cfc9e9;
+      background: rgba(255,255,255,.04);
+      transition: transform .22s var(--ease), color .22s var(--ease), border-color .22s var(--ease), background .22s var(--ease);
+      font-size: 13px;
+    }
+
+    .chip:hover {
+      transform: translateY(-2px);
+      color: #fff;
+      border-color: rgba(124,111,247,.52);
+    }
+
+    .chip.active {
+      color: #fff;
+      border-color: rgba(61, 214, 168, .52);
+      background: rgba(61, 214, 168, .13);
+      box-shadow: 0 0 0 3px rgba(61,214,168,.06);
+    }
+
+    .section-title {
+      display: flex;
+      justify-content: space-between;
+      align-items: end;
+      gap: 14px;
+      margin: 34px 0 14px;
+    }
+
+    .section-title h2 {
+      margin: 0;
+      font-size: clamp(22px, 3vw, 34px);
+      letter-spacing: 0;
+    }
+
+    .section-title p {
+      margin: 5px 0 0;
+      color: var(--muted);
+      font-size: 14px;
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(12, 1fr);
+      gap: 16px;
+    }
+
+    .card {
+      position: relative;
+      grid-column: span 6;
+      min-width: 0;
+      overflow: hidden;
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      background:
+        linear-gradient(180deg, rgba(255,255,255,.045), transparent 36%),
+        var(--panel);
+      box-shadow: var(--shadow);
+      transition: transform .28s var(--ease), border-color .28s var(--ease), box-shadow .28s var(--ease);
+      animation: cardIn .42s var(--ease) both;
+    }
+
+    .card:hover {
+      transform: translateY(-3px);
+      border-color: rgba(124,111,247,.42);
+      box-shadow: 0 24px 70px rgba(0,0,0,.46);
+    }
+
+    .card.large { grid-column: span 8; }
+    .card.small { grid-column: span 4; }
+    .card.full { grid-column: 1 / -1; }
+
+    .card-inner {
+      position: relative;
+      z-index: 1;
+      padding: 18px;
+    }
+
+    .card-head {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 12px;
+      margin-bottom: 14px;
+    }
+
+    .eyebrow {
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
+      margin-bottom: 6px;
+      color: var(--cyan);
+      font-size: 12px;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: .06em;
+    }
+
+    .eyebrow::before {
+      content: "";
+      width: 8px;
+      height: 8px;
+      border-radius: 2px;
+      background: currentColor;
+      box-shadow: 0 0 14px currentColor;
+    }
+
+    h3 {
+      margin: 0;
+      color: #faf9ff;
+      font-size: 19px;
+      line-height: 1.25;
+      letter-spacing: 0;
+    }
+
+    .card p {
+      color: var(--muted);
+      margin: 0;
+      font-size: 14px;
+    }
+
+    .text-block {
+      display: grid;
+      gap: 10px;
+      margin: 12px 0 14px;
+    }
+
+    .explain {
+      padding: 11px 12px;
+      border: 1px solid rgba(255,255,255,.08);
+      border-radius: var(--radius-sm);
+      background: rgba(255,255,255,.035);
+    }
+
+    .explain strong {
+      display: block;
+      margin-bottom: 3px;
+      color: #ebe8ff;
+      font-size: 12px;
+    }
+
+    .misconception {
+      border-color: rgba(255, 180, 92, .25);
+      background: rgba(255, 180, 92, .075);
+    }
+
+    .interactive {
+      margin-top: 14px;
+      padding: 12px;
+      border: 1px solid rgba(255,255,255,.08);
+      border-radius: var(--radius-sm);
+      background: rgba(4,5,10,.38);
+    }
+
+    .term-grid {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 12px;
+    }
+
+    .term-card {
+      min-height: 178px;
+      padding: 14px;
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      background: rgba(18, 18, 30, .72);
+      box-shadow: 0 12px 34px rgba(0,0,0,.28);
+      transition: transform .28s var(--ease), opacity .28s var(--ease), border-color .28s var(--ease), background .28s var(--ease);
+      animation: resultIn .28s var(--ease) both;
+    }
+
+    .term-card:hover {
+      transform: translateY(-4px);
+      border-color: rgba(61, 214, 168, .38);
+      background: rgba(25, 26, 43, .84);
+    }
+
+    .term-card h4 {
+      margin: 0 0 8px;
+      font-size: 17px;
+      color: #fff;
+    }
+
+    .term-card p {
+      min-height: 44px;
+      margin: 0 0 12px;
+      color: var(--muted);
+      font-size: 13px;
+    }
+
+    .term-actions {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 8px;
+      margin-top: auto;
+    }
+
+    .tag {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 5px 8px;
+      border: 1px solid rgba(124,111,247,.23);
+      border-radius: 999px;
+      color: #cfc8ff;
+      background: rgba(124,111,247,.08);
+      font-size: 12px;
+      white-space: nowrap;
+    }
+
+    .detail-btn {
+      color: var(--cyan);
+      background: transparent;
+      padding: 5px 0;
+      font-size: 13px;
+      font-weight: 800;
+    }
+
+    mark {
+      color: #fff;
+      background: rgba(61, 214, 168, .32);
+      border-radius: 4px;
+      padding: 0 2px;
+    }
+
+    .empty-state {
+      display: none;
+      padding: 26px;
+      border: 1px dashed rgba(124,111,247,.4);
+      border-radius: var(--radius);
+      color: var(--muted);
+      background: rgba(124,111,247,.06);
+      text-align: center;
+    }
+
+    .svg-box {
+      width: 100%;
+      min-height: 280px;
+      border: 1px solid rgba(255,255,255,.08);
+      border-radius: var(--radius-sm);
+      background: linear-gradient(180deg, rgba(10, 11, 20, .8), rgba(4,5,10,.9));
+      overflow: hidden;
+    }
+
+    svg {
+      display: block;
+      width: 100%;
+      height: auto;
+    }
+
+    .system-layout,
+    .split-layout {
+      display: grid;
+      grid-template-columns: minmax(0, 1.2fr) minmax(240px, .8fr);
+      gap: 12px;
+      align-items: stretch;
+    }
+
+    .info-panel {
+      padding: 13px;
+      border: 1px solid rgba(255,255,255,.09);
+      border-radius: var(--radius-sm);
+      background: rgba(255,255,255,.04);
+      min-height: 170px;
+      transition: transform .24s var(--ease), opacity .24s var(--ease);
+    }
+
+    .info-panel.flash {
+      transform: translateY(-2px);
+      border-color: rgba(61, 214, 168, .35);
+    }
+
+    .info-panel h4 {
+      margin: 0 0 8px;
+      color: #fff;
+      font-size: 16px;
+    }
+
+    .info-panel p {
+      margin: 0 0 9px;
+      font-size: 13px;
+    }
+
+    .layer-click {
+      cursor: pointer;
+      transition: filter .22s var(--ease), opacity .22s var(--ease);
+    }
+
+    .layer-click:hover,
+    .layer-click.active {
+      filter: drop-shadow(0 0 10px rgba(61,214,168,.42));
+    }
+
+    .scan-line {
+      animation: scan 4.8s linear infinite;
+    }
+
+    .gas-dot {
+      animation: floatGas 4.8s ease-in-out infinite;
+    }
+
+    .slider-group {
+      display: grid;
+      gap: 11px;
+    }
+
+    .control {
+      display: grid;
+      gap: 6px;
+    }
+
+    .control label {
+      display: flex;
+      justify-content: space-between;
+      gap: 8px;
+      color: #dad5ef;
+      font-size: 13px;
+      font-weight: 750;
+    }
+
+    .control span {
+      color: var(--cyan);
+      font-variant-numeric: tabular-nums;
+    }
+
+    input[type="range"] {
+      width: 100%;
+      accent-color: var(--cyan);
+      cursor: pointer;
+    }
+
+    .metric-row {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 10px;
+      margin-top: 12px;
+    }
+
+    .metric {
+      min-width: 0;
+      padding: 11px;
+      border: 1px solid rgba(255,255,255,.08);
+      border-radius: var(--radius-sm);
+      background: rgba(255,255,255,.035);
+    }
+
+    .metric b {
+      display: block;
+      color: #fff;
+      font-size: 22px;
+      line-height: 1;
+      font-variant-numeric: tabular-nums;
+    }
+
+    .metric small {
+      display: block;
+      margin-top: 5px;
+      color: var(--soft);
+      font-size: 12px;
+    }
+
+    .bar {
+      height: 9px;
+      overflow: hidden;
+      border-radius: 999px;
+      background: rgba(255,255,255,.08);
+    }
+
+    .bar > i {
+      display: block;
+      width: 0;
+      height: 100%;
+      border-radius: inherit;
+      background: linear-gradient(90deg, var(--orange), var(--cyan));
+      transition: width .35s var(--ease), background .35s var(--ease);
+    }
+
+    .gauge-wrap {
+      display: grid;
+      place-items: center;
+      min-height: 208px;
+    }
+
+    .gauge {
+      position: relative;
+      width: 188px;
+      aspect-ratio: 1;
+      display: grid;
+      place-items: center;
+      border-radius: 50%;
+      background: conic-gradient(var(--cyan) 0deg, rgba(255,255,255,.08) 0deg);
+      box-shadow: inset 0 0 0 1px rgba(255,255,255,.08), 0 0 38px rgba(61,214,168,.12);
+      transition: background .35s var(--ease);
+    }
+
+    .gauge::before {
+      content: "";
+      position: absolute;
+      inset: 13px;
+      border-radius: 50%;
+      background: #11111d;
+      border: 1px solid rgba(255,255,255,.08);
+    }
+
+    .gauge-value {
+      position: relative;
+      z-index: 1;
+      text-align: center;
+    }
+
+    .gauge-value b {
+      display: block;
+      font-size: 46px;
+      line-height: .95;
+      font-variant-numeric: tabular-nums;
+    }
+
+    .gauge-value small {
+      color: var(--soft);
+      font-size: 12px;
+    }
+
+    .status-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
+      min-height: 30px;
+      padding: 6px 10px;
+      border-radius: 999px;
+      color: #fff;
+      background: rgba(124,111,247,.16);
+      border: 1px solid rgba(124,111,247,.26);
+      font-size: 12px;
+      font-weight: 800;
+    }
+
+    .status-pill::before {
+      content: "";
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      background: currentColor;
+      box-shadow: 0 0 12px currentColor;
+    }
+
+    .ratio-bars {
+      display: grid;
+      gap: 8px;
+      margin-top: 10px;
+    }
+
+    .ratio-line {
+      display: grid;
+      grid-template-columns: 72px 1fr 46px;
+      gap: 8px;
+      align-items: center;
+      color: var(--muted);
+      font-size: 12px;
+    }
+
+    .ratio-line .bar > i {
+      background: var(--blue);
+    }
+
+    .ratio-line.ads .bar > i {
+      background: var(--purple);
+    }
+
+    .segmented {
+      display: inline-grid;
+      grid-auto-flow: column;
+      gap: 4px;
+      padding: 4px;
+      border: 1px solid rgba(255,255,255,.08);
+      border-radius: 10px;
+      background: rgba(255,255,255,.04);
+    }
+
+    .segmented button {
+      min-height: 30px;
+      padding: 6px 10px;
+      color: var(--muted);
+      border-radius: 7px;
+      background: transparent;
+      transition: .2s var(--ease);
+    }
+
+    .segmented button.active {
+      color: #fff;
+      background: rgba(61,214,168,.16);
+      box-shadow: inset 0 0 0 1px rgba(61,214,168,.28);
+    }
+
+    .select-grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 10px;
+    }
+
+    .timeline {
+      display: grid;
+      grid-template-columns: repeat(8, minmax(118px, 1fr));
+      gap: 10px;
+      overflow-x: auto;
+      padding: 4px 2px 12px;
+    }
+
+    .flow-step {
+      position: relative;
+      min-height: 78px;
+      padding: 11px;
+      border: 1px solid var(--line);
+      border-radius: var(--radius-sm);
+      color: var(--muted);
+      background: rgba(255,255,255,.04);
+      text-align: left;
+      transition: .22s var(--ease);
+    }
+
+    .flow-step::after {
+      content: "";
+      position: absolute;
+      top: 50%;
+      right: -10px;
+      width: 10px;
+      height: 1px;
+      background: linear-gradient(90deg, var(--purple), var(--cyan));
+      animation: flow 1.7s linear infinite;
+    }
+
+    .flow-step:last-child::after { display: none; }
+
+    .flow-step:hover,
+    .flow-step.active {
+      transform: translateY(-2px);
+      color: #fff;
+      border-color: rgba(61,214,168,.42);
+      box-shadow: 0 0 24px rgba(61,214,168,.08);
+    }
+
+    .flow-step b {
+      display: block;
+      color: inherit;
+      font-size: 13px;
+    }
+
+    .node {
+      cursor: pointer;
+      transition: transform .24s var(--ease), filter .24s var(--ease);
+    }
+
+    .node:hover,
+    .node.active {
+      transform: translateY(-2px);
+      filter: drop-shadow(0 0 12px rgba(61,214,168,.55));
+    }
+
+    .edge {
+      stroke: rgba(160,153,255,.28);
+      stroke-width: 1.2;
+      transition: stroke .25s var(--ease), stroke-width .25s var(--ease);
+    }
+
+    .edge.hot {
+      stroke: rgba(61,214,168,.75);
+      stroke-width: 2.2;
+      stroke-dasharray: 5 8;
+      animation: dash 1.2s linear infinite;
+    }
+
+    .floating-progress {
+      position: fixed;
+      right: 18px;
+      bottom: 18px;
+      z-index: 40;
+      width: 240px;
+      padding: 13px;
+      border: 1px solid rgba(61,214,168,.28);
+      border-radius: var(--radius);
+      background: rgba(12, 13, 22, .86);
+      backdrop-filter: blur(18px);
+      box-shadow: 0 18px 50px rgba(0,0,0,.46);
+    }
+
+    .floating-progress strong {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 9px;
+      font-size: 13px;
+    }
+
+    .progress-track {
+      height: 8px;
+      border-radius: 999px;
+      background: rgba(255,255,255,.08);
+      overflow: hidden;
+    }
+
+    .progress-track i {
+      display: block;
+      height: 100%;
+      width: 0;
+      border-radius: inherit;
+      background: linear-gradient(90deg, var(--purple), var(--cyan));
+      transition: width .35s var(--ease);
+    }
+
+    .toast-stack {
+      position: fixed;
+      top: 18px;
+      right: 18px;
+      z-index: 80;
+      display: grid;
+      gap: 10px;
+      width: min(360px, calc(100vw - 36px));
+      pointer-events: none;
+    }
+
+    .toast {
+      display: grid;
+      grid-template-columns: 8px 1fr;
+      gap: 10px;
+      padding: 12px;
+      border: 1px solid rgba(255,255,255,.12);
+      border-radius: var(--radius-sm);
+      background: rgba(15, 16, 27, .92);
+      box-shadow: 0 16px 45px rgba(0,0,0,.4);
+      backdrop-filter: blur(14px);
+      animation: toastIn .28s var(--ease) both;
+    }
+
+    .toast i {
+      width: 8px;
+      height: 100%;
+      border-radius: 999px;
+      background: var(--cyan);
+    }
+
+    .toast.warn i { background: var(--orange); }
+    .toast.danger i { background: var(--red); }
+
+    .toast p {
+      margin: 0;
+      color: #eeeaff;
+      font-size: 13px;
+    }
+
+    .modal-backdrop {
+      position: fixed;
+      inset: 0;
+      display: grid;
+      place-items: center;
+      padding: 22px;
+      z-index: 90;
+      background: rgba(0,0,0,.62);
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity .24s var(--ease);
+    }
+
+    .modal-backdrop.open {
+      opacity: 1;
+      pointer-events: auto;
+    }
+
+    .modal {
+      width: min(720px, 100%);
+      max-height: min(760px, 92vh);
+      overflow: auto;
+      border: 1px solid rgba(124,111,247,.32);
+      border-radius: 14px;
+      background: #11111d;
+      box-shadow: 0 30px 90px rgba(0,0,0,.62);
+      transform: scale(.96) translateY(8px);
+      transition: transform .24s var(--ease);
+    }
+
+    .modal-backdrop.open .modal {
+      transform: scale(1) translateY(0);
+    }
+
+    .modal-head {
+      position: sticky;
+      top: 0;
+      z-index: 1;
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
+      align-items: center;
+      padding: 18px;
+      border-bottom: 1px solid rgba(255,255,255,.08);
+      background: rgba(17,17,29,.92);
+      backdrop-filter: blur(12px);
+    }
+
+    .modal-head h3 {
+      font-size: 24px;
+    }
+
+    .icon-btn {
+      width: 36px;
+      height: 36px;
+      padding: 0;
+      font-size: 22px;
+    }
+
+    .modal-body {
+      display: grid;
+      gap: 12px;
+      padding: 18px;
+    }
+
+    .modal-body .explain p {
+      margin: 0;
+    }
+
+    .tooltip {
+      position: fixed;
+      z-index: 100;
+      max-width: 230px;
+      padding: 8px 9px;
+      border: 1px solid rgba(61,214,168,.28);
+      border-radius: 8px;
+      color: #efeaff;
+      background: rgba(12,13,22,.94);
+      box-shadow: 0 12px 34px rgba(0,0,0,.38);
+      font-size: 12px;
+      pointer-events: none;
+      opacity: 0;
+      transform: translateY(4px);
+      transition: opacity .14s ease, transform .14s ease;
+    }
+
+    .tooltip.show {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    .spinner {
+      width: 14px;
+      height: 14px;
+      border-radius: 50%;
+      border: 2px solid rgba(255,255,255,.25);
+      border-top-color: var(--cyan);
+      animation: spin .7s linear infinite;
+    }
+
+    .skeleton {
+      position: relative;
+      overflow: hidden;
+      background: rgba(255,255,255,.06);
+      border-radius: 6px;
+    }
+
+    .skeleton::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      transform: translateX(-100%);
+      background: linear-gradient(90deg, transparent, rgba(255,255,255,.12), transparent);
+      animation: shimmer 1.35s infinite;
+    }
+
+    @keyframes riseIn {
+      from { opacity: 0; transform: translateY(14px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    @keyframes cardIn {
+      from { opacity: 0; transform: translateY(16px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    @keyframes resultIn {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    @keyframes toastIn {
+      from { opacity: 0; transform: translateX(20px); }
+      to { opacity: 1; transform: translateX(0); }
+    }
+
+    @keyframes scan {
+      from { transform: translateY(-80px); }
+      to { transform: translateY(250px); }
+    }
+
+    @keyframes floatGas {
+      0%, 100% { transform: translateY(0); opacity: .55; }
+      50% { transform: translateY(-5px); opacity: .92; }
+    }
+
+    @keyframes dash {
+      to { stroke-dashoffset: -26; }
+    }
+
+    @keyframes flow {
+      to { background-position: 20px 0; }
+    }
+
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+
+    @keyframes shimmer {
+      to { transform: translateX(100%); }
+    }
+
+    @media (max-width: 1180px) {
+      .term-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+      .card.large, .card.small { grid-column: span 6; }
+    }
+
+    @media (max-width: 860px) {
+      .page { width: min(100% - 22px, 720px); padding-top: 22px; }
+      .intro-panel,
+      .search-row,
+      .system-layout,
+      .split-layout {
+        grid-template-columns: 1fr;
+      }
+      .mode-box { min-width: 0; }
+      .card,
+      .card.large,
+      .card.small {
+        grid-column: 1 / -1;
+      }
+      .term-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+      .floating-progress {
+        left: 12px;
+        right: 12px;
+        bottom: 12px;
+        width: auto;
+      }
+      .section-title {
+        align-items: start;
+        flex-direction: column;
+      }
+    }
+
+    @media (max-width: 560px) {
+      .term-grid,
+      .metric-row,
+      .select-grid {
+        grid-template-columns: 1fr;
+      }
+      .hero { padding-top: 20px; }
+      .card-inner { padding: 14px; }
+      .toolbar { top: 0; margin-left: -4px; margin-right: -4px; }
+      .floating-progress { display: none; }
+      .ratio-line { grid-template-columns: 64px 1fr 42px; }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after {
+        animation-duration: .01ms !important;
+        animation-iteration-count: 1 !important;
+        scroll-behavior: auto !important;
+        transition-duration: .01ms !important;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="toast-stack" id="toastStack" aria-live="polite"></div>
+  <div class="tooltip" id="tooltip" role="tooltip"></div>
+
+  <main class="page">
+    <section class="hero" aria-labelledby="pageTitle">
+      <div class="badges" aria-label="页面标签">
+        <span class="badge">Pure Frontend</span>
+        <span class="badge">Shale Gas Lab</span>
+        <span class="badge">Interactive Glossary</span>
+        <span class="badge">Exploration &amp; Development</span>
+        <span class="badge">No Backend</span>
+      </div>
+      <h1 id="pageTitle">页岩气勘探开发交互词典</h1>
+      <p class="subtitle">把甜点区、水平井、压裂段、含气量、递减曲线这些抽象术语，变成可以点击、拖动、计算和观察的前端实验。</p>
+
+      <div class="intro-panel">
+        <div>
+          <p>很多人学习页岩气时，听到“TOC”“Ro”“甜点区”“水平井”“水力压裂”“支撑剂”“SRV”“EUR”“递减曲线”等术语会觉得抽象。这个页面通过交互词典和简化模拟器，把专业概念拆成可观察的小实验。重点不是替代油气工程软件，也不是提供现场施工参数，而是用准确、简化、可交互的方式帮助初学者建立页岩气勘探开发直觉。</p>
+          <div class="disclaimer" role="note">
+            <span aria-hidden="true">!</span>
+            <span>本页面为教学简化模型，所有数值、图形和模拟效果仅用于概念理解，不用于真实勘探部署、工程设计、压裂施工或储量评价。</span>
+          </div>
+        </div>
+        <div class="mode-box">
+          <div class="switch-row">
+            <span id="modeLabel">新手模式</span>
+            <button class="switch" id="modeSwitch" type="button" aria-label="切换新手模式和专业模式" aria-pressed="false"><span class="knob"></span></button>
+          </div>
+          <p style="margin-top:10px;font-size:12px;">切换后，卡片解释会在通俗表述与专业表述之间变化。</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="toolbar" aria-label="术语搜索与分类">
+      <div class="search-row">
+        <div class="search-wrap">
+          <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M10.8 18.1a7.3 7.3 0 1 1 0-14.6 7.3 7.3 0 0 1 0 14.6Zm5.1-2 4.6 4.5" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+          <label for="searchInput" class="sr-only"></label>
+          <input id="searchInput" type="search" placeholder="搜索术语，例如：甜点区、TOC、水平井、压裂、EUR" aria-label="搜索术语" autocomplete="off" />
+        </div>
+        <button class="reset-btn" id="resetSearch" type="button">重置筛选</button>
+      </div>
+      <div class="chips" id="categoryChips" aria-label="分类筛选"></div>
+    </section>
+
+    <section class="section-title">
+      <div>
+        <h2>核心术语</h2>
+        <p>点击“查看详情”打开术语弹窗。搜索命中词会高亮显示。</p>
+      </div>
+      <span class="status-pill" id="resultCount">0 个术语</span>
+    </section>
+    <div class="term-grid" id="termGrid"></div>
+    <div class="empty-state" id="emptyState">没有找到相关术语，可以试试搜索：含气量、支撑剂、井距、递减曲线</div>
+
+    <section class="section-title">
+      <div>
+        <h2>交互实验室</h2>
+        <p>所有参数均为教学示意值，用来建立概念直觉，不构成工程建议。</p>
+      </div>
+      <button class="ghost-btn" id="openSafety" type="button">查看教学边界说明</button>
+    </section>
+
+    <section class="grid">
+      <article class="card large" id="lab-system">
+        <div class="card-inner">
+          <div class="card-head">
+            <div>
+              <div class="eyebrow">Reservoir System</div>
+              <h3>页岩气系统：气藏藏在致密页岩里</h3>
+            </div>
+            <span class="tag">可点击剖面</span>
+          </div>
+          <div class="system-layout">
+            <div class="svg-box">
+              <svg id="systemSvg" viewBox="0 0 680 360" role="img" aria-label="页岩气系统剖面图">
+                <defs>
+                  <pattern id="shalePattern" width="12" height="12" patternUnits="userSpaceOnUse">
+                    <path d="M0 8 L12 4" stroke="rgba(255,255,255,.08)" stroke-width="1"/>
+                  </pattern>
+                  <linearGradient id="surfaceGrad" x1="0" x2="1">
+                    <stop offset="0" stop-color="#2a2a38"/><stop offset="1" stop-color="#1b1b2a"/>
+                  </linearGradient>
+                  <filter id="softGlow"><feGaussianBlur stdDeviation="3" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+                </defs>
+                <rect width="680" height="360" fill="#0b0c15"/>
+                <path class="layer-click" data-key="surface" data-tip="地表与井场：示意，不代表真实部署" d="M0 56 C110 36 210 64 330 48 C460 30 560 62 680 42 L680 0 L0 0 Z" fill="url(#surfaceGrad)"/>
+                <path class="layer-click" data-key="cover" data-tip="覆盖层：影响保存条件和埋深环境" d="M0 56 C120 72 230 62 350 80 C480 99 560 72 680 88 L680 170 L0 152 Z" fill="#151827"/>
+                <path class="layer-click" data-key="shale" data-tip="页岩层：致密、低渗、富有机质是重点" d="M0 170 C120 156 240 190 350 170 C470 150 560 178 680 160 L680 278 C535 300 410 268 300 286 C178 306 90 270 0 292 Z" fill="#262238"/>
+                <path d="M0 170 C120 156 240 190 350 170 C470 150 560 178 680 160 L680 278 C535 300 410 268 300 286 C178 306 90 270 0 292 Z" fill="url(#shalePattern)" opacity=".8"/>
+                <rect class="scan-line" x="0" y="-40" width="680" height="26" fill="rgba(61,214,168,.10)"/>
+                <path class="layer-click" data-key="organic" data-tip="有机质富集带：烃源和吸附空间相关" d="M40 215 C170 193 285 230 405 205 C515 184 600 202 650 193 L650 235 C520 250 425 232 315 249 C200 266 112 241 40 258 Z" fill="rgba(61,214,168,.20)" stroke="rgba(61,214,168,.45)"/>
+                <path class="layer-click" data-key="well" data-tip="水平井：增加与优质页岩层的接触长度" d="M88 86 C130 118 160 158 188 210 C238 246 362 231 530 221" fill="none" stroke="#3dd6a8" stroke-width="5" stroke-linecap="round" filter="url(#softGlow)"/>
+                <circle cx="188" cy="210" r="7" fill="#3dd6a8"/>
+                <g class="layer-click" data-key="fracture" data-tip="压裂裂缝网络：提供更多流动通道" fill="none" stroke="#9b8cff" stroke-width="2" stroke-linecap="round" opacity=".86">
+                  <path d="M275 232 C264 207 252 195 240 174 M275 232 C288 208 299 198 312 178"/>
+                  <path d="M355 228 C342 203 334 190 320 171 M355 228 C371 205 384 193 398 174"/>
+                  <path d="M440 224 C426 199 416 190 404 169 M440 224 C458 204 468 190 486 176"/>
+                  <path d="M505 222 C492 202 480 190 466 172 M505 222 C519 201 530 190 552 178"/>
+                </g>
+                <g class="layer-click" data-key="freeGas" data-tip="游离气：孔隙和微裂缝中的可流动部分" fill="#5ea8ff">
+                  <circle class="gas-dot" cx="248" cy="215" r="4"/><circle class="gas-dot" cx="330" cy="240" r="3.4"/><circle class="gas-dot" cx="472" cy="205" r="4"/>
+                  <circle class="gas-dot" cx="552" cy="230" r="3.6"/><circle class="gas-dot" cx="160" cy="245" r="3.2"/>
+                </g>
+                <g class="layer-click" data-key="adsGas" data-tip="吸附气：附着在有机质或矿物表面" fill="#7c6ff7">
+                  <circle class="gas-dot" cx="118" cy="224" r="2.5"/><circle class="gas-dot" cx="142" cy="232" r="2.2"/><circle class="gas-dot" cx="392" cy="220" r="2.4"/>
+                  <circle class="gas-dot" cx="418" cy="214" r="2.1"/><circle class="gas-dot" cx="610" cy="213" r="2.4"/><circle class="gas-dot" cx="632" cy="222" r="2.1"/>
+                </g>
+                <text x="28" y="34" fill="#a9a2c7" font-size="13">地表</text>
+                <text x="28" y="122" fill="#a9a2c7" font-size="13">覆盖层</text>
+                <text x="28" y="192" fill="#f3f1ff" font-size="13">页岩层</text>
+                <text x="52" y="252" fill="#3dd6a8" font-size="12">有机质富集带</text>
+              </svg>
+            </div>
+            <aside class="info-panel" id="systemInfo" aria-live="polite">
+              <h4>点击剖面元素查看解释</h4>
+              <p>通俗解释：页岩气不是聚集在大空洞里，而是大量分布在非常致密的页岩孔隙、有机质表面和微裂缝中。</p>
+              <p>专业解释：页岩气通常以游离气和吸附气等形式赋存于富有机质页岩储层中，开发上往往需要水平井与体积压裂来提高有效改造体积。</p>
+              <p>常见误区：页岩气并不是随便打一口井就能大量产气，关键要看地质甜点、工程甜点和开发参数是否匹配。</p>
+            </aside>
+          </div>
+        </div>
+      </article>
+
+      <article class="card small" id="lab-sweet">
+        <div class="card-inner">
+          <div class="card-head">
+            <div>
+              <div class="eyebrow">Sweet Spot</div>
+              <h3>甜点区：不是哪里有页岩，哪里就值得开发</h3>
+            </div>
+            <span class="tag">教学示意值</span>
+          </div>
+          <div class="split-layout" style="grid-template-columns:1fr;">
+            <div class="gauge-wrap">
+              <div class="gauge" id="sweetGauge"><div class="gauge-value"><b id="sweetScore">0</b><small id="sweetLabel">低潜力</small></div></div>
+            </div>
+            <div class="slider-group" id="sweetControls"></div>
+          </div>
+          <div class="metric-row">
+            <div class="metric"><b id="geoScore">0</b><small>地质甜点评分</small><div class="bar"><i id="geoBar"></i></div></div>
+            <div class="metric"><b id="engScore">0</b><small>工程甜点评分</small><div class="bar"><i id="engBar"></i></div></div>
+          </div>
+          <div class="interactive">
+            <p id="sweetReason">拖动滑块，观察 TOC、Ro、孔隙度、脆性、含气量和埋深如何共同影响甜点指数。</p>
+          </div>
+          <div class="text-block">
+            <div class="explain"><strong>通俗解释</strong><p>甜点区就是地质条件和工程条件都比较好的区域，既要有气，也要能被有效改造出来。</p></div>
+            <div class="explain pro-text" hidden><strong>专业解释</strong><p>页岩气甜点区评价通常综合考虑有机质丰度、成熟度、储集空间、含气性、脆性、地应力、埋深、压力系数等因素。</p></div>
+            <div class="explain misconception"><strong>常见误区</strong><p>TOC 高不一定就是好甜点，还要看成熟度、含气量、可压性、保存条件和开发经济性。</p></div>
+          </div>
+        </div>
+      </article>
+
+      <article class="card" id="lab-gas-state">
+        <div class="card-inner">
+          <div class="card-head">
+            <div>
+              <div class="eyebrow">Gas State</div>
+              <h3>含气状态：页岩气不只是一种存在方式</h3>
+            </div>
+            <span class="tag">压力滑块</span>
+          </div>
+          <div class="split-layout">
+            <div class="svg-box">
+              <svg id="gasSvg" viewBox="0 0 520 310" aria-label="页岩微孔与气体赋存状态示意">
+                <rect width="520" height="310" fill="#0b0c15"/>
+                <path d="M56 58 C132 26 210 68 272 46 C344 20 426 48 472 84 L472 250 C405 284 316 238 260 265 C182 304 109 252 56 268 Z" fill="#252137" stroke="rgba(160,153,255,.3)"/>
+                <ellipse cx="260" cy="160" rx="128" ry="56" fill="#111522" stroke="rgba(94,168,255,.45)" stroke-width="2"/>
+                <g id="freeBubbles"></g>
+                <g id="adsPoints"></g>
+                <text x="44" y="34" fill="#a9a2c7" font-size="13">页岩微孔示意</text>
+                <text x="160" y="160" fill="#5ea8ff" font-size="12">孔隙 / 微裂缝</text>
+                <text x="315" y="88" fill="#9b8cff" font-size="12">表面吸附点</text>
+              </svg>
+            </div>
+            <div>
+              <div class="control">
+                <label for="pressureRange">压力 <span id="pressureValue">35 MPa</span></label>
+                <input id="pressureRange" type="range" min="5" max="60" value="35" step="1" />
+              </div>
+              <div class="ratio-bars">
+                <div class="ratio-line"><span>游离气</span><div class="bar"><i id="freeBar"></i></div><b id="freePct">0%</b></div>
+                <div class="ratio-line ads"><span>吸附气</span><div class="bar"><i id="adsBar"></i></div><b id="adsPct">0%</b></div>
+              </div>
+              <div class="text-block">
+                <div class="explain"><strong>通俗解释</strong><p>游离气存在于孔隙和微裂缝中；吸附气附着在有机质和矿物表面，通常与压力变化有关。</p></div>
+                <div class="explain"><strong>教学边界</strong><p>真实含气状态受等温吸附、孔隙结构、压力、温度和有机质类型等因素影响，这里仅作教学简化。</p></div>
+                <div class="explain misconception"><strong>常见误区</strong><p>含气量高不等于所有气体都能快速采出来，不同赋存状态对产量贡献和释放过程不同。</p></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </article>
+
+      <article class="card" id="lab-geosteering">
+        <div class="card-inner">
+          <div class="card-head">
+            <div>
+              <div class="eyebrow">Geosteering</div>
+              <h3>水平井：尽量让井眼待在优质页岩层里</h3>
+            </div>
+            <button class="primary-btn" id="optimizeWell" type="button">自动优化轨迹</button>
+          </div>
+          <div class="svg-box">
+            <svg id="wellSvg" viewBox="0 0 660 310" aria-label="水平井地质导向示意">
+              <rect width="660" height="310" fill="#0b0c15"/>
+              <path d="M0 118 C120 92 218 130 332 112 C452 92 548 126 660 102 L660 188 C540 202 446 176 334 190 C218 204 110 180 0 198 Z" fill="rgba(61,214,168,.15)" stroke="rgba(61,214,168,.48)"/>
+              <path d="M0 76 C150 60 260 92 398 72 C512 56 588 70 660 62" stroke="rgba(255,255,255,.08)" fill="none"/>
+              <path d="M0 230 C160 212 260 246 398 222 C520 202 586 226 660 214" stroke="rgba(255,255,255,.08)" fill="none"/>
+              <text x="24" y="144" fill="#3dd6a8" font-size="13">目标页岩层</text>
+              <path id="wellPath" d="" fill="none" stroke="#3dd6a8" stroke-width="5" stroke-linecap="round"/>
+              <circle id="entryPoint" cx="92" cy="78" r="6" fill="#3dd6a8"/>
+              <circle id="dragPoint" cx="390" cy="150" r="10" fill="#7c6ff7" stroke="#fff" stroke-width="2" style="cursor:grab"/>
+              <text x="104" y="76" fill="#a9a2c7" font-size="12">入靶点</text>
+              <text x="420" y="150" fill="#a9a2c7" font-size="12">拖动控制点</text>
+            </svg>
+          </div>
+          <div class="metric-row">
+            <div class="metric"><b id="targetRate">0%</b><small>在靶率</small><div class="bar"><i id="targetBar"></i></div></div>
+            <div class="metric"><b id="targetStatus">在靶</b><small>轨迹状态</small><div class="bar"><i id="statusBar"></i></div></div>
+          </div>
+          <div class="text-block">
+            <div class="explain"><strong>通俗解释</strong><p>水平井就像在地下沿着一层很薄的优质页岩尽量多走一段路，这样接触的储层更多。</p></div>
+            <div class="explain pro-text" hidden><strong>专业解释</strong><p>地质导向通过实时地质、测井和轨迹数据调整井眼位置，目标是在复杂地层中提高优质储层钻遇率。</p></div>
+            <div class="explain misconception"><strong>常见误区</strong><p>水平段越长不一定越好，如果偏离甜点层，增加长度也未必带来更好的产量。</p></div>
+          </div>
+        </div>
+      </article>
+
+      <article class="card large" id="lab-frac">
+        <div class="card-inner">
+          <div class="card-head">
+            <div>
+              <div class="eyebrow">Hydraulic Fracturing</div>
+              <h3>压裂改造：让致密储层形成更多流动通道</h3>
+            </div>
+            <button class="primary-btn" id="startFrac" type="button">启动压裂模拟</button>
+          </div>
+          <div class="split-layout">
+            <div class="svg-box">
+              <svg id="fracSvg" viewBox="0 0 720 360" aria-label="水平井分段压裂动画">
+                <rect width="720" height="360" fill="#0b0c15"/>
+                <rect x="28" y="84" width="664" height="192" rx="10" fill="#242036" stroke="rgba(160,153,255,.18)"/>
+                <path d="M70 180 L650 180" stroke="#3dd6a8" stroke-width="5" stroke-linecap="round"/>
+                <g id="stageGroup"></g>
+                <g id="fractureGroup"></g>
+                <g id="propGroup"></g>
+              </svg>
+            </div>
+            <div class="slider-group">
+              <div class="control"><label for="stageRange">压裂段数 <span id="stageValue">6 段</span></label><input id="stageRange" type="range" min="3" max="12" value="6" step="1"></div>
+              <div>
+                <label style="display:block;color:#dad5ef;font-size:13px;font-weight:750;margin-bottom:7px;">改造强度</label>
+                <div class="segmented" id="intensityBtns" data-name="intensity">
+                  <button type="button" data-value="low">低</button><button type="button" data-value="mid" class="active">中</button><button type="button" data-value="high">高</button>
+                </div>
+              </div>
+              <div>
+                <label style="display:block;color:#dad5ef;font-size:13px;font-weight:750;margin-bottom:7px;">支撑剂量</label>
+                <div class="segmented" id="propBtns" data-name="proppant">
+                  <button type="button" data-value="low">低</button><button type="button" data-value="mid" class="active">中</button><button type="button" data-value="high">高</button>
+                </div>
+              </div>
+              <div class="metric-row">
+                <div class="metric"><b id="srvIndex">0</b><small>教学 SRV 指数</small></div>
+                <div class="metric"><b id="fracComplexity">中</b><small>裂缝复杂度</small></div>
+              </div>
+              <div class="interactive"><p id="fracFeedback">选择段数、强度和支撑剂量后启动模拟。动画为教学示意，不代表真实压裂设计。</p></div>
+            </div>
+          </div>
+          <div class="text-block">
+            <div class="explain"><strong>通俗解释</strong><p>页岩很致密，气不容易流出来。压裂的目的，是在地下制造和支撑裂缝，让气体有通道进入井筒。</p></div>
+            <div class="explain pro-text" hidden><strong>专业解释</strong><p>体积压裂通过多段多簇改造，在页岩储层中形成复杂裂缝网络，以提高储层改造体积和导流能力。</p></div>
+            <div class="explain misconception"><strong>常见误区</strong><p>压裂不是越强越好。过强可能带来成本增加、裂缝过度延伸、井间干扰或改造效率下降。</p></div>
+          </div>
+        </div>
+      </article>
+
+      <article class="card small" id="lab-proppant">
+        <div class="card-inner">
+          <div class="card-head">
+            <div>
+              <div class="eyebrow">Proppant</div>
+              <h3>支撑剂：裂缝打开后，还要撑得住</h3>
+            </div>
+          </div>
+          <div class="segmented" id="propStepBtns" aria-label="支撑剂步骤">
+            <button type="button" class="active" data-step="closed">闭合</button>
+            <button type="button" data-step="open">张开</button>
+            <button type="button" data-step="sand">加砂</button>
+            <button type="button" data-step="flow">保持导流</button>
+          </div>
+          <div class="svg-box" style="margin-top:12px;min-height:230px;">
+            <svg id="propSvg" viewBox="0 0 420 250" aria-label="支撑剂裂缝横截面动画">
+              <rect width="420" height="250" fill="#0b0c15"/>
+              <path id="upperFrac" d="" fill="rgba(124,111,247,.16)" stroke="#7c6ff7" stroke-width="2"/>
+              <path id="lowerFrac" d="" fill="rgba(61,214,168,.1)" stroke="#3dd6a8" stroke-width="2"/>
+              <g id="sandGroup"></g>
+              <text x="24" y="32" fill="#a9a2c7" font-size="13">裂缝横截面</text>
+            </svg>
+          </div>
+          <div class="metric-row">
+            <div class="metric"><b id="fracWidth">0</b><small>裂缝宽度</small></div>
+            <div class="metric"><b id="flowIndex">0</b><small>导流能力指数</small></div>
+          </div>
+          <div class="text-block">
+            <div class="explain"><strong>通俗解释</strong><p>压裂把裂缝打开只是第一步，支撑剂像小颗粒支架，帮助裂缝在压力释放后仍然保持通道。</p></div>
+            <div class="explain misconception"><strong>常见误区</strong><p>有裂缝不等于有持续导流能力，如果裂缝闭合或支撑剂铺置不足，产量可能快速下降。</p></div>
+          </div>
+        </div>
+      </article>
+
+      <article class="card" id="lab-micro">
+        <div class="card-inner">
+          <div class="card-head">
+            <div>
+              <div class="eyebrow">Microseismic</div>
+              <h3>微地震：用地下微小信号观察压裂响应</h3>
+            </div>
+            <button class="primary-btn" id="playMicro" type="button">播放压裂监测</button>
+          </div>
+          <div class="svg-box">
+            <svg id="microSvg" viewBox="0 0 620 330" aria-label="微地震事件平面图">
+              <defs>
+                <radialGradient id="heat" cx="50%" cy="50%" r="50%">
+                  <stop offset="0" stop-color="rgba(255,180,92,.46)"/>
+                  <stop offset="1" stop-color="rgba(255,180,92,0)"/>
+                </radialGradient>
+              </defs>
+              <rect width="620" height="330" fill="#0b0c15"/>
+              <ellipse id="heatCloud" cx="310" cy="165" rx="40" ry="20" fill="url(#heat)" opacity="0"/>
+              <path d="M80 165 L540 165" stroke="#3dd6a8" stroke-width="5" stroke-linecap="round"/>
+              <path d="M125 86 C210 40 330 46 450 84 M130 246 C230 285 374 288 505 236" stroke="rgba(124,111,247,.35)" fill="none" stroke-dasharray="7 9"/>
+              <g id="microEvents"></g>
+              <text x="86" y="154" fill="#a9a2c7" font-size="12">水平井</text>
+            </svg>
+          </div>
+          <div class="interactive">
+            <button class="ghost-btn" id="microExplain" type="button">显示解释</button>
+            <p id="microText" style="margin-top:10px;">事件点会按时间顺序出现。悬停事件点可查看时间、相对能量和位置。</p>
+          </div>
+          <div class="text-block">
+            <div class="explain"><strong>通俗解释</strong><p>微地震就像地下传来的细微信号，可以帮助工程师判断压裂影响到了哪里。</p></div>
+            <div class="explain misconception"><strong>常见误区</strong><p>微地震事件多不一定代表产量一定高，关键还要看裂缝是否有效连通、是否具备导流能力。</p></div>
+          </div>
+        </div>
+      </article>
+
+      <article class="card" id="lab-decline">
+        <div class="card-inner">
+          <div class="card-head">
+            <div>
+              <div class="eyebrow">Production</div>
+              <h3>递减曲线：页岩气井通常高初产、快递减、长尾生产</h3>
+            </div>
+            <span class="tag">教学 EUR</span>
+          </div>
+          <div class="split-layout">
+            <div class="svg-box">
+              <svg id="declineSvg" viewBox="0 0 620 330" aria-label="产量递减曲线图">
+                <rect width="620" height="330" fill="#0b0c15"/>
+                <g stroke="rgba(255,255,255,.07)" stroke-width="1">
+                  <path d="M58 38 V274 H580"/>
+                  <path d="M58 214 H580"/><path d="M58 154 H580"/><path d="M58 94 H580"/>
+                </g>
+                <path id="declinePath" d="" fill="none" stroke="#3dd6a8" stroke-width="3" stroke-linecap="round"/>
+                <path id="declineArea" d="" fill="rgba(61,214,168,.10)"/>
+                <text x="32" y="40" fill="#a9a2c7" font-size="12">日产气量</text>
+                <text x="540" y="302" fill="#a9a2c7" font-size="12">时间</text>
+              </svg>
+            </div>
+            <div class="slider-group">
+              <div class="control"><label for="qiRange">初始产量 <span id="qiValue">30</span></label><input id="qiRange" type="range" min="8" max="80" value="30"></div>
+              <div class="control"><label for="diRange">递减率 <span id="diValue">48%</span></label><input id="diRange" type="range" min="15" max="85" value="48"></div>
+              <div class="control"><label for="tailRange">长尾稳定系数 <span id="tailValue">0.45</span></label><input id="tailRange" type="range" min="0.15" max="0.85" value="0.45" step="0.01"></div>
+              <div class="metric-row">
+                <div class="metric"><b id="year1">0</b><small>第 1 年预测产量</small></div>
+                <div class="metric"><b id="year5">0</b><small>第 5 年预测产量</small></div>
+                <div class="metric"><b id="cumGas">0</b><small>累计产量</small></div>
+                <div class="metric"><b id="eur">0</b><small>教学 EUR 估算值</small></div>
+              </div>
+            </div>
+          </div>
+          <div class="interactive"><p id="declineHint">拖动参数，曲线会实时重绘。</p></div>
+          <div class="text-block">
+            <div class="explain"><strong>通俗解释</strong><p>页岩气井往往一开始产量高，但下降也快，后期靠较长时间的低产量持续贡献累计产量。</p></div>
+            <div class="explain misconception"><strong>常见误区</strong><p>只看初始产量容易误判一口井的价值，累计产量和递减趋势同样重要。</p></div>
+          </div>
+        </div>
+      </article>
+
+      <article class="card" id="lab-spacing">
+        <div class="card-inner">
+          <div class="card-head">
+            <div>
+              <div class="eyebrow">Spacing</div>
+              <h3>井距优化：井太远浪费储层，井太近可能互相干扰</h3>
+            </div>
+            <span class="tag">俯视图</span>
+          </div>
+          <div class="split-layout">
+            <div class="svg-box">
+              <svg id="spacingSvg" viewBox="0 0 640 330" aria-label="井距和裂缝影响范围俯视图">
+                <rect width="640" height="330" fill="#0b0c15"/>
+                <g id="spacingAreas"></g>
+                <g id="spacingWells"></g>
+              </svg>
+            </div>
+            <div class="slider-group">
+              <div class="control"><label for="spacingRange">井距 <span id="spacingValue">400 m</span></label><input id="spacingRange" type="range" min="150" max="800" value="400"></div>
+              <div class="control"><label for="halfRange">裂缝半长 <span id="halfValue">140 m</span></label><input id="halfRange" type="range" min="50" max="250" value="140"></div>
+              <div class="control"><label for="wellCountRange">井数 <span id="wellCountValue">3 口</span></label><input id="wellCountRange" type="range" min="2" max="5" value="3" step="1"></div>
+              <div class="metric-row">
+                <div class="metric"><b id="coverageMetric">0%</b><small>动用覆盖率</small></div>
+                <div class="metric"><b id="riskMetric">0%</b><small>干扰风险</small></div>
+              </div>
+              <div class="interactive"><p id="spacingFeedback">调整井距，观察改造范围空白和重叠。</p></div>
+            </div>
+          </div>
+          <div class="text-block">
+            <div class="explain"><strong>通俗解释</strong><p>井距就像种树的间距。太稀浪费土地，太密会互相抢资源。</p></div>
+            <div class="explain pro-text" hidden><strong>专业解释</strong><p>页岩气开发井距优化需要综合考虑储层非均质性、裂缝扩展、压力传播、单井 EUR、平台部署和经济性。</p></div>
+            <div class="explain misconception"><strong>常见误区</strong><p>井越多不一定越好，过密布井可能降低单井产量并增加总体开发成本。</p></div>
+          </div>
+        </div>
+      </article>
+
+      <article class="card full" id="lab-flow">
+        <div class="card-inner">
+          <div class="card-head">
+            <div>
+              <div class="eyebrow">Workflow</div>
+              <h3>从勘探到开发：页岩气不是一个动作，而是一条链条</h3>
+            </div>
+          </div>
+          <div class="timeline" id="flowSteps"></div>
+          <div class="info-panel" id="flowInfo"></div>
+        </div>
+      </article>
+
+      <article class="card full" id="lab-network">
+        <div class="card-inner">
+          <div class="card-head">
+            <div>
+              <div class="eyebrow">Concept Network</div>
+              <h3>术语之间不是孤立的</h3>
+            </div>
+            <span class="tag">点击节点</span>
+          </div>
+          <div class="split-layout">
+            <div class="svg-box">
+              <svg id="networkSvg" viewBox="0 0 860 420" aria-label="页岩气概念关系图">
+                <rect width="860" height="420" fill="#0b0c15"/>
+                <g id="networkEdges"></g>
+                <g id="networkNodes"></g>
+              </svg>
+            </div>
+            <aside class="info-panel" id="networkInfo">
+              <h4>页岩气开发</h4>
+              <p>中心概念连接地质条件、工程改造、生产动态和经济性。点击节点可以看到相关术语被高亮。</p>
+            </aside>
+          </div>
+        </div>
+      </article>
+    </section>
+  </main>
+
+  <aside class="floating-progress" aria-label="学习完成度">
+    <strong><span>学习完成度</span><span id="progressText">0 / 10</span></strong>
+    <div class="progress-track"><i id="progressBar"></i></div>
+  </aside>
+
+  <div class="modal-backdrop" id="modalBackdrop" role="dialog" aria-modal="true" aria-hidden="true">
+    <div class="modal" role="document">
+      <div class="modal-head">
+        <div>
+          <div class="eyebrow" id="modalEyebrow">Glossary</div>
+          <h3 id="modalTitle">术语详情</h3>
+        </div>
+        <button class="icon-btn" id="modalClose" type="button" aria-label="关闭弹窗">×</button>
+      </div>
+      <div class="modal-body" id="modalBody"></div>
+    </div>
+  </div>
+
+  <script>
+    const $ = (sel, root = document) => root.querySelector(sel);
+    const $$ = (sel, root = document) => [...root.querySelectorAll(sel)];
+    const ns = "http://www.w3.org/2000/svg";
+    const clamp = (n, min, max) => Math.max(min, Math.min(max, n));
+    const lerp = (a, b, t) => a + (b - a) * t;
+
+    const categories = ["全部", "地质基础", "储层参数", "钻完井", "压裂改造", "产能评价", "开发优化"];
+    const terms = [
+      { name: "页岩气", cat: "地质基础", one: "赋存在富有机质页岩中的天然气。", pro: "以吸附气、游离气等形式赋存于页岩孔隙、有机质和微裂缝中。", analogy: "像海绵里夹着许多极小气泡，不是大洞里的气。", example: "富有机质页岩具有一定成熟度、含气量和可压性时，可能形成开发目标。", myth: "页岩气不是只靠天然裂缝就能高产，通常需要水平井和压裂改造。", tags: ["烃源岩", "储层", "含气量"] },
+      { name: "烃源岩", cat: "地质基础", one: "能够生成油气的富有机质岩石。", pro: "含有足够有机质并经历适当热演化后，可生成并排出烃类。", analogy: "像厨房里的原料仓，本身决定有没有产生油气的基础。", example: "高 TOC 且成熟度适中的黑色页岩常被关注。", myth: "烃源岩好不等于一定可开发，还要看储集、保存和工程条件。", tags: ["TOC", "Ro", "有机质"] },
+      { name: "储层", cat: "地质基础", one: "能储存并让流体产出的岩层。", pro: "页岩气储层通常孔隙小、渗透率低，储集和生烃空间部分重合。", analogy: "像很紧密的海绵，能藏气但不容易流。", example: "有机孔、无机孔和微裂缝共同贡献储集空间。", myth: "传统砂岩储层经验不能直接套到页岩气。", tags: ["孔隙度", "渗透率", "裂缝"] },
+      { name: "TOC", cat: "储层参数", one: "总有机碳含量，表示岩石中有机质丰度。", pro: "TOC 是烃源岩评价的重要参数，常用于表征有机质含量基础。", analogy: "像面包里酵母多少，原料太少就难有足够气源。", example: "TOC 较高可能意味着更好的生气物质基础。", myth: "TOC 高不一定就是好甜点，还要看成熟度和可采性。", tags: ["烃源岩", "甜点区", "Ro"] },
+      { name: "Ro", cat: "储层参数", one: "镜质体反射率，用来表征有机质成熟度。", pro: "Ro 反映热演化程度，影响生油、生气阶段和含气类型。", analogy: "像食物被加热的火候，太生或太过都可能不理想。", example: "成熟度位于生气窗口时更利于形成页岩气。", myth: "成熟度不是越高越好，过高可能影响储层性质和含气性。", tags: ["成熟度", "TOC", "生气窗口"] },
+      { name: "孔隙度", cat: "储层参数", one: "岩石中孔隙体积占总体积的比例。", pro: "页岩孔隙包括有机孔、粒间孔、粒内孔和微裂缝等。", analogy: "像海绵里空隙的多少。", example: "孔隙度高一些，通常有利于更多气体储存。", myth: "孔隙度高不等于气一定能顺畅流出来。", tags: ["储层", "含气量", "渗透率"] },
+      { name: "渗透率", cat: "储层参数", one: "流体通过岩石的难易程度。", pro: "页岩基质渗透率通常极低，裂缝和改造体积对产能很关键。", analogy: "像水穿过布料的容易程度。", example: "天然裂缝发育或压裂改造后，等效导流能力会改善。", myth: "页岩气开发不能只看孔隙，还要看流动通道。", tags: ["储层", "裂缝网络", "压裂"] },
+      { name: "含气量", cat: "储层参数", one: "单位质量或体积页岩中含有的气体量。", pro: "通常包括吸附气、游离气等组成，受压力、温度、TOC 和孔隙结构影响。", analogy: "像每公斤岩石里装了多少气。", example: "含气量较好是甜点评价的重要因素之一。", myth: "含气量高不代表都能快速采出来。", tags: ["吸附气", "游离气", "甜点区"] },
+      { name: "吸附气", cat: "地质基础", one: "附着在有机质或矿物表面的天然气。", pro: "吸附气与压力和吸附等温线相关，压力降低时可逐步解吸。", analogy: "像水汽贴在玻璃表面。", example: "TOC 较高的页岩可能提供更多吸附表面。", myth: "吸附气不是一开井就全部释放。", tags: ["含气量", "压力", "有机质"] },
+      { name: "游离气", cat: "地质基础", one: "存在于孔隙和微裂缝中的气体。", pro: "游离气更依赖有效孔隙体积和压力条件，通常更接近可流动部分。", analogy: "像小孔里的气泡。", example: "较高孔隙度和压力有利于游离气赋存。", myth: "游离气多也需要连通通道才能有效产出。", tags: ["孔隙度", "压力", "产能"] },
+      { name: "甜点区", cat: "开发优化", one: "资源、储层、工程改造和经济性相对更好的区域。", pro: "综合有机质丰度、成熟度、含气性、可压性、地应力、压力和经济参数等评价。", analogy: "在大片土地里找最适合打井的地方。", example: "TOC 较高、成熟度适中、含气量较好、脆性较强的区带可能更接近甜点。", myth: "甜点区不是由单一指标决定，也会随资料和技术变化。", tags: ["TOC", "Ro", "含气量", "脆性"] },
+      { name: "水平井", cat: "钻完井", one: "井眼在目标层内横向延伸的井。", pro: "通过增加与储层接触长度，提高低渗页岩储层开发效率。", analogy: "不是垂直戳一下，而是在目标层里横着走一段。", example: "水平段尽量保持在优质页岩层内，可提高钻遇率。", myth: "水平段越长不一定越好，关键是是否在靶。", tags: ["地质导向", "压裂段", "井轨迹"] },
+      { name: "地质导向", cat: "钻完井", one: "根据实时信息调整井眼位置。", pro: "结合随钻测井、岩性、构造和轨迹数据，提高目标层钻遇率。", analogy: "像地下导航，边走边修正方向。", example: "发现井眼接近目标层顶界时，及时调整轨迹。", myth: "地质导向不是单纯按预设曲线机械钻进。", tags: ["水平井", "在靶率", "测井"] },
+      { name: "分段压裂", cat: "压裂改造", one: "把水平井分成多个段依次改造。", pro: "通过多段多簇压裂形成更大改造体积和更多导流通道。", analogy: "像把长管道分段处理，每段都打开一片通道。", example: "不同段的压裂响应可能受地应力和岩性影响。", myth: "段数越多不一定越好，还要看改造效率和成本。", tags: ["压裂段", "SRV", "裂缝网络"] },
+      { name: "支撑剂", cat: "压裂改造", one: "进入裂缝后支撑裂缝不完全闭合的颗粒。", pro: "支撑剂粒径、强度、铺置和嵌入程度会影响裂缝导流能力。", analogy: "像给裂缝放入小支架。", example: "支撑剂铺置不足时，裂缝可能闭合导致导流下降。", myth: "有裂缝不等于有持续导流能力。", tags: ["导流能力", "压裂", "裂缝"] },
+      { name: "裂缝网络", cat: "压裂改造", one: "天然裂缝和人工裂缝形成的连通通道系统。", pro: "复杂裂缝网络可扩大改造体积，但有效导流和连通性更关键。", analogy: "像地下道路网，路多但还要能通车。", example: "压裂后形成的主裂缝和分支裂缝共同影响产量。", myth: "裂缝越复杂不一定产量越高。", tags: ["SRV", "支撑剂", "微地震"] },
+      { name: "SRV", cat: "压裂改造", one: "储层改造体积，用于描述压裂影响范围的概念。", pro: "SRV 是体积压裂评价中的概念指标，不等同于全部有效产气体积。", analogy: "像被改造触达的地下区域。", example: "较大的 SRV 可能带来更多动用，但也可能增加干扰风险。", myth: "SRV 大不等于 EUR 一定高。", tags: ["压裂", "裂缝网络", "EUR"] },
+      { name: "微地震监测", cat: "压裂改造", one: "记录压裂诱发微小震动来分析地下响应。", pro: "用于辅助判断裂缝扩展方向、改造范围和地应力响应。", analogy: "听地下很小的声音，判断影响到了哪里。", example: "事件云可显示压裂响应大致展布。", myth: "微地震事件多不等于有效导流裂缝多。", tags: ["裂缝展布", "压裂", "监测"] },
+      { name: "井距", cat: "开发优化", one: "相邻井之间的空间距离。", pro: "井距优化需兼顾储层动用、井间干扰、单井 EUR 和平台经济性。", analogy: "像种树间距，太密太稀都不理想。", example: "裂缝半长较大时，过小井距可能增加连通风险。", myth: "井越多不一定总体效益越好。", tags: ["井间干扰", "开发优化", "EUR"] },
+      { name: "递减曲线", cat: "产能评价", one: "描述产量随时间下降趋势的曲线。", pro: "递减曲线分析用于生产动态预测和可采量估算，需要结合实际生产制度校正。", analogy: "像电池放电曲线，前期快，后期长尾。", example: "高初产但快递减的井，累计产量未必最高。", myth: "只看初始产量容易误判井的价值。", tags: ["初始产量", "EUR", "产能评价"] },
+      { name: "EUR", cat: "产能评价", one: "最终可采量的估算值。", pro: "Estimated Ultimate Recovery，常基于生产动态、地质和工程资料综合评价。", analogy: "不是今天产多少，而是一口井一生可能采多少。", example: "长尾产量对 EUR 贡献明显。", myth: "早期 EUR 估算不确定性较大。", tags: ["递减曲线", "累计产量", "经济性"] },
+      { name: "产能评价", cat: "产能评价", one: "判断井或区块生产能力和开发价值。", pro: "综合初始产量、递减、压力、改造参数、生产制度和经济性进行评价。", analogy: "不只看短跑速度，还看长期表现。", example: "试采资料可帮助校正开发方案。", myth: "单个高产测试点不能代表整个区块。", tags: ["试采", "EUR", "递减曲线"] }
+    ];
+
+    const state = {
+      category: "全部",
+      query: "",
+      professional: false,
+      completed: new Set(),
+      modalTerm: null,
+      intensity: "mid",
+      proppant: "mid",
+      proppantStep: "closed"
+    };
+
+    function showToast(message, type = "ok") {
+      const el = document.createElement("div");
+      el.className = `toast ${type}`;
+      el.innerHTML = `<i></i><p>${message}</p>`;
+      $("#toastStack").appendChild(el);
+      setTimeout(() => {
+        el.style.opacity = "0";
+        el.style.transform = "translateX(20px)";
+        setTimeout(() => el.remove(), 260);
+      }, 2600);
+    }
+
+    function completeLab(id) {
+      if (!state.completed.has(id)) {
+        state.completed.add(id);
+        updateProgress();
+      }
+    }
+
+    function updateProgress() {
+      const total = 10;
+      const count = Math.min(state.completed.size, total);
+      $("#progressText").textContent = `${count} / ${total}`;
+      $("#progressBar").style.width = `${(count / total) * 100}%`;
+    }
+
+    function highlightText(text) {
+      const q = state.query.trim();
+      if (!q) return text;
+      const safe = q.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+      return text.replace(new RegExp(safe, "gi"), m => `<mark>${m}</mark>`);
+    }
+
+    function renderChips() {
+      const box = $("#categoryChips");
+      box.innerHTML = categories.map(cat => `<button class="chip ${cat === state.category ? "active" : ""}" type="button" data-cat="${cat}">${cat}</button>`).join("");
+      $$(".chip", box).forEach(btn => {
+        btn.addEventListener("click", () => {
+          state.category = btn.dataset.cat;
+          renderChips();
+          renderTerms();
+          showToast(`已切换到「${state.category}」分类`);
+        });
+      });
+    }
+
+    function renderTerms() {
+      const q = state.query.trim().toLowerCase();
+      const list = terms.filter(t => {
+        const inCat = state.category === "全部" || t.cat === state.category;
+        const hay = [t.name, t.cat, t.one, t.pro, ...t.tags].join(" ").toLowerCase();
+        return inCat && (!q || hay.includes(q));
+      });
+      $("#resultCount").textContent = `${list.length} 个术语`;
+      $("#emptyState").style.display = list.length ? "none" : "block";
+      $("#termGrid").innerHTML = list.map((t, i) => `
+        <article class="term-card" tabindex="0" style="animation-delay:${Math.min(i * 24, 220)}ms">
+          <h4>${highlightText(t.name)}</h4>
+          <p>${highlightText(state.professional ? t.pro : t.one)}</p>
+          <div class="term-actions">
+            <span class="tag">${t.cat}</span>
+            <button class="detail-btn" type="button" data-term="${t.name}">查看详情</button>
+          </div>
+        </article>
+      `).join("");
+      $$(".detail-btn", $("#termGrid")).forEach(btn => btn.addEventListener("click", () => openTermModal(btn.dataset.term)));
+      $$(".term-card", $("#termGrid")).forEach(card => {
+        card.addEventListener("keydown", e => {
+          if (e.key === "Enter") card.querySelector("button").click();
+        });
+      });
+    }
+
+    function openTermModal(name) {
+      const term = terms.find(t => t.name === name);
+      if (!term) return;
+      state.modalTerm = term;
+      $("#modalEyebrow").textContent = term.cat;
+      $("#modalTitle").textContent = term.name;
+      $("#modalBody").innerHTML = `
+        <div class="explain"><strong>一句话解释</strong><p>${term.one}</p></div>
+        <div class="explain"><strong>专业解释</strong><p>${term.pro}</p></div>
+        <div class="explain"><strong>生活类比</strong><p>${term.analogy}</p></div>
+        <div class="explain"><strong>简单例子</strong><p>${term.example}</p></div>
+        <div class="explain misconception"><strong>常见误区</strong><p>${term.myth}</p></div>
+        <div class="explain"><strong>相关术语</strong><p>${term.tags.map(x => `<span class="tag">${x}</span>`).join(" ")}</p></div>
+      `;
+      openModal();
+      completeLab("term");
+    }
+
+    function openSafetyModal() {
+      $("#modalEyebrow").textContent = "Teaching Boundary";
+      $("#modalTitle").textContent = "教学简化模型说明";
+      $("#modalBody").innerHTML = `
+        <div class="explain"><strong>适用目的</strong><p>本页面用于帮助初学者理解页岩气勘探开发术语之间的关系，以及常见参数变化带来的概念性影响。</p></div>
+        <div class="explain"><strong>不适用场景</strong><p>它不用于真实勘探部署、储量评价、工程设计、压裂施工、产能承诺或投资决策。</p></div>
+        <div class="explain misconception"><strong>真实工作需要</strong><p>真实页岩气勘探开发需要结合地震、测井、岩心、试气、生产动态、地应力、工程约束和经济评价等多源资料。</p></div>
+      `;
+      openModal();
+    }
+
+    function openModal() {
+      const backdrop = $("#modalBackdrop");
+      backdrop.classList.add("open");
+      backdrop.setAttribute("aria-hidden", "false");
+      $("#modalClose").focus();
+    }
+
+    function closeModal() {
+      const backdrop = $("#modalBackdrop");
+      backdrop.classList.remove("open");
+      backdrop.setAttribute("aria-hidden", "true");
+    }
+
+    function setMode(pro) {
+      state.professional = pro;
+      $("#modeSwitch").classList.toggle("on", pro);
+      $("#modeSwitch").setAttribute("aria-pressed", String(pro));
+      $("#modeLabel").textContent = pro ? "专业模式" : "新手模式";
+      $$(".pro-text").forEach(el => el.hidden = !pro);
+      renderTerms();
+      showToast(pro ? "已切换到专业模式" : "已切换到新手模式");
+    }
+
+    function initSearch() {
+      renderChips();
+      renderTerms();
+      $("#searchInput").addEventListener("input", e => {
+        state.query = e.target.value;
+        renderTerms();
+      });
+      $("#resetSearch").addEventListener("click", () => {
+        state.query = "";
+        state.category = "全部";
+        $("#searchInput").value = "";
+        renderChips();
+        renderTerms();
+        showToast("筛选已重置");
+      });
+      $("#modeSwitch").addEventListener("click", () => setMode(!state.professional));
+      $("#openSafety").addEventListener("click", openSafetyModal);
+      $("#modalClose").addEventListener("click", closeModal);
+      $("#modalBackdrop").addEventListener("click", e => {
+        if (e.target.id === "modalBackdrop") closeModal();
+      });
+      document.addEventListener("keydown", e => {
+        if (e.key === "Escape") closeModal();
+      });
+    }
+
+    function initTooltip() {
+      const tip = $("#tooltip");
+      document.addEventListener("mousemove", e => {
+        tip.style.left = `${e.clientX + 14}px`;
+        tip.style.top = `${e.clientY + 14}px`;
+      });
+      document.addEventListener("mouseover", e => {
+        const target = e.target.closest("[data-tip]");
+        if (!target) return;
+        tip.textContent = target.dataset.tip;
+        tip.classList.add("show");
+      });
+      document.addEventListener("mouseout", e => {
+        if (e.target.closest("[data-tip]")) tip.classList.remove("show");
+      });
+    }
+
+    function initSystem() {
+      const data = {
+        surface: ["地表 / 井场", "这里展示的是地面到地下目标层的关系。实际井场部署还要考虑地形、环保、集输和平台位置。"],
+        cover: ["覆盖层", "覆盖层影响埋深、压力和保存条件。保存条件差时，即使生气条件较好，也可能难以形成有效富集。"],
+        shale: ["页岩层", "页岩气不是聚集在大空洞里，而是分布在致密页岩孔隙、有机质表面和微裂缝中。"],
+        organic: ["有机质富集带", "有机质既与生气基础有关，也可能提供吸附表面和有机孔，是页岩气评价的重要对象。"],
+        well: ["水平井", "水平井通过在目标层内横向延伸，增加井眼与优质储层的接触长度。"],
+        fracture: ["压裂裂缝", "体积压裂希望形成复杂裂缝网络，提高储层改造体积和导流能力。"],
+        freeGas: ["游离气", "游离气主要存在于孔隙和微裂缝中，更接近可流动部分，但仍需要连通通道。"],
+        adsGas: ["吸附气", "吸附气附着在有机质或矿物表面，压力降低时可能逐步释放。"]
+      };
+      $$(".layer-click", $("#systemSvg")).forEach(el => {
+        el.addEventListener("click", () => {
+          $$(".layer-click", $("#systemSvg")).forEach(x => x.classList.remove("active"));
+          el.classList.add("active");
+          const [title, body] = data[el.dataset.key] || data.shale;
+          const panel = $("#systemInfo");
+          panel.innerHTML = `<h4>${title}</h4><p>${body}</p><p>教学提示：这张图是概念剖面，真实地层具有更强非均质性和构造复杂性。</p>`;
+          panel.classList.add("flash");
+          setTimeout(() => panel.classList.remove("flash"), 280);
+          completeLab("system");
+        });
+      });
+    }
+
+    const sweetDefs = [
+      ["toc", "TOC", 0, 8, 3.2, 0.1, "%"],
+      ["ro", "Ro", 0.5, 3.5, 1.8, 0.1, "%"],
+      ["por", "孔隙度", 1, 12, 6, 0.1, "%"],
+      ["bri", "脆性指数", 20, 90, 58, 1, ""],
+      ["gas", "含气量", 0.5, 8, 4.2, 0.1, " m³/t"],
+      ["depth", "埋深", 1000, 5000, 3000, 50, " m"]
+    ];
+    const sweetValues = {};
+
+    function scoreWindow(v, goodMin, goodMax, min, max) {
+      if (v >= goodMin && v <= goodMax) return 100;
+      if (v < goodMin) return clamp((v - min) / (goodMin - min) * 100, 0, 100);
+      return clamp((max - v) / (max - goodMax) * 100, 0, 100);
+    }
+
+    function initSweet() {
+      $("#sweetControls").innerHTML = sweetDefs.map(([id, label, min, max, value, step, unit]) => {
+        sweetValues[id] = value;
+        return `<div class="control"><label for="${id}Range">${label}<span id="${id}Val">${value}${unit}</span></label><input id="${id}Range" type="range" min="${min}" max="${max}" step="${step}" value="${value}" aria-label="${label}"></div>`;
+      }).join("");
+      sweetDefs.forEach(([id, label, min, max, value, step, unit]) => {
+        $(`#${id}Range`).addEventListener("input", e => {
+          sweetValues[id] = Number(e.target.value);
+          $(`#${id}Val`).textContent = `${Number(e.target.value).toFixed(step < 1 ? 1 : 0)}${unit}`;
+          updateSweet(true);
+        });
+      });
+      updateSweet(false);
+    }
+
+    function updateSweet(interactive) {
+      const geo = (
+        scoreWindow(sweetValues.toc, 2.5, 5.5, 0, 8) * .26 +
+        scoreWindow(sweetValues.ro, 1.2, 2.6, .5, 3.5) * .24 +
+        clamp((sweetValues.por - 1) / 11 * 100, 0, 100) * .20 +
+        clamp((sweetValues.gas - .5) / 7.5 * 100, 0, 100) * .30
+      );
+      const eng = (
+        clamp((sweetValues.bri - 20) / 70 * 100, 0, 100) * .55 +
+        scoreWindow(sweetValues.depth, 1800, 3800, 1000, 5000) * .45
+      );
+      const score = Math.round(geo * .62 + eng * .38);
+      const color = score < 40 ? "var(--red)" : score < 62 ? "var(--orange)" : "var(--cyan)";
+      const label = score < 35 ? "低潜力" : score < 62 ? "中等潜力" : score < 80 ? "较好甜点" : "优质甜点";
+      $("#sweetScore").textContent = score;
+      $("#sweetLabel").textContent = label;
+      $("#sweetGauge").style.background = `conic-gradient(${color} ${score * 3.6}deg, rgba(255,255,255,.08) 0deg)`;
+      $("#geoScore").textContent = Math.round(geo);
+      $("#engScore").textContent = Math.round(eng);
+      $("#geoBar").style.width = `${geo}%`;
+      $("#engBar").style.width = `${eng}%`;
+      const reasons = [];
+      if (sweetValues.toc < 2.2) reasons.push("TOC 偏低，生气物质基础可能不足");
+      if (sweetValues.ro < 1.1 || sweetValues.ro > 2.8) reasons.push("Ro 偏离较常见的有利成熟度窗口");
+      if (sweetValues.bri > 60) reasons.push("脆性较好，有利于形成裂缝网络");
+      if (sweetValues.gas > 4.5) reasons.push("含气量较好，提高资源基础");
+      if (sweetValues.depth > 4300) reasons.push("埋深较大，可能带来工程和经济压力");
+      $("#sweetReason").textContent = reasons.length ? reasons.join("；") + "。" : "当前参数比较均衡，但仍需结合保存条件、压力系数和经济性。";
+      if (interactive) {
+        completeLab("sweet");
+        if (score >= 80) showToast("当前参数组合接近甜点区特征");
+        if (score < 35) showToast("该组合可能存在开发风险或经济性不足", "warn");
+      }
+    }
+
+    function initGasState() {
+      const ads = $("#adsPoints");
+      const free = $("#freeBubbles");
+      for (let i = 0; i < 34; i++) {
+        const angle = (i / 34) * Math.PI * 2;
+        const x = 260 + Math.cos(angle) * (130 + (i % 3) * 9);
+        const y = 160 + Math.sin(angle) * (58 + (i % 2) * 10);
+        const c = document.createElementNS(ns, "circle");
+        c.setAttribute("cx", x); c.setAttribute("cy", y); c.setAttribute("r", 3.2);
+        c.setAttribute("fill", "#7c6ff7"); c.setAttribute("opacity", ".55");
+        ads.appendChild(c);
+      }
+      for (let i = 0; i < 22; i++) {
+        const c = document.createElementNS(ns, "circle");
+        c.setAttribute("cx", 160 + Math.random() * 210);
+        c.setAttribute("cy", 118 + Math.random() * 90);
+        c.setAttribute("r", 3 + Math.random() * 4);
+        c.setAttribute("fill", "#5ea8ff");
+        c.setAttribute("class", "gas-dot");
+        free.appendChild(c);
+      }
+      $("#pressureRange").addEventListener("input", () => updateGasState(true));
+      updateGasState(false);
+    }
+
+    function updateGasState(interactive = false) {
+      const p = Number($("#pressureRange").value);
+      $("#pressureValue").textContent = `${p} MPa`;
+      const adsPct = clamp(18 + p * 1.05, 24, 74);
+      const freePct = 100 - adsPct;
+      $("#adsPct").textContent = `${Math.round(adsPct)}%`;
+      $("#freePct").textContent = `${Math.round(freePct)}%`;
+      $("#adsBar").style.width = `${adsPct}%`;
+      $("#freeBar").style.width = `${freePct}%`;
+      $$("#adsPoints circle").forEach((c, i) => c.setAttribute("opacity", clamp((adsPct / 100) + (i % 4) * .05, .18, .95)));
+      $$("#freeBubbles circle").forEach((c, i) => {
+        c.setAttribute("opacity", clamp((freePct / 100) + (i % 3) * .08, .12, .95));
+        c.setAttribute("r", 2.4 + freePct / 23 + (i % 3));
+      });
+      if (interactive) completeLab("gas");
+    }
+
+    let dragY = 150;
+    function initGeosteering() {
+      const drag = $("#dragPoint");
+      const svg = $("#wellSvg");
+      let dragging = false;
+      function clientToSvgY(evt) {
+        const rect = svg.getBoundingClientRect();
+        return (evt.clientY - rect.top) / rect.height * 310;
+      }
+      drag.addEventListener("pointerdown", e => {
+        dragging = true;
+        drag.setPointerCapture(e.pointerId);
+        drag.style.cursor = "grabbing";
+      });
+      drag.addEventListener("pointermove", e => {
+        if (!dragging) return;
+        dragY = clamp(clientToSvgY(e), 70, 230);
+        updateWellPath();
+        completeLab("well");
+      });
+      drag.addEventListener("pointerup", () => {
+        dragging = false;
+        drag.style.cursor = "grab";
+      });
+      $("#optimizeWell").addEventListener("click", () => {
+        const start = dragY;
+        const end = 150;
+        const t0 = performance.now();
+        function tick(now) {
+          const t = clamp((now - t0) / 420, 0, 1);
+          dragY = lerp(start, end, 1 - Math.pow(1 - t, 3));
+          updateWellPath();
+          if (t < 1) requestAnimationFrame(tick);
+        }
+        requestAnimationFrame(tick);
+        completeLab("well");
+        showToast("井轨迹已回到目标层附近");
+      });
+      updateWellPath();
+    }
+
+    function updateWellPath() {
+      const d = `M92 78 C145 95 160 136 198 154 C268 ${dragY - 20} 355 ${dragY} 430 ${dragY} C510 ${dragY} 565 154 612 148`;
+      $("#wellPath").setAttribute("d", d);
+      $("#dragPoint").setAttribute("cy", dragY);
+      const rate = Math.round(clamp(100 - Math.abs(dragY - 150) * 1.45, 28, 98));
+      const inTarget = rate >= 72;
+      $("#targetRate").textContent = `${rate}%`;
+      $("#targetBar").style.width = `${rate}%`;
+      $("#targetStatus").textContent = inTarget ? "在靶" : "偏离目标层";
+      $("#targetStatus").style.color = inTarget ? "var(--cyan)" : "var(--orange)";
+      $("#statusBar").style.width = `${rate}%`;
+      $("#statusBar").style.background = inTarget ? "var(--cyan)" : "var(--orange)";
+    }
+
+    function initFrac() {
+      $("#stageRange").addEventListener("input", e => {
+        $("#stageValue").textContent = `${e.target.value} 段`;
+        renderStages();
+      });
+      $$("#intensityBtns button").forEach(btn => btn.addEventListener("click", () => {
+        state.intensity = btn.dataset.value;
+        $$("#intensityBtns button").forEach(b => b.classList.toggle("active", b === btn));
+        renderStages();
+      }));
+      $$("#propBtns button").forEach(btn => btn.addEventListener("click", () => {
+        state.proppant = btn.dataset.value;
+        $$("#propBtns button").forEach(b => b.classList.toggle("active", b === btn));
+        renderStages();
+      }));
+      $("#startFrac").addEventListener("click", runFrac);
+      renderStages();
+    }
+
+    function renderStages(active = -1) {
+      const n = Number($("#stageRange").value);
+      const group = $("#stageGroup");
+      group.innerHTML = "";
+      const gap = 580 / n;
+      for (let i = 0; i < n; i++) {
+        const x = 70 + gap * i + gap / 2;
+        const rect = document.createElementNS(ns, "rect");
+        rect.setAttribute("x", x - gap * .34);
+        rect.setAttribute("y", 169);
+        rect.setAttribute("width", gap * .68);
+        rect.setAttribute("height", 22);
+        rect.setAttribute("rx", 5);
+        rect.setAttribute("fill", i <= active ? "rgba(61,214,168,.36)" : "rgba(255,255,255,.06)");
+        rect.setAttribute("stroke", i <= active ? "rgba(61,214,168,.7)" : "rgba(255,255,255,.12)");
+        group.appendChild(rect);
+      }
+    }
+
+    function runFrac() {
+      const btn = $("#startFrac");
+      btn.disabled = true;
+      btn.innerHTML = `<span class="spinner"></span> pumping`;
+      $("#fractureGroup").innerHTML = "";
+      $("#propGroup").innerHTML = "";
+      const n = Number($("#stageRange").value);
+      const amp = { low: 48, mid: 75, high: 108 }[state.intensity];
+      const propN = { low: 3, mid: 5, high: 8 }[state.proppant];
+      const gap = 580 / n;
+      let i = 0;
+      function stage() {
+        renderStages(i);
+        const x = 70 + gap * i + gap / 2;
+        addFractures(x, amp, propN);
+        showToast(`第 ${i + 1} 段压裂完成`);
+        i++;
+        if (i < n) {
+          setTimeout(stage, 280);
+        } else {
+          const srv = Math.round(n * amp * ({ low: .78, mid: 1, high: 1.16 }[state.proppant]) / 10);
+          $("#srvIndex").textContent = srv;
+          $("#fracComplexity").textContent = state.intensity === "high" ? "高" : state.intensity === "mid" ? "中" : "低";
+          $("#fracFeedback").textContent = state.intensity === "high"
+            ? "当前方案形成了较大的改造体积，但也可能带来更高成本和井间干扰风险。"
+            : "当前方案为教学示意组合，需在改造范围、导流能力、成本和干扰风险之间权衡。";
+          btn.disabled = false;
+          btn.textContent = "启动压裂模拟";
+          showToast("压裂模拟完成");
+          completeLab("frac");
+        }
+      }
+      setTimeout(stage, 220);
+    }
+
+    function addFractures(x, amp, propN) {
+      const fg = $("#fractureGroup");
+      const pg = $("#propGroup");
+      for (let side of [-1, 1]) {
+        for (let b = 0; b < 3; b++) {
+          const len = amp * (.65 + b * .16);
+          const offset = (b - 1) * 18;
+          const p = document.createElementNS(ns, "path");
+          p.setAttribute("d", `M${x} 180 C${x + offset} ${180 + side * len * .35} ${x + offset * 1.6} ${180 + side * len * .72} ${x + offset * 2.2} ${180 + side * len}`);
+          p.setAttribute("stroke", "#9b8cff");
+          p.setAttribute("stroke-width", "2");
+          p.setAttribute("fill", "none");
+          p.setAttribute("stroke-linecap", "round");
+          p.style.strokeDasharray = "160";
+          p.style.strokeDashoffset = "160";
+          p.style.transition = "stroke-dashoffset .45s cubic-bezier(.2,.8,.2,1)";
+          fg.appendChild(p);
+          requestAnimationFrame(() => p.style.strokeDashoffset = "0");
+        }
+      }
+      for (let j = 0; j < propN; j++) {
+        const c = document.createElementNS(ns, "circle");
+        const dx = (j - propN / 2) * 5;
+        const dy = (j % 2 ? -1 : 1) * (22 + Math.random() * amp * .45);
+        c.setAttribute("cx", x);
+        c.setAttribute("cy", 180);
+        c.setAttribute("r", 2.6);
+        c.setAttribute("fill", "#ffb45c");
+        c.style.transition = "transform .55s cubic-bezier(.2,.8,.2,1)";
+        pg.appendChild(c);
+        requestAnimationFrame(() => c.style.transform = `translate(${dx}px, ${dy}px)`);
+      }
+    }
+
+    function initProppant() {
+      $$("#propStepBtns button").forEach(btn => btn.addEventListener("click", () => {
+        state.proppantStep = btn.dataset.step;
+        $$("#propStepBtns button").forEach(b => b.classList.toggle("active", b === btn));
+        updateProppant();
+        completeLab("proppant");
+      }));
+      updateProppant();
+    }
+
+    function updateProppant() {
+      const config = {
+        closed: [8, 0, 0],
+        open: [54, 0, 24],
+        sand: [58, 24, 46],
+        flow: [38, 30, 72]
+      }[state.proppantStep];
+      const [width, sand, flow] = config;
+      const upper = `M54 ${125 - width / 2} C145 ${98 - width / 4} 260 ${100 - width / 5} 366 ${124 - width / 2} L366 124 C260 ${120 - width / 5} 145 ${120 - width / 4} 54 124 Z`;
+      const lower = `M54 ${126 + width / 2} C145 ${150 + width / 4} 260 ${148 + width / 5} 366 ${126 + width / 2} L366 126 C260 ${130 + width / 5} 145 ${130 + width / 4} 54 126 Z`;
+      $("#upperFrac").setAttribute("d", upper);
+      $("#lowerFrac").setAttribute("d", lower);
+      $("#fracWidth").textContent = width;
+      $("#flowIndex").textContent = flow;
+      const group = $("#sandGroup");
+      group.innerHTML = "";
+      for (let i = 0; i < sand; i++) {
+        const c = document.createElementNS(ns, "circle");
+        c.setAttribute("cx", 78 + (i % 12) * 24 + (i % 2) * 5);
+        c.setAttribute("cy", 125 + (Math.floor(i / 12) - 1) * 12 + (i % 3) * 3);
+        c.setAttribute("r", 4);
+        c.setAttribute("fill", "#ffb45c");
+        c.style.opacity = "0";
+        c.style.transition = `opacity .25s ease ${i * 12}ms, transform .25s ease ${i * 12}ms`;
+        c.style.transform = "translateY(-10px)";
+        group.appendChild(c);
+        requestAnimationFrame(() => { c.style.opacity = "1"; c.style.transform = "translateY(0)"; });
+      }
+    }
+
+    const microEvents = Array.from({ length: 36 }, (_, i) => ({
+      x: 150 + Math.random() * 330 + Math.sin(i) * 40,
+      y: 90 + Math.random() * 150 + Math.cos(i * 1.4) * 35,
+      e: Math.round(20 + Math.random() * 80),
+      t: i + 1
+    }));
+
+    function initMicro() {
+      $("#playMicro").addEventListener("click", () => {
+        $("#microEvents").innerHTML = "";
+        $("#heatCloud").setAttribute("opacity", "0");
+        microEvents.forEach((ev, i) => {
+          setTimeout(() => {
+            const c = document.createElementNS(ns, "circle");
+            c.setAttribute("cx", ev.x);
+            c.setAttribute("cy", ev.y);
+            c.setAttribute("r", 2.8 + ev.e / 28);
+            c.setAttribute("fill", ev.e > 70 ? "#ffb45c" : "#7c6ff7");
+            c.setAttribute("opacity", "0");
+            c.dataset.tip = `时间 T+${ev.t}，相对能量 ${ev.e}，位置 (${Math.round(ev.x)}, ${Math.round(ev.y)})`;
+            c.style.transition = "opacity .22s ease, transform .22s ease";
+            c.style.transformOrigin = `${ev.x}px ${ev.y}px`;
+            c.style.transform = "scale(.4)";
+            $("#microEvents").appendChild(c);
+            requestAnimationFrame(() => { c.setAttribute("opacity", ".86"); c.style.transform = "scale(1)"; });
+            $("#heatCloud").setAttribute("cx", 310);
+            $("#heatCloud").setAttribute("cy", 164);
+            $("#heatCloud").setAttribute("rx", 150);
+            $("#heatCloud").setAttribute("ry", 82);
+            $("#heatCloud").setAttribute("opacity", Math.min(.42, (i + 1) / microEvents.length * .42));
+            if (i === microEvents.length - 1) {
+              showToast("微地震事件播放完成");
+              completeLab("micro");
+            }
+          }, i * 85);
+        });
+      });
+      $("#microExplain").addEventListener("click", () => {
+        $("#microText").textContent = "微地震可以帮助理解压裂响应范围，但不等于直接看见所有有效导流裂缝。";
+        completeLab("micro");
+      });
+    }
+
+    function initDecline() {
+      ["qiRange", "diRange", "tailRange"].forEach(id => $( "#" + id).addEventListener("input", () => updateDecline(true)));
+      updateDecline(false);
+    }
+
+    function updateDecline(interactive) {
+      const qi = Number($("#qiRange").value);
+      const di = Number($("#diRange").value) / 100;
+      const tail = Number($("#tailRange").value);
+      $("#qiValue").textContent = qi;
+      $("#diValue").textContent = `${Math.round(di * 100)}%`;
+      $("#tailValue").textContent = tail.toFixed(2);
+      const pts = [];
+      let cum = 0;
+      for (let m = 0; m <= 120; m++) {
+        const y = qi / Math.pow(1 + di * m / 12, 1.18) + qi * tail * .05;
+        pts.push(y);
+        cum += y * 30;
+      }
+      const maxY = Math.max(...pts) * 1.08;
+      const coords = pts.map((v, i) => [58 + i / 120 * 522, 274 - v / maxY * 220]);
+      const path = coords.map((p, i) => `${i ? "L" : "M"}${p[0].toFixed(1)} ${p[1].toFixed(1)}`).join(" ");
+      $("#declinePath").setAttribute("d", path);
+      $("#declineArea").setAttribute("d", `${path} L580 274 L58 274 Z`);
+      const len = $("#declinePath").getTotalLength();
+      $("#declinePath").style.strokeDasharray = len;
+      $("#declinePath").style.strokeDashoffset = len;
+      requestAnimationFrame(() => {
+        $("#declinePath").style.transition = "stroke-dashoffset .55s cubic-bezier(.2,.8,.2,1)";
+        $("#declinePath").style.strokeDashoffset = "0";
+      });
+      $("#year1").textContent = Math.round(pts[12]);
+      $("#year5").textContent = Math.round(pts[60]);
+      $("#cumGas").textContent = Math.round(cum / 1000);
+      $("#eur").textContent = Math.round(cum * (1 + tail * .62) / 1000);
+      $("#declineHint").textContent = di > .68 ? "高初产不一定代表最终采收量高。" : tail > .62 ? "长尾产量对 EUR 有明显影响。" : "递减率和长尾稳定性共同控制累计产量。";
+      $("#declineHint").style.color = di > .68 ? "var(--orange)" : tail > .62 ? "var(--cyan)" : "var(--muted)";
+      if (interactive) {
+        completeLab("decline");
+      }
+    }
+
+    function initSpacing() {
+      ["spacingRange", "halfRange", "wellCountRange"].forEach(id => $("#" + id).addEventListener("input", () => updateSpacing(true)));
+      updateSpacing(false);
+    }
+
+    function updateSpacing(interactive) {
+      const spacing = Number($("#spacingRange").value);
+      const half = Number($("#halfRange").value);
+      const count = Number($("#wellCountRange").value);
+      $("#spacingValue").textContent = `${spacing} m`;
+      $("#halfValue").textContent = `${half} m`;
+      $("#wellCountValue").textContent = `${count} 口`;
+      const areas = $("#spacingAreas");
+      const wells = $("#spacingWells");
+      areas.innerHTML = "";
+      wells.innerHTML = "";
+      const scale = 420 / 800;
+      const dx = spacing * scale;
+      const start = 320 - dx * (count - 1) / 2;
+      const overlap = clamp((half * 2 - spacing) / (half * 2) * 100, 0, 100);
+      const coverage = clamp((count * half * 2) / (spacing * (count - 1) + half * 2) * 100, 38, 96);
+      for (let i = 0; i < count; i++) {
+        const x = start + i * dx;
+        const ell = document.createElementNS(ns, "ellipse");
+        ell.setAttribute("cx", x);
+        ell.setAttribute("cy", 165);
+        ell.setAttribute("rx", half * scale * 1.45);
+        ell.setAttribute("ry", 74);
+        ell.setAttribute("fill", "rgba(124,111,247,.16)");
+        ell.setAttribute("stroke", "rgba(124,111,247,.34)");
+        ell.style.transition = "all .3s cubic-bezier(.2,.8,.2,1)";
+        areas.appendChild(ell);
+        const line = document.createElementNS(ns, "path");
+        line.setAttribute("d", `M${x - 100} 165 L${x + 100} 165`);
+        line.setAttribute("stroke", "#3dd6a8");
+        line.setAttribute("stroke-width", "4");
+        line.setAttribute("stroke-linecap", "round");
+        wells.appendChild(line);
+      }
+      if (overlap > 0) {
+        for (let i = 0; i < count - 1; i++) {
+          const x = start + i * dx + dx / 2;
+          const ell = document.createElementNS(ns, "ellipse");
+          ell.setAttribute("cx", x);
+          ell.setAttribute("cy", 165);
+          ell.setAttribute("rx", Math.max(10, overlap * 1.8));
+          ell.setAttribute("ry", 78);
+          ell.setAttribute("fill", "rgba(255,180,92,.22)");
+          ell.setAttribute("stroke", "rgba(255,180,92,.44)");
+          areas.appendChild(ell);
+        }
+      }
+      $("#coverageMetric").textContent = `${Math.round(coverage)}%`;
+      $("#riskMetric").textContent = `${Math.round(overlap)}%`;
+      if (spacing > half * 3.8) {
+        $("#spacingFeedback").textContent = "改造范围之间存在空白区，储层动用可能不足。";
+        $("#spacingFeedback").style.color = "var(--orange)";
+      } else if (overlap > 28) {
+        $("#spacingFeedback").textContent = "可能出现井间干扰或裂缝连通风险。";
+        $("#spacingFeedback").style.color = "var(--orange)";
+      } else {
+        $("#spacingFeedback").textContent = "井距与改造范围较匹配。";
+        $("#spacingFeedback").style.color = "var(--cyan)";
+      }
+      if (interactive) completeLab("spacing");
+    }
+
+    const flow = [
+      ["资源评价", "判断是否具备页岩气资源基础", "TOC、Ro、厚度、含气量、保存条件", "有机质好但保存差，可能难以形成有效富集"],
+      ["甜点优选", "寻找地质和工程条件相对更优的区域", "脆性、压力系数、孔隙度、地应力、可压性", "单一指标好不代表整体甜点好"],
+      ["井位部署", "把资源认识转化为可实施井位", "构造、断裂、地面条件、平台部署、井距", "只追求井多可能带来干扰和成本问题"],
+      ["水平井钻井", "提高优质储层接触长度和钻遇率", "井轨迹、入靶点、水平段、随钻测井", "偏离目标层会削弱水平段价值"],
+      ["分段压裂", "建立人工裂缝网络和导流通道", "段数、簇间距、支撑剂、泵注响应", "改造强度越高不一定越经济"],
+      ["试采评价", "用生产动态校正地质和工程认识", "初产、压力、递减、返排、含砂", "短期高产不能代表长期表现"],
+      ["产能建设", "形成规模化生产和地面集输能力", "平台节奏、管网、处理能力、投资", "地面系统也会约束开发节奏"],
+      ["生产优化", "通过制度和监测持续改善产量与成本", "递减曲线、EUR、井间干扰、修井", "只看单井不看区块协同会误判"]
+    ];
+
+    function initFlow() {
+      $("#flowSteps").innerHTML = flow.map((f, i) => `<button class="flow-step ${i === 0 ? "active" : ""}" type="button" data-i="${i}"><b>${i + 1}. ${f[0]}</b><span>${f[1]}</span></button>`).join("");
+      $$(".flow-step").forEach(btn => btn.addEventListener("click", () => {
+        $$(".flow-step").forEach(b => b.classList.toggle("active", b === btn));
+        renderFlow(Number(btn.dataset.i));
+        completeLab("flow");
+      }));
+      renderFlow(0);
+    }
+
+    function renderFlow(i) {
+      const f = flow[i];
+      const panel = $("#flowInfo");
+      panel.innerHTML = `<h4>${f[0]}</h4><p><b>目标：</b>${f[1]}</p><p><b>关键数据：</b>${f[2]}</p><p><b>常见问题：</b>${f[3]}</p>`;
+      panel.classList.add("flash");
+      setTimeout(() => panel.classList.remove("flash"), 260);
+    }
+
+    const netNodes = [
+      ["页岩气开发", 430, 210, "center"],
+      ["地质条件", 210, 96, "geo"], ["甜点区", 330, 88, "sweet"], ["水平井", 565, 92, "well"], ["压裂改造", 680, 170, "frac"],
+      ["含气量", 170, 230, "gas"], ["裂缝网络", 600, 286, "network"], ["产量递减", 380, 330, "decline"], ["EUR", 260, 308, "eur"], ["经济性", 500, 330, "money"],
+      ["TOC", 88, 72, "toc"], ["Ro", 105, 142, "ro"], ["脆性", 308, 28, "bri"], ["支撑剂", 750, 270, "prop"], ["压裂段", 760, 110, "stage"], ["SRV", 670, 340, "srv"], ["井距", 520, 30, "spacing"]
+    ];
+    const netRelations = {
+      "甜点区": ["TOC", "Ro", "含气量", "脆性", "地质条件"],
+      "压裂改造": ["水平井", "压裂段", "支撑剂", "裂缝网络", "SRV"],
+      "产量递减": ["EUR", "经济性", "含气量"],
+      "水平井": ["甜点区", "井距", "压裂改造"],
+      "页岩气开发": ["地质条件", "甜点区", "水平井", "压裂改造", "产量递减", "EUR", "经济性"]
+    };
+    const netText = {
+      "甜点区": "甜点区把 TOC、Ro、含气量、脆性、压力和经济性等信息综合起来，不是单指标判断。",
+      "压裂改造": "压裂改造通过压裂段、支撑剂和裂缝网络提高 SRV 与导流能力，但成本和干扰风险也会变化。",
+      "产量递减": "递减曲线连接初始产量、长尾生产、累计产量和 EUR，是产能评价的重要入口。",
+      "水平井": "水平井需要地质导向和井距优化配合，目标是在优质层内获得更有效接触。",
+      "页岩气开发": "页岩气开发是一条从地质认识到工程改造，再到生产评价和经济优化的链条。"
+    };
+
+    function initNetwork() {
+      const edgeGroup = $("#networkEdges");
+      const nodeGroup = $("#networkNodes");
+      edgeGroup.innerHTML = "";
+      nodeGroup.innerHTML = "";
+      const center = netNodes[0];
+      netNodes.slice(1).forEach(n => {
+        const e = document.createElementNS(ns, "path");
+        e.setAttribute("d", `M${center[1]} ${center[2]} L${n[1]} ${n[2]}`);
+        e.setAttribute("class", "edge");
+        e.dataset.a = center[0]; e.dataset.b = n[0];
+        edgeGroup.appendChild(e);
+      });
+      [["甜点区", "TOC"], ["甜点区", "Ro"], ["甜点区", "含气量"], ["压裂改造", "支撑剂"], ["压裂改造", "压裂段"], ["压裂改造", "SRV"], ["产量递减", "EUR"], ["水平井", "井距"]].forEach(([a,b]) => {
+        const na = netNodes.find(n => n[0] === a), nb = netNodes.find(n => n[0] === b);
+        const e = document.createElementNS(ns, "path");
+        e.setAttribute("d", `M${na[1]} ${na[2]} L${nb[1]} ${nb[2]}`);
+        e.setAttribute("class", "edge");
+        e.dataset.a = a; e.dataset.b = b;
+        edgeGroup.appendChild(e);
+      });
+      netNodes.forEach(n => {
+        const g = document.createElementNS(ns, "g");
+        g.setAttribute("class", "node");
+        g.setAttribute("tabindex", "0");
+        g.dataset.name = n[0];
+        const r = n[3] === "center" ? 52 : 34;
+        g.innerHTML = `<circle cx="${n[1]}" cy="${n[2]}" r="${r}" fill="${n[3] === "center" ? "rgba(61,214,168,.18)" : "rgba(124,111,247,.16)"}" stroke="${n[3] === "center" ? "rgba(61,214,168,.62)" : "rgba(160,153,255,.34)"}"/><text x="${n[1]}" y="${n[2] + 4}" text-anchor="middle" fill="#f3f1ff" font-size="${n[3] === "center" ? 15 : 12}" font-weight="700">${n[0]}</text>`;
+        g.addEventListener("click", () => selectNetwork(n[0], true));
+        g.addEventListener("keydown", e => { if (e.key === "Enter") selectNetwork(n[0], true); });
+        nodeGroup.appendChild(g);
+      });
+      selectNetwork("页岩气开发", false);
+    }
+
+    function selectNetwork(name, interactive = false) {
+      const related = new Set([name, ...(netRelations[name] || [])]);
+      $$(".node", $("#networkSvg")).forEach(g => g.classList.toggle("active", related.has(g.dataset.name)));
+      $$(".edge", $("#networkSvg")).forEach(e => e.classList.toggle("hot", related.has(e.dataset.a) && related.has(e.dataset.b) || (e.dataset.a === "页岩气开发" && related.has(e.dataset.b))));
+      $("#networkInfo").innerHTML = `<h4>${name}</h4><p>${netText[name] || `${name} 是页岩气开发概念网络中的一环，需要和地质、工程、生产和经济信息一起理解。`}</p><p>相关节点：${[...related].filter(x => x !== name).join("、") || "地质条件、工程改造、生产评价"}</p>`;
+      if (interactive) completeLab("network");
+    }
+
+    function boot() {
+      initSearch();
+      initTooltip();
+      initSystem();
+      initSweet();
+      initGasState();
+      initGeosteering();
+      initFrac();
+      initProppant();
+      initMicro();
+      initDecline();
+      initSpacing();
+      initFlow();
+      initNetwork();
+      updateProgress();
+      setTimeout(() => showToast("交互词典已加载，所有模拟均为教学简化模型"), 500);
+    }
+
+    boot();
+  </script>
+</body>
+</html>
