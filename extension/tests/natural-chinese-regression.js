@@ -8,8 +8,10 @@ const root = path.resolve(__dirname, "..");
 const background = fs.readFileSync(path.join(root, "background.js"), "utf8");
 const content = fs.readFileSync(path.join(root, "content.js"), "utf8");
 
-assert.match(background, /PROMPT_VERSION = "yipage-v2-natural-zh"/);
+assert.match(background, /PROMPT_VERSION = "yipage-v3-semantic-ui"/);
 assert.match(background, /中文语序必须符合现代简体中文习惯/);
+assert.match(background, /导航、菜单或交互控件/);
+assert.match(background, /必须原样返回，不要音译或意译/);
 assert.match(background, /不要照搬英文的主从句顺序/);
 assert.match(background, /先在内部完成整段中文表达/);
 assert.match(background, /相邻的非链接 segment 之间重新分配/);

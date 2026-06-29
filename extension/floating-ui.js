@@ -4,10 +4,12 @@
   if (document.querySelector("[data-yipage-ui]")) return;
 
   const POSITION_KEY = "floatingUiPosition";
+  const COLLAPSED_KEY = "floatingUiCollapsed";
   const EDGE_GAP = 10;
   const host = document.createElement("div");
   host.dataset.yipageUi = "floating-toolbar";
   host.setAttribute("aria-label", "译页翻译控制");
+  host.style.visibility = "hidden";
   const shadow = host.attachShadow({ mode: "closed" });
   shadow.innerHTML = `
     <style>
@@ -33,6 +35,7 @@
       .collapse{padding:4px;color:#6e6c63;font:15px/1 sans-serif}
       .progress{height:4px;margin:8px 0;background:#d7cfbf;overflow:hidden;border-radius:3px}
       .progress span{display:block;width:0;height:100%;background:#df4a31;transition:width .25s ease}
+      .progress.indeterminate span{width:36%!important;animation:indeterminate 1s ease-in-out infinite}
       .actions{display:grid;grid-template-columns:1.2fr 1fr 1fr;gap:6px}
       .actions button{padding:8px 7px;border:1px solid #bcb39f;background:#e9e2d4}
       .actions button:hover{border-color:#245a43}
@@ -40,8 +43,14 @@
       .translate.stopping{background:#df4a31!important;border-color:#df4a31!important}
       .mini{width:auto;padding:6px}
       .mini .drag-handle{grid-template-columns:29px 24px}
-      .mini .grip,.mini .status,.mini .percent,.mini .progress,.mini .actions{display:none}
+      .mini .grip,.mini .status,.mini .percent,.mini .actions{display:none}
+      .mini .progress{display:none;width:60px;height:3px;margin:5px 0 0}
+      .mini.mini-progress-active .progress{display:block}
+      .mini .drag-handle{cursor:pointer}
+      .mini .mark{transition:transform .12s ease,filter .12s ease}
+      .mini .drag-handle:hover .mark{filter:brightness(.94);transform:translateY(-1px)}
       @keyframes pulse{50%{opacity:.3}}
+      @keyframes indeterminate{0%{transform:translateX(-110%)}100%{transform:translateX(300%)}}
       @media(max-width:520px){.desk{width:258px}}
       @media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
     </style>
@@ -77,6 +86,8 @@
   const collapse = shadow.querySelector(".collapse");
   let polling = false;
   let busy = false;
+  let showing = "original";
+  let hasTranslation = false;
   let drag = null;
 
   function clampPosition(left, top) {
@@ -96,16 +107,32 @@
     return next;
   }
 
-  async function restorePosition() {
-    const stored = await chrome.storage.local.get(POSITION_KEY);
+  function applyMiniState(mini) {
+    desk.classList.toggle("mini", mini);
+    collapse.textContent = mini ? "+" : "−";
+    collapse.setAttribute("aria-label", mini ? "展开翻译控制" : "收起翻译控制");
+    dragHandle.title = mini ? "单击翻译，拖动可调整位置" : "拖动";
+    dragHandle.tabIndex = mini ? 0 : -1;
+    dragHandle.setAttribute("role", mini ? "button" : "presentation");
+    dragHandle.setAttribute("aria-label", mini ? miniActionLabel() : "拖动翻译控制");
+    updateMiniAccessibility();
+  }
+
+  async function restoreUiState() {
+    const stored = await chrome.storage.local.get([POSITION_KEY, COLLAPSED_KEY]);
+    applyMiniState(stored[COLLAPSED_KEY] === true);
+    await new Promise((resolve) => requestAnimationFrame(resolve));
     const position = stored[POSITION_KEY];
     if (Number.isFinite(position?.left) && Number.isFinite(position?.top)) {
       setPosition(position.left, position.top);
     }
+    host.style.visibility = "";
   }
 
   function render(next = {}) {
     busy = next.phase === "analyzing" || next.phase === "translating";
+    showing = next.showing || showing;
+    hasTranslation = next.hasTranslation === true;
     const completed = Math.max(0, Number(next.completed) || 0);
     const total = Math.max(0, Number(next.total) || 0);
     const value = total ? Math.min(100, Math.round(completed / total * 100)) : 0;
@@ -115,11 +142,27 @@
     percent.textContent = `${value}%`;
     progressBar.style.width = `${value}%`;
     progress.setAttribute("aria-valuenow", String(value));
+    progress.classList.toggle("indeterminate", busy && !total);
+    desk.classList.toggle("mini-progress-active", busy);
     translate.textContent = busy ? "停止" : "翻译";
     translate.classList.toggle("stopping", busy);
     original.classList.toggle("active", next.showing === "original");
     translated.classList.toggle("active", next.showing === "translated");
     translated.disabled = !total;
+    updateMiniAccessibility();
+  }
+
+  function miniActionLabel() {
+    if (busy) return "正在翻译";
+    if (!hasTranslation) return "翻译当前页面";
+    return showing === "translated" ? "切换为原文" : "切换为译文";
+  }
+
+  function updateMiniAccessibility() {
+    if (!desk.classList.contains("mini")) return;
+    const label = miniActionLabel();
+    dragHandle.title = `${label}，拖动可调整位置`;
+    dragHandle.setAttribute("aria-label", label);
   }
 
   async function command(commandName) {
@@ -138,36 +181,67 @@
   translate.addEventListener("click", () => command(busy ? "STOP_TRANSLATION" : "TRANSLATE_PAGE"));
   original.addEventListener("click", () => command("SHOW_ORIGINAL"));
   translated.addEventListener("click", () => command("SHOW_TRANSLATION"));
-  collapse.addEventListener("click", (event) => {
+  collapse.addEventListener("click", async (event) => {
     event.stopPropagation();
-    const mini = desk.classList.toggle("mini");
-    collapse.textContent = mini ? "+" : "−";
-    collapse.setAttribute("aria-label", mini ? "展开翻译控制" : "收起翻译控制");
-    requestAnimationFrame(() => {
-      const rect = host.getBoundingClientRect();
-      setPosition(rect.left, rect.top);
+    const before = host.getBoundingClientRect();
+    const anchorRight = before.left + before.width / 2 >= innerWidth / 2;
+    const anchorBottom = before.top + before.height / 2 >= innerHeight / 2;
+    const mini = !desk.classList.contains("mini");
+    applyMiniState(mini);
+    await chrome.storage.local.set({ [COLLAPSED_KEY]: mini });
+    requestAnimationFrame(async () => {
+      const after = host.getBoundingClientRect();
+      const left = anchorRight ? before.right - after.width : before.left;
+      const top = anchorBottom ? before.bottom - after.height : before.top;
+      const position = setPosition(left, top);
+      await chrome.storage.local.set({ [POSITION_KEY]: position });
     });
+  });
+
+  function runMiniAction() {
+    if (busy) return Promise.resolve();
+    if (!hasTranslation) return command("TRANSLATE_PAGE");
+    return command(showing === "translated" ? "SHOW_ORIGINAL" : "SHOW_TRANSLATION");
+  }
+
+  dragHandle.addEventListener("keydown", (event) => {
+    if (!desk.classList.contains("mini") || (event.key !== "Enter" && event.key !== " ")) return;
+    event.preventDefault();
+    runMiniAction();
   });
 
   dragHandle.addEventListener("pointerdown", (event) => {
     if (event.target instanceof Element && event.target.closest("button")) return;
     const rect = host.getBoundingClientRect();
-    drag = { pointerId: event.pointerId, offsetX: event.clientX - rect.left, offsetY: event.clientY - rect.top };
+    drag = {
+      pointerId: event.pointerId,
+      offsetX: event.clientX - rect.left,
+      offsetY: event.clientY - rect.top,
+      startX: event.clientX,
+      startY: event.clientY,
+      moved: false
+    };
     dragHandle.setPointerCapture(event.pointerId);
     event.preventDefault();
   });
 
   dragHandle.addEventListener("pointermove", (event) => {
     if (!drag || drag.pointerId !== event.pointerId) return;
+    if (Math.hypot(event.clientX - drag.startX, event.clientY - drag.startY) > 5) {
+      drag.moved = true;
+    }
     setPosition(event.clientX - drag.offsetX, event.clientY - drag.offsetY);
   });
 
   async function finishDrag(event) {
     if (!drag || drag.pointerId !== event.pointerId) return;
+    const shouldRunMiniAction =
+      event.type === "pointerup" && desk.classList.contains("mini") && !drag.moved;
     drag = null;
     const rect = host.getBoundingClientRect();
     const position = setPosition(rect.left, rect.top);
     await chrome.storage.local.set({ [POSITION_KEY]: position });
+    if (shouldRunMiniAction) await runMiniAction();
   }
   dragHandle.addEventListener("pointerup", finishDrag);
   dragHandle.addEventListener("pointercancel", finishDrag);
@@ -183,7 +257,9 @@
     polling = false;
   }
 
-  restorePosition();
+  restoreUiState().catch(() => {
+    host.style.visibility = "";
+  });
   poll();
   setInterval(poll, 750);
 })();

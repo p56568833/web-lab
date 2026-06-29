@@ -9,6 +9,10 @@
     translateNavigation: false
   };
   const COMPONENT_SELECTOR = `${Core.BLOCK_SELECTOR},span,div,a,time,label,button,[role='tab'],[role='status']`;
+  const UI_CONTEXT_SELECTOR = [
+    "nav", "[role='navigation']", "[role='menu']", "[role='menubar']", "[role='tablist']",
+    "[aria-label*='navigation' i]", "[aria-label*='menu' i]", "[aria-label*='tabs' i]"
+  ].join(",");
   const COMPONENT_HARD_EXCLUDED = [
     "script", "style", "noscript", "code", "pre", "kbd", "samp", "textarea",
     "input", "select", "option", "svg", "canvas", "math", "iframe", "video",
@@ -24,12 +28,34 @@
   const nativeDocumentQueryAll = Document.prototype.querySelectorAll;
   const UI_DICTIONARY = new Map(Object.entries({
     "by": "作者",
+    "about": "关于",
+    "biographical": "生平",
+    "careers": "招聘",
+    "chemistry": "化学",
+    "contact": "联系我们",
+    "educational": "教育",
+    "explore": "探索",
+    "facts": "事实",
     "show": "展开",
     "hide": "收起",
     "home": "首页",
+    "interview": "采访",
+    "laureates": "获奖者",
+    "literature": "文学",
+    "medicine": "生理学或医学",
     "news": "新闻",
+    "overview": "概览",
+    "peace": "和平",
+    "physics": "物理学",
+    "press": "新闻中心",
+    "profile": "简介",
+    "publications": "出版物",
+    "resources": "资源",
     "search": "搜索",
     "search bbc": "搜索 BBC",
+    "stories": "故事",
+    "summary": "概述",
+    "video": "视频",
     "more": "更多",
     "sport": "体育",
     "football": "足球",
@@ -95,7 +121,8 @@
   function publicState() {
     return {
       phase: state.phase, label: labels[state.phase] || state.phase,
-      completed: state.completed, total: state.total, error: state.error, showing: state.showing
+      completed: state.completed, total: state.total, error: state.error, showing: state.showing,
+      hasTranslation: state.records.some((record) => typeof record.translatedValue === "string")
     };
   }
 
@@ -198,7 +225,20 @@
       .filter((element) => !safeClosest(element, Core.PROSE_EXCLUDED_SELECTOR))
       .map((element) => ({ element, score: textDensity(element) }))
       .filter((item) => item.score >= 120).sort((a, b) => b.score - a.score);
-    return candidates[0]?.element || null;
+    if (candidates[0]) return candidates[0].element;
+
+    // Early web documents often place their complete article directly in <body>
+    // without article/main/section/div wrappers. Keep this as a final fallback so
+    // modern pages still use the narrower, safer content roots above.
+    const legacyBody = document.body;
+    if (
+      legacyBody
+      && isVisible(legacyBody, Core.PROSE_EXCLUDED_SELECTOR)
+      && textDensity(legacyBody) >= 120
+    ) {
+      return legacyBody;
+    }
+    return null;
   }
 
   function collectTextNodes(blockElement, excludedSelector = Core.PROSE_EXCLUDED_SELECTOR) {
@@ -233,6 +273,18 @@
     return false;
   }
 
+  function componentSemanticKind(element) {
+    const role = safeAttribute(element, "role");
+    if (/^(tab|status|menuitem|option|button)$/.test(role) || safeMatches(element, "button,label")) {
+      return "control";
+    }
+    if (safeClosest(element, UI_CONTEXT_SELECTOR)) return "navigation";
+    if (safeMatches(element, "a") && safeClosest(element, "aside,[role='complementary']")) {
+      return "navigation";
+    }
+    return "generic";
+  }
+
   function componentTranslation(text, element) {
     const value = text.replace(/\s+/g, " ").trim();
     const normalized = normalizeUiLabel(value);
@@ -241,18 +293,34 @@
     if (/^(?:https?:\/\/|www\.|[\w.+-]+@)/i.test(value)) return null;
     if (/^[\d\s.,:%'’()+/-]+$/.test(value) || looksLikeName(value)) return null;
     const words = value.match(/[A-Za-z][A-Za-z'’-]*/g) || [];
-    if (words.length < 2) return null;
     let role = "";
     try {
       role = element.getAttribute("role") || "";
     } catch {
       return null;
     }
-    const semanticControl = /^(tab|status|menuitem|option)$/.test(role) || safeMatches(element, "button,label");
+    const semanticKind = componentSemanticKind(element);
+    const semanticControl = semanticKind !== "generic";
+    if (words.length < 2 && !semanticControl) return null;
+    if (
+      words.length === 1
+      && /^[A-Z][\p{L}'’-]+$/u.test(value)
+      && semanticKind === "navigation"
+    ) {
+      return null;
+    }
     const hasLowercasePhrase = words.some((word) => /^[a-z]/.test(word));
     if (!semanticControl && value.length < 10) return null;
-    if (!hasLowercasePhrase && words.length <= 3) return null;
-    return { local: null };
+    if (!hasLowercasePhrase && words.length <= 3 && semanticKind === "generic") return null;
+    return {
+      local: null,
+      semanticKind,
+      contentType: semanticKind === "navigation"
+        ? "navigation or menu label"
+        : semanticKind === "control"
+          ? "interactive interface control"
+          : "short website interface label"
+    };
   }
 
   function auxiliaryScore(element, primaryRoot) {
@@ -336,6 +404,17 @@
     };
   }
 
+  function blockProgressWeight(block) {
+    const text = block?.payload?.fullBlockText
+      || block?.records?.map((record) => record.content).join("")
+      || "";
+    return Math.max(1, Array.from(text).length);
+  }
+
+  function blocksProgressWeight(blocks) {
+    return blocks.reduce((sum, block) => sum + blockProgressWeight(block), 0);
+  }
+
   function analyzePage(settings) {
     const root = findContentRoot();
     if (!root) return [];
@@ -399,7 +478,8 @@
               viewportDistance: rect.bottom < 0 ? Math.abs(rect.bottom) : rect.top > innerHeight ? rect.top - innerHeight : 0,
               payload: {
                 blockId: `block_${blocks.length + 1}`, fullBlockText: record.content,
-                contentType: "short website interface label", componentContext: context,
+                contentType: decision.contentType || "short website interface label",
+                componentContext: `${decision.semanticKind || "dictionary"}: ${context}`,
                 translationStyle: "natural Chinese interface wording",
                 segments: [payloadSegment(record)]
               }
@@ -489,7 +569,7 @@
     if (state.stopped) return { successes: 0, errors: [] };
     try {
       await translateBatch(batch);
-      state.completed += batch.length;
+      state.completed += blocksProgressWeight(batch);
       publish();
       return { successes: batch.length, errors: [] };
     } catch (error) {
@@ -500,7 +580,7 @@
         const right = await translateResiliently(batch.slice(middle));
         return { successes: left.successes + right.successes, errors: [...left.errors, ...right.errors] };
       }
-      state.completed += 1;
+      state.completed += blockProgressWeight(batch[0]);
       publish();
       return { successes: 0, errors: [`${batch[0]?.id || "段落"}：${error.message}`] };
     }
@@ -549,13 +629,13 @@
     }
     state.blocks = blocks;
     state.records = blocks.flatMap((block) => block.records);
-    state.total = blocks.length;
+    state.total = blocksProgressWeight(blocks);
     state.showing = "translated";
 
     const localBlocks = blocks.filter((block) => block.localTranslations);
     for (const block of localBlocks) {
       Core.applyTranslations(block.records, block.localTranslations);
-      state.completed += 1;
+      state.completed += blockProgressWeight(block);
     }
     publish();
 

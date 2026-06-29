@@ -32,6 +32,14 @@ API Key 保存在 `chrome.storage.local`，只由后台 service worker 读取，
 - 批次失败时自动拆小重试，单段失败不会中断整页。
 - DOM 扫描使用防御式包装；单个异常节点或网站组件不会导致整页分析失败。
 - 网页右下角提供可拖动控制器，支持翻译、停止、原文/译文切换和 0–100% 进度显示。
+- 控制器收起后，首次单击“译”即可翻译；翻译中显示迷你进度条，完成后自动隐藏。
+- 完成翻译后继续单击迷你控制器，会在原文与译文之间循环切换；拖动不会误触发操作。
+- 控制器会记住展开或收起状态，新页面和新窗口沿用上一次选择。
+- 展开或收起时会锁定距离最近的屏幕边缘，右侧浮窗不会在收起后跳到左边。
+- 常见单词型菜单标签使用安全词典翻译，同时继续跳过疑似人名和专有名词。
+- 组件会按导航、菜单、标签页、按钮和状态等语义分类翻译，安全词典仅作为短词兜底。
+- 翻译进度按实际字符量加权，长段落和短标签不再拥有相同权重。
+- 支持正文直接放在 `body` 下、缺少 `article` / `main` 等现代语义容器的早期网页。
 - 拖动位置保存在浏览器本地。
 - 设置页可以关闭“翻译页面组件”，或单独开启实验性的导航栏翻译。
 
@@ -60,6 +68,7 @@ node .\tests\component-translation-regression.js
 node .\tests\dom-safety-regression.js
 node .\tests\auxiliary-regions-regression.js
 node .\tests\natural-chinese-regression.js
+node .\tests\legacy-body-regression.js
 ```
 
 测试覆盖原文恢复、标签结构保护、排除规则、segment 映射、API 配置、悬浮 UI、批次拆分重试和组件翻译保护。
