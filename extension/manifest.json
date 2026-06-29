@@ -1,0 +1,28 @@
+{
+  "manifest_version": 3,
+  "name": "译页 · DeepSeek 网页翻译",
+  "version": "1.6.2",
+  "description": "将英文文章、新闻、文档和常见页面组件原位翻译为简体中文。",
+  "permissions": ["storage", "activeTab"],
+  "host_permissions": ["<all_urls>"],
+  "background": {
+    "service_worker": "service-worker.js"
+  },
+  "action": {
+    "default_title": "译页",
+    "default_popup": "popup.html"
+  },
+  "options_page": "options.html",
+  "content_scripts": [
+    {
+      "matches": ["http://*/*", "https://*/*", "file:///*"],
+      "js": ["content-core.js", "content.js"],
+      "run_at": "document_idle"
+    },
+    {
+      "matches": ["http://*/*", "https://*/*", "file:///*"],
+      "js": ["floating-ui.js"],
+      "run_at": "document_idle"
+    }
+  ]
+}

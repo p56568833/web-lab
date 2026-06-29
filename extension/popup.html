@@ -1,0 +1,40 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>译页</title>
+  <link rel="stylesheet" href="popup.css">
+</head>
+<body>
+  <main>
+    <header>
+      <div class="mark" aria-hidden="true">译</div>
+      <div>
+        <p class="eyebrow">DEEPSEEK TRANSLATION DESK</p>
+        <h1>译页</h1>
+      </div>
+      <button id="settings" class="icon-button" title="设置" aria-label="打开设置">⚙</button>
+    </header>
+
+    <section class="status-card" aria-live="polite">
+      <div class="status-line">
+        <span id="statusDot" class="dot"></span>
+        <strong id="status">尚未翻译</strong>
+        <span id="progress">0 / 0</span>
+      </div>
+      <div class="track"><span id="progressBar"></span></div>
+      <p id="error" hidden></p>
+    </section>
+
+    <button id="translate" class="primary">翻译此页 <span>→</span></button>
+    <div class="controls">
+      <button id="stop">停止翻译</button>
+      <button id="original">显示原文</button>
+      <button id="translated">显示译文</button>
+    </div>
+    <p class="note">只处理正文文本节点，不改动页面标签、链接与样式。</p>
+  </main>
+  <script src="popup.js"></script>
+</body>
+</html>

@@ -1,0 +1,24 @@
+:root { --ink:#1a241d; --paper:#f5f0e3; --red:#df4a31; --green:#245a43; --line:#c9c0aa; }
+* { box-sizing:border-box; }
+body { margin:0; min-height:100vh; color:var(--ink); background:var(--paper); font-family:"Noto Serif SC","Songti SC",Georgia,serif; }
+main { min-height:100vh; display:grid; grid-template-columns:minmax(280px,38%) 1fr; }
+aside { padding:8vw 6vw; color:#f6f0e4; background:var(--green); position:relative; overflow:hidden; }
+aside::after { content:"译"; position:absolute; right:-35px; bottom:-120px; font-size:360px; opacity:.035; font-weight:900; }
+.seal { display:grid; place-items:center; width:58px; height:66px; background:var(--red); font-size:30px; font-weight:900; clip-path:polygon(0 0,100% 0,100% 85%,50% 100%,0 85%); }
+aside p,.kicker { margin:28px 0 12px; font:700 10px ui-monospace,monospace; letter-spacing:.2em; opacity:.75; }
+aside h1 { max-width:430px; margin-top:12vh; font-size:clamp(30px,4vw,58px); line-height:1.35; letter-spacing:.03em; }
+section { padding:8vw min(9vw,110px); max-width:950px; }
+.kicker { margin:0; color:var(--red); opacity:1; }
+h2 { margin:8px 0 42px; font-size:38px; }
+form { display:grid; gap:23px; }
+label { display:grid; gap:8px; font-size:13px; font-weight:700; }
+input { width:100%; border:0; border-bottom:1px solid var(--line); padding:12px 2px; color:var(--ink); background:transparent; font:15px ui-monospace,monospace; outline:none; }
+input:focus { border-color:var(--red); box-shadow:0 1px 0 var(--red); }
+.row { display:grid; grid-template-columns:1fr 1fr; gap:26px; }
+.actions { display:flex; gap:10px; align-items:center; flex-wrap:wrap; margin-top:12px; }
+button { border:1px solid var(--green); padding:11px 16px; color:var(--green); background:transparent; font:700 13px inherit; cursor:pointer; }
+button.save { color:white; background:var(--green); }
+#message { margin-left:8px; color:var(--red); font-size:12px; }
+.notice { margin-top:46px; padding:18px 20px; border-left:4px solid var(--red); background:rgba(255,255,255,.42); }
+.notice p { margin:7px 0 0; color:#5f625a; font-size:13px; line-height:1.7; }
+@media(max-width:720px){ main{grid-template-columns:1fr} aside{padding:32px} aside h1{margin:28px 0 6px;font-size:28px} section{padding:42px 28px}.row{grid-template-columns:1fr} }

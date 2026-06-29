@@ -1,0 +1,71 @@
+.test-api {
+  border-color: var(--red);
+  color: var(--red);
+}
+
+.test-api:hover {
+  color: #fff;
+  background: var(--red);
+}
+
+.test-api:disabled {
+  cursor: wait;
+  opacity: .58;
+}
+
+.test-result {
+  grid-template-columns: 12px 1fr;
+  gap: 13px;
+  align-items: start;
+  padding: 15px 17px;
+  border: 1px solid var(--line);
+  background: rgba(255,255,255,.42);
+}
+
+.test-result:not([hidden]) {
+  display: grid;
+}
+
+.test-indicator {
+  width: 10px;
+  height: 10px;
+  margin-top: 4px;
+  border-radius: 50%;
+  background: #8b8b83;
+}
+
+.test-result.testing .test-indicator {
+  background: var(--red);
+  animation: test-pulse 1s infinite;
+}
+
+.test-result.success {
+  border-color: #7d9d89;
+}
+
+.test-result.success .test-indicator {
+  background: var(--green);
+}
+
+.test-result.failure {
+  border-color: #d7988c;
+}
+
+.test-result.failure .test-indicator {
+  background: var(--red);
+}
+
+.test-result strong {
+  font-size: 13px;
+}
+
+.test-result p {
+  margin: 4px 0 0;
+  color: #66675f;
+  font: 12px/1.55 ui-monospace, monospace;
+  overflow-wrap: anywhere;
+}
+
+@keyframes test-pulse {
+  50% { opacity: .3; }
+}
