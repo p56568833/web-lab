@@ -1,0 +1,51 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>译页</title>
+  <link rel="stylesheet" href="popup.css">
+</head>
+<body>
+  <main>
+    <header>
+      <div class="mark" aria-hidden="true"><span>译</span></div>
+      <div class="brand-copy">
+        <h1>译页</h1>
+        <p class="eyebrow">PAGE TRANSLATOR</p>
+      </div>
+      <button id="settings" class="icon-button" title="设置" aria-label="打开设置">
+        <svg viewBox="0 0 24 24" aria-hidden="true">
+          <path d="M12 3.5v2M12 18.5v2M3.5 12h2M18.5 12h2M6 6l1.4 1.4M16.6 16.6 18 18M18 6l-1.4 1.4M7.4 16.6 6 18"/>
+          <circle cx="12" cy="12" r="3.5"/>
+        </svg>
+      </button>
+    </header>
+
+    <section class="status-card" aria-live="polite">
+      <div class="status-kicker">
+        <span>TRANSLATION STATUS</span>
+        <span id="progress">0 / 0</span>
+      </div>
+      <div class="status-line">
+        <span id="statusDot" class="dot"></span>
+        <strong id="status">尚未翻译</strong>
+      </div>
+      <div class="track"><span id="progressBar"></span></div>
+      <p id="error" hidden></p>
+    </section>
+
+    <button id="translate" class="primary">
+      <span>翻译此页</span>
+      <span class="primary-arrow" aria-hidden="true">→</span>
+    </button>
+    <div class="controls">
+      <button id="stop">停止翻译</button>
+      <button id="original">显示原文</button>
+      <button id="translated">显示译文</button>
+    </div>
+    <p class="note"><span aria-hidden="true"></span>只处理文字内容，不改动网页结构与样式</p>
+  </main>
+  <script src="popup.js"></script>
+</body>
+</html>

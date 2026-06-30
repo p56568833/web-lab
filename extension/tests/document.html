@@ -1,0 +1,33 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>Documentation fixture</title>
+  <style>
+    body{max-width:940px;margin:50px auto;padding:0 24px;font:16px/1.6 Georgia,serif;color:#243027}
+    table{border-collapse:collapse;width:100%}th,td{padding:10px;border:1px solid #9ba69c;text-align:left}
+    code{background:#edf0eb;padding:2px 4px}
+  </style>
+</head>
+<body>
+  <main>
+    <h1>Reader mode integration guide</h1>
+    <p>This guide explains how a document reader preserves semantic structure during translation.</p>
+    <h2>Requirements</h2>
+    <ul>
+      <li>Keep every heading at its original level.</li>
+      <li>Preserve <strong>bold terms</strong>, <em>emphasis</em>, and linked references.</li>
+      <li>Never translate source code such as <code>node.nodeValue = text</code>.</li>
+    </ul>
+    <h2>Compatibility table</h2>
+    <table>
+      <thead><tr><th>Content type</th><th>Expected behavior</th></tr></thead>
+      <tbody>
+        <tr><td>Paragraphs</td><td>Translate visible English prose.</td></tr>
+        <tr><td>Code blocks</td><td>Keep the original source unchanged.</td></tr>
+      </tbody>
+    </table>
+    <blockquote>When safe mapping is impossible, retain the original text.</blockquote>
+  </main>
+</body>
+</html>

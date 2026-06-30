@@ -1,0 +1,78 @@
+.test-api {
+  border-color: #b9d9ca;
+  color: #4f846b;
+}
+
+.test-api:hover {
+  border-color: #91c8ac;
+  color: #3e6d57;
+  background: #f0faf5;
+}
+
+.test-api:disabled {
+  cursor: wait;
+  opacity: .58;
+}
+
+.test-result {
+  grid-template-columns: 12px 1fr;
+  gap: 13px;
+  align-items: start;
+  padding: 15px 17px;
+  border: 1px solid var(--line);
+  border-radius: 13px;
+  background: rgba(249,251,250,.82);
+}
+
+.test-result:not([hidden]) {
+  display: grid;
+}
+
+.test-indicator {
+  width: 8px;
+  height: 8px;
+  margin-top: 4px;
+  border-radius: 50%;
+  background: #aab4af;
+  box-shadow: 0 0 0 4px rgba(170,180,175,.11);
+}
+
+.test-result.testing .test-indicator {
+  background: var(--accent);
+  box-shadow: 0 0 0 4px rgba(121,207,166,.13);
+  animation: test-pulse 1s infinite;
+}
+
+.test-result.success {
+  border-color: #add8c1;
+  background: #f4fbf7;
+}
+
+.test-result.success .test-indicator {
+  background: var(--accent-strong);
+}
+
+.test-result.failure {
+  border-color: #e2bbbb;
+  background: #fff8f8;
+}
+
+.test-result.failure .test-indicator {
+  background: var(--danger);
+  box-shadow: 0 0 0 4px rgba(184,92,92,.11);
+}
+
+.test-result strong {
+  font-size: 13px;
+}
+
+.test-result p {
+  margin: 4px 0 0;
+  color: #7b8580;
+  font: 12px/1.55 ui-monospace, monospace;
+  overflow-wrap: anywhere;
+}
+
+@keyframes test-pulse {
+  50% { opacity: .3; }
+}

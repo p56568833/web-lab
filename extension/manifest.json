@@ -1,0 +1,28 @@
+{
+  "manifest_version": 3,
+  "name": "译页 · DeepSeek 网页翻译",
+  "version": "1.15.1",
+  "description": "快速翻译网页中的全部可见英文文字，并进行轻量上下文精校。",
+  "permissions": ["storage", "activeTab"],
+  "host_permissions": ["<all_urls>"],
+  "background": {
+    "service_worker": "service-worker.js"
+  },
+  "action": {
+    "default_title": "译页",
+    "default_popup": "popup.html"
+  },
+  "options_page": "options.html",
+  "content_scripts": [
+    {
+      "matches": ["http://*/*", "https://*/*", "file:///*"],
+      "js": ["content-core.js", "content.js"],
+      "run_at": "document_start"
+    },
+    {
+      "matches": ["http://*/*", "https://*/*", "file:///*"],
+      "js": ["floating-ui.js"],
+      "run_at": "document_idle"
+    }
+  ]
+}

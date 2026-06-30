@@ -1,0 +1,33 @@
+<!doctype html>
+<html lang="en">
+<body>
+  <main>
+    <h1>A long forum discussion about tactics</h1>
+    <form action="/moderate" method="post">
+      <article>
+        <header>
+          <a href="/members/alex">Alex</a>
+          <time datetime="2026-01-01">January 1, 2026</time>
+        </header>
+        <div>
+          <p>I did not plan to share this yet, but the results and the way the team behaves changed my mind.</p>
+          <h2>The idea</h2>
+          <p>This system uses controlled possession, compact spacing, and aggressive counter pressing.</p>
+        </div>
+        <label><input type="checkbox" name="post"> Select this post for moderation</label>
+      </article>
+      <article>
+        <header>
+          <a href="/members/sam">Sam</a>
+          <time datetime="2026-01-02">January 2, 2026</time>
+        </header>
+        <div>
+          <p>This second reply contains enough English prose to verify that the entire discussion is scanned.</p>
+        </div>
+        <textarea name="reply">Draft text in an editor must not be translated.</textarea>
+        <button type="submit">Submit moderation action</button>
+      </article>
+    </form>
+  </main>
+</body>
+</html>
