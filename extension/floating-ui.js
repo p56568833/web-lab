@@ -13,52 +13,264 @@
   const shadow = host.attachShadow({ mode: "closed" });
   shadow.innerHTML = `
     <style>
-      :host{all:initial;position:fixed;right:22px;bottom:22px;z-index:2147483647}
-      .desk{width:286px;padding:8px;background:#f4efe3;border:1px solid #bdb39e;border-radius:5px;
-        box-shadow:0 14px 38px rgba(20,28,22,.24),3px 3px 0 #233f31;
-        font-family:"Songti SC","Noto Serif SC",Georgia,serif;color:#172019;user-select:none}
-      .drag-handle{display:grid;grid-template-columns:14px 29px minmax(0,1fr) 38px 24px;gap:7px;
-        align-items:center;cursor:grab;touch-action:none}
+      :host{
+        all:initial;
+        position:fixed;
+        right:22px;
+        bottom:22px;
+        z-index:2147483647;
+        color-scheme:light
+      }
+      *{box-sizing:border-box}
+      .desk{
+        position:relative;
+        width:306px;
+        padding:10px;
+        overflow:hidden;
+        border:1px solid rgba(197,209,203,.92);
+        border-radius:18px;
+        color:#39413e;
+        background:
+          radial-gradient(circle at 92% -15%,rgba(121,207,166,.22),transparent 42%),
+          rgba(250,252,251,.94);
+        box-shadow:
+          inset 0 1px 0 rgba(255,255,255,.96),
+          0 18px 50px rgba(52,75,64,.17),
+          0 3px 10px rgba(52,75,64,.08);
+        backdrop-filter:blur(18px) saturate(1.08);
+        -webkit-backdrop-filter:blur(18px) saturate(1.08);
+        font-family:"Avenir Next","SF Pro Display","PingFang SC","Microsoft YaHei",sans-serif;
+        -webkit-font-smoothing:antialiased;
+        user-select:none;
+        transition:width .24s ease,padding .24s ease,border-radius .24s ease,box-shadow .24s ease
+      }
+      .desk::after{
+        content:"";
+        position:absolute;
+        top:-39px;
+        right:-30px;
+        width:100px;
+        height:100px;
+        border:1px solid rgba(121,207,166,.18);
+        border-radius:50%;
+        box-shadow:0 0 0 13px rgba(121,207,166,.025),0 0 0 27px rgba(121,207,166,.018);
+        pointer-events:none
+      }
+      .drag-handle{
+        position:relative;
+        z-index:1;
+        display:grid;
+        grid-template-columns:12px 36px minmax(0,1fr) 40px 26px;
+        gap:8px;
+        align-items:center;
+        cursor:grab;
+        touch-action:none
+      }
       .drag-handle:active{cursor:grabbing}
-      .grip{color:#8d897f;font:13px/1 ui-monospace,monospace;letter-spacing:-3px}
-      .mark{display:grid;place-items:center;width:29px;height:31px;background:#df4a31;color:#fff;
-        font-size:15px;font-weight:800;clip-path:polygon(0 0,100% 0,100% 82%,50% 100%,0 82%)}
-      .status{min-width:0;font-size:11px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-      .status::before{content:"";display:inline-block;width:6px;height:6px;margin-right:6px;border-radius:50%;background:#85877f}
-      .status.busy::before{background:#df4a31;animation:pulse 1s infinite}
-      .percent{text-align:right;color:#245a43;font:700 10px ui-monospace,monospace}
-      button{appearance:none;border:0;border-radius:0;color:#27332b;background:transparent;
-        font:700 11px "Songti SC","Noto Serif SC",serif;cursor:pointer}
-      button:hover{background:rgba(36,90,67,.1)}
-      button.active{background:#245a43;color:#fff}
+      .grip{
+        width:10px;
+        height:16px;
+        overflow:hidden;
+        color:transparent;
+        background:radial-gradient(circle,#9ca7a1 1.2px,transparent 1.4px) 0 0/5px 5px;
+        opacity:.7
+      }
+      .mark{
+        position:relative;
+        display:grid;
+        place-items:center;
+        width:36px;
+        height:36px;
+        border:1px solid rgba(79,159,120,.33);
+        border-radius:11px;
+        color:#3f7d61;
+        background:linear-gradient(145deg,#fff,#e1f5ea);
+        box-shadow:inset 0 1px 0 #fff,0 7px 15px rgba(64,103,83,.07);
+        font-size:16px;
+        font-weight:700
+      }
+      .mark::after{
+        content:"";
+        position:absolute;
+        inset:3px;
+        border:1px solid rgba(121,207,166,.18);
+        border-radius:8px
+      }
+      .status-copy{
+        display:grid;
+        min-width:0;
+        gap:4px
+      }
+      .overline{
+        color:#929c97;
+        font:600 7px/1 ui-monospace,"SFMono-Regular",monospace;
+        letter-spacing:.13em
+      }
+      .status{
+        min-width:0;
+        color:#505a55;
+        font-size:11px;
+        font-weight:600;
+        line-height:1.15;
+        white-space:nowrap;
+        overflow:hidden;
+        text-overflow:ellipsis
+      }
+      .status::before{
+        content:"";
+        display:inline-block;
+        width:6px;
+        height:6px;
+        margin-right:6px;
+        border-radius:50%;
+        background:#abb5b0;
+        box-shadow:0 0 0 3px rgba(171,181,176,.12);
+        vertical-align:1px
+      }
+      .status.busy::before{
+        background:#4f9f78;
+        box-shadow:0 0 0 3px rgba(79,159,120,.13);
+        animation:pulse 1.15s ease-in-out infinite
+      }
+      .percent{
+        text-align:right;
+        color:#5b7568;
+        font:650 10px/1 ui-monospace,"SFMono-Regular",monospace;
+        font-variant-numeric:tabular-nums
+      }
+      button{
+        appearance:none;
+        border:0;
+        color:#56615c;
+        background:transparent;
+        font-family:inherit;
+        font-size:11px;
+        font-weight:600;
+        cursor:pointer;
+        -webkit-tap-highlight-color:transparent;
+        transition:color .2s ease,background .2s ease,border-color .2s ease,box-shadow .2s ease,transform .2s ease
+      }
+      button:focus-visible{outline:2px solid #4f9f78;outline-offset:2px}
+      button:active:not(:disabled){transform:scale(.97)}
       button:disabled{opacity:.42;cursor:default}
-      .collapse{padding:4px;color:#6e6c63;font:15px/1 sans-serif}
-      .progress{height:4px;margin:8px 0;background:#d7cfbf;overflow:hidden;border-radius:3px}
-      .progress span{display:block;width:0;height:100%;background:#df4a31;transition:width .25s ease}
+      .collapse{
+        display:grid;
+        place-items:center;
+        width:26px;
+        height:26px;
+        padding:0;
+        border:1px solid transparent;
+        border-radius:8px;
+        color:#7b8580;
+        font:500 15px/1 sans-serif
+      }
+      .collapse:hover{border-color:#d9e1dd;background:rgba(255,255,255,.76);color:#48534d}
+      .progress{
+        position:relative;
+        z-index:1;
+        height:3px;
+        margin:10px 3px 9px;
+        overflow:hidden;
+        border-radius:99px;
+        background:#e7ece9
+      }
+      .progress span{
+        display:block;
+        width:0;
+        height:100%;
+        border-radius:inherit;
+        background:linear-gradient(90deg,#a8e1c6,#4f9f78);
+        box-shadow:0 0 9px rgba(79,159,120,.32);
+        transition:width .28s ease
+      }
       .progress.indeterminate span{width:36%!important;animation:indeterminate 1s ease-in-out infinite}
-      .actions{display:grid;grid-template-columns:1.2fr 1fr 1fr;gap:6px}
-      .actions button{padding:8px 7px;border:1px solid #bcb39f;background:#e9e2d4}
-      .actions button:hover{border-color:#245a43}
-      .translate{color:#fff!important;background:#245a43!important;border-color:#245a43!important}
-      .translate.stopping{background:#df4a31!important;border-color:#df4a31!important}
-      .mini{width:auto;padding:6px}
-      .mini .drag-handle{grid-template-columns:29px 24px}
-      .mini .grip,.mini .status,.mini .percent,.mini .actions{display:none}
+      .actions{
+        position:relative;
+        z-index:1;
+        display:grid;
+        grid-template-columns:1.18fr 1fr 1fr;
+        gap:4px;
+        padding:4px;
+        border:1px solid #dce3df;
+        border-radius:12px;
+        background:rgba(235,240,237,.7)
+      }
+      .actions button{
+        min-height:34px;
+        padding:7px 8px;
+        border:1px solid transparent;
+        border-radius:8px
+      }
+      .actions button:hover:not(:disabled){
+        color:#3e5047;
+        background:rgba(255,255,255,.9);
+        box-shadow:0 2px 8px rgba(63,86,74,.06)
+      }
+      .actions button.active{
+        border-color:rgba(202,212,207,.8);
+        color:#3f6f58;
+        background:#fff;
+        box-shadow:0 2px 8px rgba(63,86,74,.07)
+      }
+      .translate{
+        display:flex;
+        align-items:center;
+        justify-content:space-between;
+        padding-left:11px!important;
+        color:#315e49!important;
+        background:linear-gradient(110deg,#e3f6ec,#d8f1e4)!important;
+        border-color:#b9dec9!important
+      }
+      .translate::after{
+        content:"→";
+        display:grid;
+        place-items:center;
+        width:20px;
+        height:20px;
+        border:1px solid rgba(79,159,120,.22);
+        border-radius:6px;
+        background:rgba(255,255,255,.58);
+        transition:transform .2s ease,background .2s ease
+      }
+      .translate:hover::after{background:#fff;transform:translateX(1px)}
+      .translate.stopping{
+        color:#9a5555!important;
+        background:#f8e9e9!important;
+        border-color:#e6bebe!important
+      }
+      .translate.stopping::after{content:"■";border-color:#e1b8b8;color:#b76767;font-size:7px}
+      .mini{
+        width:auto;
+        padding:7px;
+        border-radius:16px;
+        box-shadow:inset 0 1px 0 #fff,0 12px 34px rgba(52,75,64,.16),0 2px 8px rgba(52,75,64,.07)
+      }
+      .mini::after{display:none}
+      .mini .drag-handle{grid-template-columns:38px 24px;gap:5px}
+      .mini .grip,.mini .status-copy,.mini .percent,.mini .actions{display:none}
       .mini .progress{display:none;width:60px;height:3px;margin:5px 0 0}
       .mini.mini-progress-active .progress{display:block}
       .mini .drag-handle{cursor:pointer}
-      .mini .mark{transition:transform .12s ease,filter .12s ease}
-      .mini .drag-handle:hover .mark{filter:brightness(.94);transform:translateY(-1px)}
-      @keyframes pulse{50%{opacity:.3}}
+      .mini .mark{width:38px;height:38px;transition:transform .18s ease,box-shadow .18s ease}
+      .mini .drag-handle:hover .mark{box-shadow:inset 0 1px 0 #fff,0 9px 18px rgba(64,103,83,.13);transform:translateY(-1px)}
+      @keyframes pulse{50%{opacity:.35;transform:scale(.8)}}
       @keyframes indeterminate{0%{transform:translateX(-110%)}100%{transform:translateX(300%)}}
-      @media(max-width:520px){.desk{width:258px}}
+      @media(max-width:520px){
+        :host{right:12px;bottom:12px}
+        .desk{width:278px}
+        .drag-handle{grid-template-columns:10px 34px minmax(0,1fr) 34px 24px;gap:7px}
+        .mark{width:34px;height:34px}
+      }
       @media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
     </style>
     <div class="desk">
       <div class="drag-handle" title="拖动">
         <span class="grip" aria-hidden="true">⠿</span>
         <span class="mark" aria-hidden="true">译</span>
-        <span class="status">尚未翻译</span>
+        <span class="status-copy">
+          <span class="overline">PAGE TRANSLATOR</span>
+          <span class="status">尚未翻译</span>
+        </span>
         <span class="percent">0%</span>
         <button class="collapse" type="button" aria-label="收起翻译控制">−</button>
       </div>

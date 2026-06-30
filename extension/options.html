@@ -11,39 +11,50 @@
 <body>
   <main>
     <aside>
-      <span class="seal">译</span>
-      <p>YÌ YÈ / 01</p>
-      <h1>把翻译留在文字里，<br>把网页留在原处。</h1>
+      <div class="aside-brand">
+        <span class="seal">译</span>
+        <div>
+          <strong>译页</strong>
+          <p>PAGE TRANSLATOR</p>
+        </div>
+      </div>
+      <div class="aside-copy">
+        <span class="edition">SYSTEM / 01</span>
+        <h1>翻译文字，<br>不打扰网页。</h1>
+        <p class="aside-note">参数仅保存在当前浏览器中。</p>
+      </div>
+      <div class="signal" aria-hidden="true">
+        <span></span><span></span><span></span>
+      </div>
     </aside>
-    <section>
+    <section class="settings-panel">
       <header>
-        <p class="kicker">DEEPSEEK CONNECTION</p>
-        <h2>翻译设置</h2>
+        <div>
+          <p class="kicker">PREFERENCES</p>
+          <h2>翻译设置</h2>
+        </div>
+        <span class="local-badge"><i></i>LOCAL ONLY</span>
       </header>
       <form id="settingsForm">
-        <label>API Key<input id="apiKey" type="password" autocomplete="off" placeholder="sk-…"></label>
-        <label>API Base URL<input id="apiBaseUrl" type="url" required></label>
-        <label>模型名称<input id="model" type="text" required></label>
-        <div class="row">
-          <label>单次最大字符数<input id="maxCharacters" type="number" min="1000" max="30000" step="500"></label>
-          <label>并发请求数<input id="concurrency" type="number" min="1" max="5"></label>
-        </div>
-        <label class="component-option">
-          <span>
-            <strong>翻译页面组件</strong>
-            <small>默认开启。翻译作者标签、状态、标签页和常见短文本，同时跳过人名、比分和代码。</small>
-          </span>
-          <input id="translateComponents" type="checkbox">
-          <i aria-hidden="true"></i>
-        </label>
-        <label class="component-option">
-          <span>
-            <strong>翻译导航栏（实验）</strong>
-            <small>默认关闭。开启后翻译菜单和导航链接；部分网站可能因中文更长而出现布局拥挤。</small>
-          </span>
-          <input id="translateNavigation" type="checkbox">
-          <i aria-hidden="true"></i>
-        </label>
+        <fieldset>
+          <legend><span>01</span>API 连接</legend>
+          <div class="field-grid">
+            <label class="full">API Key<input id="apiKey" type="password" autocomplete="off" placeholder="sk-…"></label>
+            <label>API Base URL<input id="apiBaseUrl" type="url" required></label>
+            <label>模型名称<input id="model" type="text" required></label>
+          </div>
+        </fieldset>
+        <fieldset>
+          <legend><span>02</span>处理性能</legend>
+          <div class="row">
+            <label>单批字符上限<input id="maxCharacters" type="number" min="1000" max="1200" step="100"></label>
+            <label>最大在途请求数<input id="concurrency" type="number" min="1" max="500"></label>
+          </div>
+        </fieldset>
+        <fieldset>
+          <legend><span>03</span>翻译范围</legend>
+          <p>自动翻译正文、导航、按钮、侧栏和页脚中的全部可见英文文字。代码、输入内容、隐藏区域、网址和广告不会发送翻译。</p>
+        </fieldset>
         <div class="actions">
           <button class="save" type="submit">保存设置</button>
           <button id="testApi" class="test-api" type="button">测试 API 连接</button>
@@ -59,8 +70,11 @@
         </div>
       </form>
       <div class="notice">
-        <strong>隐私提示</strong>
-        <p>翻译时，识别到的网页正文和启用的组件文字会发送给你配置的 API 服务。API Key 仅保存在浏览器本地存储中。</p>
+        <span class="notice-icon" aria-hidden="true">i</span>
+        <div>
+          <strong>数据与隐私</strong>
+          <p>翻译时，识别到的网页文字会发送给你配置的 API 服务。API Key 仅保存在浏览器本地。</p>
+        </div>
       </div>
     </section>
   </main>

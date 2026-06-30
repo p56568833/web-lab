@@ -35,6 +35,12 @@ test("accepts English prose and rejects short labels", () => {
   assert.equal(Core.isEnglishProse("Home"), false);
 });
 
+test("accepts every visible English label while still rejecting URLs", () => {
+  assert.equal(Core.hasTranslatableEnglish("Home"), true);
+  assert.equal(Core.hasTranslatableEnglish("I"), true);
+  assert.equal(Core.hasTranslatableEnglish("https://example.com/a"), false);
+});
+
 test("validates exact segment IDs and count", () => {
   const valid = { translations: [{ id: "a", text: "甲" }, { id: "b", text: "乙" }] };
   assert.equal(Core.validateTranslations(valid, ["a", "b"]).length, 2);
@@ -71,6 +77,49 @@ test("skips detached or concurrently changed text nodes", () => {
   assert.equal(Core.applyTranslations(records, [{ id: "a", text: "译文" }, { id: "b", text: "译文" }]), 0);
 });
 
+test("applies a refinement over the currently displayed initial translation", () => {
+  const node = { nodeValue: "初译", isConnected: true };
+  const records = [{
+    id: "a",
+    node,
+    originalValue: "Original",
+    translatedValue: "初译",
+    leadingWhitespace: "",
+    trailingWhitespace: ""
+  }];
+  assert.equal(Core.applyRefinements(records, [{ id: "a", text: "精校译文" }]), 1);
+  assert.equal(node.nodeValue, "精校译文");
+});
+
+test("records background refinement without switching an original-view node", () => {
+  const node = { nodeValue: "Original", isConnected: true };
+  const records = [{
+    id: "a",
+    node,
+    originalValue: "Original",
+    translatedValue: "初译",
+    leadingWhitespace: "",
+    trailingWhitespace: ""
+  }];
+  assert.equal(Core.applyRefinements(records, [{ id: "a", text: "精校译文" }]), 1);
+  assert.equal(node.nodeValue, "Original");
+  assert.equal(records[0].translatedValue, "精校译文");
+});
+
+test("does not rewrite a text node when background refinement is unchanged", () => {
+  const node = { nodeValue: "初译", isConnected: true };
+  const records = [{
+    id: "a",
+    node,
+    originalValue: "Original",
+    translatedValue: "初译",
+    leadingWhitespace: "",
+    trailingWhitespace: ""
+  }];
+  assert.equal(Core.applyRefinements(records, [{ id: "a", text: "初译" }]), 0);
+  assert.equal(node.nodeValue, "初译");
+});
+
 test("content pipeline never assigns innerHTML", () => {
   for (const file of ["content.js", "content-core.js"]) {
     const source = fs.readFileSync(path.join(root, file), "utf8");
@@ -96,6 +145,7 @@ test("manifest is MV3 and loads core before content script", () => {
   const manifest = JSON.parse(fs.readFileSync(path.join(root, "manifest.json"), "utf8"));
   assert.equal(manifest.manifest_version, 3);
   assert.deepEqual(manifest.content_scripts[0].js, ["content-core.js", "content.js"]);
+  assert.equal(manifest.content_scripts[0].run_at, "document_start");
 });
 
 if (!process.exitCode) process.stdout.write("\nAll automated checks passed.\n");

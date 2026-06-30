@@ -47,6 +47,15 @@
     return letters.length >= 4 && meaningful.length > 0 && letters.length / meaningful.length >= 0.45;
   }
 
+  function hasTranslatableEnglish(text) {
+    const value = String(text || "").replace(/\s+/g, " ").trim();
+    if (!value || !/[A-Za-z]/.test(value)) return false;
+    if (/^(?:https?:\/\/|www\.)\S+$/i.test(value)) return false;
+    if (/^[\w.+-]+@[\w.-]+\.[a-z]{2,}$/i.test(value)) return false;
+    if (/^(?:[a-z]:\\|\/)[^\s]+$/i.test(value)) return false;
+    return true;
+  }
+
   function validateTranslations(payload, expectedIds) {
     if (!payload || !Array.isArray(payload.translations)) {
       throw new Error("API 返回内容缺少 translations 数组");
@@ -79,6 +88,26 @@
       if (!node || node.isConnected === false || node.nodeValue !== record.originalValue) continue;
       record.translatedValue = record.leadingWhitespace + byId.get(record.id) + record.trailingWhitespace;
       node.nodeValue = record.translatedValue;
+      applied += 1;
+    }
+    return applied;
+  }
+
+  function applyRefinements(records, translations) {
+    const byId = new Map(translations.map((item) => [item.id, item.text]));
+    let applied = 0;
+    for (const record of records) {
+      if (!byId.has(record.id)) continue;
+      const node = record.node;
+      if (!node || node.isConnected === false) continue;
+      const showingTranslation = node.nodeValue === record.translatedValue;
+      const showingOriginal = node.nodeValue === record.originalValue;
+      if (!showingTranslation && !showingOriginal) continue;
+      const nextTranslatedValue =
+        record.leadingWhitespace + byId.get(record.id) + record.trailingWhitespace;
+      if (nextTranslatedValue === record.translatedValue) continue;
+      record.translatedValue = nextTranslatedValue;
+      if (showingTranslation) node.nodeValue = record.translatedValue;
       applied += 1;
     }
     return applied;
@@ -118,6 +147,7 @@
 
   return {
     BLOCK_SELECTOR, EXCLUDED_SELECTOR, PROSE_EXCLUDED_SELECTOR, splitWhitespace, isLikelyNonProse,
-    isEnglishProse, validateTranslations, applyTranslations, restoreRecords, createBatches
+    isEnglishProse, hasTranslatableEnglish, validateTranslations, applyTranslations,
+    applyRefinements, restoreRecords, createBatches
   };
 });

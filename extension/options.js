@@ -4,10 +4,8 @@ const DEFAULTS = {
   apiKey: "",
   apiBaseUrl: "https://api.deepseek.com",
   model: "deepseek-v4-pro",
-  maxCharacters: 12000,
-  concurrency: 2,
-  translateComponents: true,
-  translateNavigation: false
+  maxCharacters: 1200,
+  concurrency: 500
 };
 const fields = Object.keys(DEFAULTS);
 const message = document.querySelector("#message");
@@ -22,9 +20,7 @@ function readForm() {
     apiBaseUrl: document.querySelector("#apiBaseUrl").value.trim().replace(/\/+$/, ""),
     model: document.querySelector("#model").value.trim(),
     maxCharacters: Number(document.querySelector("#maxCharacters").value),
-    concurrency: Number(document.querySelector("#concurrency").value),
-    translateComponents: document.querySelector("#translateComponents").checked,
-    translateNavigation: document.querySelector("#translateNavigation").checked
+    concurrency: Number(document.querySelector("#concurrency").value)
   };
 }
 
